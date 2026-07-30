@@ -1,0 +1,53 @@
+{
+    "generated_at_utc":  "2026-07-30T07:30:57.8660293Z",
+    "status":  "pass",
+    "rtl_files_checked":  37,
+    "testbench_files_checked":  164,
+    "firmware_files_checked":  49,
+    "script_files_checked":  62,
+    "audits_run":  [
+                       "rtl_comment_audit",
+                       "testbench_comment_audit",
+                       "firmware_comment_audit",
+                       "script_comment_audit"
+                   ],
+    "failed_audits":  [
+
+                      ],
+    "audit_results":  [
+                          {
+                              "name":  "rtl_comment_audit",
+                              "script":  "scripts\\comment-audit.ps1",
+                              "status":  "pass",
+                              "exit_code":  0,
+                              "error_message":  ""
+                          },
+                          {
+                              "name":  "testbench_comment_audit",
+                              "script":  "scripts\\testbench-comment-audit.ps1",
+                              "status":  "pass",
+                              "exit_code":  0,
+                              "error_message":  ""
+                          },
+                          {
+                              "name":  "firmware_comment_audit",
+                              "script":  "scripts\\firmware-comment-audit.ps1",
+                              "status":  "pass",
+                              "exit_code":  0,
+                              "error_message":  ""
+                          },
+                          {
+                              "name":  "script_comment_audit",
+                              "script":  "scripts\\script-comment-audit.ps1",
+                              "status":  "pass",
+                              "exit_code":  0,
+                              "error_message":  ""
+                          }
+                      ],
+    "note":  "Documentation coverage/readability evidence only; not hardware correctness, timing closure, physical board validation, official RISC-V compliance, or benchmark proof.",
+    "documentation_repository_head":  "7cd71138fd790d25751c0d4b720f18dcfc0eeba1",
+    "documentation_input_fingerprint":  "456bb369212330da62b4947df703176d1e879b4aab3a78da2a169600331c5b29",
+    "documentation_input_count":  374,
+    "documentation_source_working_tree_dirty":  false,
+    "documentation_input_scope":  "README, public docs/board metadata, audited source headers, workflows, and generated release text/metadata; generated audit copies and final artifact manifest excluded"
+}

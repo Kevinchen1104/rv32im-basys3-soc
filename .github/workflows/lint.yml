@@ -1,0 +1,25 @@
+name: Optional Verilator Lint
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verilator-lint:
+    name: Verilator lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Verilator
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y verilator
+
+      - name: Verify Verilator
+        run: verilator --version
+
+      - name: Run optional Verilator lint
+        shell: pwsh
+        run: pwsh -ExecutionPolicy Bypass -File scripts/verilator-lint.ps1

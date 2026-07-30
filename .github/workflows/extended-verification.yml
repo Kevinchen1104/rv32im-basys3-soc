@@ -1,0 +1,75 @@
+name: Extended Verification
+
+on:
+  workflow_dispatch:
+
+jobs:
+  windows-release-smoke:
+    name: Windows release smoke
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        shell: pwsh
+        run: choco install iverilog --yes --no-progress
+
+      - name: Install MSYS2 RISC-V and synthesis helpers
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            git
+            python
+            mingw-w64-ucrt-x86_64-riscv64-unknown-elf-gcc
+            mingw-w64-ucrt-x86_64-yosys
+
+      - name: Add MSYS2 UCRT64 to PATH
+        shell: pwsh
+        run: |
+          "C:\msys64\ucrt64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "RISCV_TOOLCHAIN_BIN=C:\msys64\ucrt64\bin" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "RISCV_PREFIX=riscv64-unknown-elf-" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Project doctor
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File scripts\project-doctor.ps1
+
+      - name: Portable full check
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File scripts\check.ps1
+
+      - name: Showcase summaries
+        shell: pwsh
+        run: |
+          powershell -ExecutionPolicy Bypass -File scripts\showcase-demo.ps1
+          powershell -ExecutionPolicy Bypass -File scripts\interactive-showcase-demo.ps1
+
+      - name: Selected arch-test integration
+        shell: pwsh
+        run: |
+          powershell -ExecutionPolicy Bypass -File scripts\arch-test-detect.ps1
+          powershell -ExecutionPolicy Bypass -File scripts\arch-test-setup.ps1
+          powershell -ExecutionPolicy Bypass -File scripts\arch-test-run.ps1 -Profile rv32im-selected
+          powershell -ExecutionPolicy Bypass -File scripts\arch-test-report.ps1
+
+      - name: FPGA and portable release smoke
+        shell: pwsh
+        run: |
+          powershell -ExecutionPolicy Bypass -File scripts\synth-smoke.ps1
+          powershell -ExecutionPolicy Bypass -File scripts\fpga-tool-detect.ps1
+          powershell -ExecutionPolicy Bypass -File scripts\fpga-release.ps1 -BoardProfile generic_uart_boot_runtime
+
+      - name: Upload release evidence artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: extended-verification-evidence
+          path: |
+            wave/*.json
+            wave/demo-smoke/*.log
+            release/fpga/generic_uart_boot_runtime/status.json
+          if-no-files-found: ignore

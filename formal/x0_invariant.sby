@@ -1,0 +1,55 @@
+[options]
+mode bmc
+depth 12
+
+[engines]
+smtbmc
+
+[script]
+read -formal -sv x0_invariant.sv
+read -formal riscv_alu.v
+read -formal rv32m_multicycle_unit.v
+read -formal branch_predictor.v
+read -formal hazard_unit.v
+read -formal forwarding_unit.v
+read -formal branch_jump_unit.v
+read -formal load_store_format_unit.v
+read -formal pipeline_control_unit.v
+read -formal csr_unit.v
+read -formal exception_decode_unit.v
+read -formal trap_redirect_control_unit.v
+read -formal performance_counter_unit.v
+read -formal ras_unit.v
+read -formal icache_unit.v
+read -formal dcache_unit.v
+read -formal mmio_decode.v
+read -formal mmio_read_mux.v
+read -formal int8_matvec_scratchpad_accelerator.v
+read -formal int8_matvec_dma_lite.v
+read -formal machine_timer.v
+read -formal riscv_cpu_core.v
+prep -top x0_invariant
+
+[files]
+formal/x0_invariant.sv
+rtl/core/execute/riscv_alu.v
+rtl/core/execute/rv32m_multicycle_unit.v
+rtl/core/frontend/branch_predictor.v
+rtl/core/pipeline/hazard_unit.v
+rtl/core/pipeline/forwarding_unit.v
+rtl/core/execute/branch_jump_unit.v
+rtl/memory/load_store_format_unit.v
+rtl/core/pipeline/pipeline_control_unit.v
+rtl/core/csr/csr_unit.v
+rtl/core/csr/exception_decode_unit.v
+rtl/core/csr/trap_redirect_control_unit.v
+rtl/soc/perf/performance_counter_unit.v
+rtl/core/frontend/ras_unit.v
+rtl/memory/cache/icache_unit.v
+rtl/memory/cache/dcache_unit.v
+rtl/soc/mmio/mmio_decode.v
+rtl/soc/mmio/mmio_read_mux.v
+rtl/accelerators/matvec/int8_matvec_scratchpad_accelerator.v
+rtl/accelerators/matvec/int8_matvec_dma_lite.v
+rtl/peripherals/timer/machine_timer.v
+rtl/core/riscv_cpu_core.v

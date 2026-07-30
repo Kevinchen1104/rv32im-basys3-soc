@@ -1,0 +1,137 @@
+[
+    {
+        "path":  "evidence/check-summary.json",
+        "bytes":  3244,
+        "sha256":  "0d26400479cda760d95027e982777428ccfa8b01565e3fc534e0c6efd81cba74"
+    },
+    {
+        "path":  "evidence/claim-audit-summary.json",
+        "bytes":  1311,
+        "sha256":  "3d5639dabf13f00c97cff91a569f472b5c5c93909c55b326d169cb556ea8109b"
+    },
+    {
+        "path":  "evidence/docs-link-audit-summary.json",
+        "bytes":  916,
+        "sha256":  "ce01bc3bd93dd95de4ee7613997c6d1574cbce27a171351d688aa7bfb0518df6"
+    },
+    {
+        "path":  "evidence/documentation-coverage-summary.json",
+        "bytes":  2653,
+        "sha256":  "abe9da45eb60d1aa1a1f2f27c6bc15fb3c85bd901552f17ccde4542d34558123"
+    },
+    {
+        "path":  "evidence/formal-matvec-smoke-summary.json",
+        "bytes":  575,
+        "sha256":  "286bb80a6dc823b3e309a66d531a73619675062837e4a52487bf9dcecb76d33d"
+    },
+    {
+        "path":  "evidence/formal-smoke-summary.json",
+        "bytes":  849,
+        "sha256":  "210f235f0cf6a95c37b6044781a977e0f2692b9901147b81e549e3cb5b738650"
+    },
+    {
+        "path":  "evidence/physical/hardware-validation-transcript.txt",
+        "bytes":  82,
+        "sha256":  "e79c0a5cf34d98c178a4f4fe0a6f0cd65472daf786f0d523c2e97338725e6282"
+    },
+    {
+        "path":  "evidence/physical/interactive-transcript.txt",
+        "bytes":  74,
+        "sha256":  "3640188d8d3f56b1a613d7cb900d04798814d4654f50f48d738a66f11ef33736"
+    },
+    {
+        "path":  "evidence/physical/README.md",
+        "bytes":  3349,
+        "sha256":  "7b80766dbdc9581d5666d725c5798567b357f5fbb60b924b8ba2d708cad17bc4"
+    },
+    {
+        "path":  "evidence/physical/showcase-transcript.txt",
+        "bytes":  64,
+        "sha256":  "983a592b146062541104b69e82c2abe463b498d70c659545141f05fa8d73ef9a"
+    },
+    {
+        "path":  "evidence/physical/summary.json",
+        "bytes":  7526,
+        "sha256":  "357aa598d58a025e7f6c1efdd4241d4e40e96f861e8a149d787fa84f1ba47b51"
+    },
+    {
+        "path":  "evidence/physical/xsdb-programming-summary.json",
+        "bytes":  1343,
+        "sha256":  "4879c87ef527995800f0dcf7a221429ca338e8ae44abb9236c66e05e7523cead"
+    },
+    {
+        "path":  "evidence/regression-evidence-summary.json",
+        "bytes":  3570,
+        "sha256":  "0192bf608c0072831bdef32064f8919430882d1d6a0e46c666dbfa85bc111d0c"
+    },
+    {
+        "path":  "evidence/regression-summary.json",
+        "bytes":  56212,
+        "sha256":  "16e3b5be3e1d5d502693a515a9fda5f0cc90596b0e1bbc8252620e08bcbf5daf"
+    },
+    {
+        "path":  "evidence/release-evidence-summary.json",
+        "bytes":  15943,
+        "sha256":  "bd4889dc67584f8042c761cd589da5f6c288ab7a53d99af8d6e39d117213f5c8"
+    },
+    {
+        "path":  "evidence/synth-smoke-summary.json",
+        "bytes":  4718,
+        "sha256":  "b5678da7b0463f21727569ede17f415f7d9b9f3932c83aa091a668a1b0ed6855"
+    },
+    {
+        "path":  "evidence/test-catalog-summary.json",
+        "bytes":  3564,
+        "sha256":  "b1d1aee79078fdde188645a829388b3e7d8ca3aa9d0bd1701e20c72863820ad0"
+    },
+    {
+        "path":  "evidence/verilator-lint-summary.json",
+        "bytes":  1034,
+        "sha256":  "fc04f07dad49d29ba953c64e0a2c94d1a83ea727d4c6f099b088a3a7b1418dc9"
+    },
+    {
+        "path":  "evidence/vivado-basys3-build-summary.json",
+        "bytes":  26720,
+        "sha256":  "46fe7d80c0aea318bc9e55f8bbedeaf7eaea2c6a27f9fcb07b3df8ef4cb9e3d7"
+    },
+    {
+        "path":  "evidence/vivado-basys3-robustness-summary.json",
+        "bytes":  22638,
+        "sha256":  "448f7555d5e12475e9ec8973ca5f683e4e310e354af5d35fb14f0c56174a7bcd"
+    },
+    {
+        "path":  "evidence/vivado-detect-summary.json",
+        "bytes":  1172,
+        "sha256":  "e21dcb2f51ed3a2e10e192714c7f6617f7ec61a2c68dc4a0cf93d8fa44765c53"
+    },
+    {
+        "path":  "evidence-index.md",
+        "bytes":  1500,
+        "sha256":  "9578c73d458d55bd4090c3624a785e79818b917412195a3f4f13fc026d4739e6"
+    },
+    {
+        "path":  "limitations.md",
+        "bytes":  527,
+        "sha256":  "b3a3aae11bea79578020d82f11e61e4cc0938a57c8a555b8290efb960a7a3152"
+    },
+    {
+        "path":  "README.md",
+        "bytes":  1133,
+        "sha256":  "4e32f86541b8814761d73f4e22dcd6acb565b399c6a539a381ca789a177510be"
+    },
+    {
+        "path":  "release-summary.json",
+        "bytes":  3640,
+        "sha256":  "5abce7b95ec4862ba86380c07af7852ea11f5f4a05ab49cc6ec1d8b06c2b027d"
+    },
+    {
+        "path":  "source-manifests/fpga_sources.f",
+        "bytes":  1491,
+        "sha256":  "c86bc176c33364a534346e20a800b10307dddaaf5d3a18dd0f4b1364fc163619"
+    },
+    {
+        "path":  "source-manifests/rtl_sources.f",
+        "bytes":  1447,
+        "sha256":  "12072d8acaf8fa249a078c3557716f55b9819af6611c3c0996502b2871706070"
+    }
+]

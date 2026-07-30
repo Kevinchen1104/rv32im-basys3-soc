@@ -1,0 +1,20 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Thu Jul 30 13:57:50 2026
+| Host         : [redacted in public evidence package]
+| Command      : report_exceptions -file <repo>/build/vivado/basys3_full_100mhz_canonical/reports/post_route_timing_exceptions.rpt
+| Design       : RISCVCPU_basys3_top
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Exceptions Report
+
+Position  From                                    Through         To                                      Setup           Hold            Status           
+--------  --------------------------------------  --------------  --------------------------------------  --------------  --------------  -----------------
+9         [all_registers]                         *               [get_ports {RsTx {led[*]}}]             max_dpo=20      -               
+5         [get_clocks { sys_clk_pin }]                            [get_clocks { board_async_input_ref }]  clock_group     clock_group     Non-existent path
+5         [get_clocks { board_async_input_ref }]                  [get_clocks { sys_clk_pin }]            clock_group     clock_group     
+

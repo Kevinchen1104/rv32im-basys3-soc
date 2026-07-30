@@ -1,0 +1,15 @@
+[options]
+mode bmc
+depth 12
+
+[engines]
+smtbmc
+
+[script]
+read -formal -sv int8_matvec_scratchpad_accelerator.v
+read -formal -sv matvec_scratchpad_formal.sv
+prep -top matvec_scratchpad_formal
+
+[files]
+rtl/accelerators/matvec/int8_matvec_scratchpad_accelerator.v
+formal/matvec_scratchpad_formal.sv

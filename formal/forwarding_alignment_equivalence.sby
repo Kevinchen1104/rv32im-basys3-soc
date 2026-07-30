@@ -1,0 +1,15 @@
+[options]
+mode bmc
+depth 1
+
+[engines]
+smtbmc
+
+[script]
+read -formal -sv forwarding_alignment_equivalence.sv
+read -formal forwarding_unit.v
+prep -top forwarding_alignment_equivalence
+
+[files]
+formal/forwarding_alignment_equivalence.sv
+rtl/core/pipeline/forwarding_unit.v

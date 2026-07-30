@@ -1,0 +1,17 @@
+[
+    {
+        "path":  "COMMANDS.md",
+        "bytes":  825,
+        "sha256":  "fc003e84160b3ca5d84a7ee23ff9ba33836e71eb230618cc64308ff1165b4dfa"
+    },
+    {
+        "path":  "fpga_sources.f",
+        "bytes":  1491,
+        "sha256":  "c86bc176c33364a534346e20a800b10307dddaaf5d3a18dd0f4b1364fc163619"
+    },
+    {
+        "path":  "status.json",
+        "bytes":  2549,
+        "sha256":  "354facab8e209c37f9672d67cfe032005468eea7978f53247f333d0a5ff4fe15"
+    }
+]

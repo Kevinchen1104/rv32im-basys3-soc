@@ -1,0 +1,4 @@
+name period_ns frequency_mhz generated source_pin
+board_async_input_ref 10.000 100.000000 0 none
+board_output_budget 20.000 50.000000 0 none
+sys_clk_pin 10.000 100.000000 0 clk

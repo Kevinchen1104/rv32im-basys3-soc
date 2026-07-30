@@ -1,0 +1,367 @@
+{
+    "schema_version":  2,
+    "generated_at_utc":  "2026-07-30T05:44:56.8471605Z",
+    "status":  "pass",
+    "top":  "RISCVCPU_basys3_top",
+    "part":  "xc7a35tcpg236-1",
+    "clock_mhz":  100,
+    "source_commit":  "d7f1afe8ef1a28205e5448a9c9507bb97005b2f9",
+    "working_tree_dirty":  false,
+    "source_fingerprint":  "ac14c293a9e0cae8d27876321955f2cf950f93c333a602184f522fdb0833c724",
+    "verification_input_fingerprint":  "74864f9e590c5ff6b7ee22adfe1728aacd18352c1244d960f7039f678621d683",
+    "verification_input_count":  437,
+    "verification_working_tree_dirty":  false,
+    "methodology":  "documented Vivado implementation-directive sweep; not random-seed evidence",
+    "run_count":  5,
+    "required_all_timing_met":  true,
+    "minimum_wns_target_ns":  0.2,
+    "all_implementations_passed":  true,
+    "identity_consistent":  true,
+    "margin_target_status":  "not_met",
+    "margin_target_met":  false,
+    "worst_wns_ns":  0.079,
+    "best_wns_ns":  0.318,
+    "runs":  [
+                 {
+                     "name":  "remap_explore",
+                     "implementation_strategy":  {
+                                                     "opt_directive":  "ExploreWithRemap",
+                                                     "place_directive":  "Explore",
+                                                     "phys_opt_directive":  "Explore",
+                                                     "route_directive":  "NoTimingRelaxation"
+                                                 },
+                     "status":  "pass",
+                     "implementation_status":  "pass",
+                     "timing_closure_status":  "met",
+                     "timing_constraint_status":  "pass",
+                     "drc_status":  "pass",
+                     "wns_ns":  0.318,
+                     "tns_ns":  0,
+                     "whs_ns":  0.027,
+                     "ths_ns":  0,
+                     "no_clock_count":  0,
+                     "unconstrained_internal_endpoint_count":  0,
+                     "no_input_delay_count":  0,
+                     "no_output_delay_count":  0,
+                     "drc_error_count":  0,
+                     "drc_critical_warning_count":  0,
+                     "drc_unapproved_warning_count":  0,
+                     "bram_async_control_warning_count":  0,
+                     "critical_path":  {
+                                           "path":  "<repo>\\build\\vivado\\basys3_robustness\\remap_explore\\reports\\post_route_critical_paths.rpt",
+                                           "present":  true,
+                                           "slack_ns":  0.318,
+                                           "source":  "soc/cpu/EXMEMALUOut_reg[6]/C",
+                                           "destination":  "soc/cpu/MEMWBValue_reg[3]/D",
+                                           "path_group":  "sys_clk_pin",
+                                           "logic_levels":  10,
+                                           "cell_types":  "(LUT3=2 LUT4=1 LUT5=1 LUT6=6)"
+                                       },
+                     "utilization":  {
+                                         "path":  "<repo>\\build\\vivado\\basys3_robustness\\remap_explore\\reports\\post_route_utilization.rpt",
+                                         "present":  true,
+                                         "lut":  {
+                                                     "used":  12578,
+                                                     "available":  20800,
+                                                     "percent":  60.47
+                                                 },
+                                         "ff":  {
+                                                    "used":  7148,
+                                                    "available":  41600,
+                                                    "percent":  17.18
+                                                },
+                                         "bram":  {
+                                                      "used":  2,
+                                                      "available":  50,
+                                                      "percent":  4
+                                                  },
+                                         "dsp":  {
+                                                     "used":  0,
+                                                     "available":  90,
+                                                     "percent":  0
+                                                 },
+                                         "io":  {
+                                                    "used":  36,
+                                                    "available":  106,
+                                                    "percent":  33.96
+                                                }
+                                     },
+                     "peak_memory_mb":  2662.02,
+                     "out_dir":  "build\\vivado\\basys3_robustness\\remap_explore",
+                     "summary_path":  "wave/vivado-basys3-robustness-remap_explore.json"
+                 },
+                 {
+                     "name":  "remap_extra_place",
+                     "implementation_strategy":  {
+                                                     "opt_directive":  "ExploreWithRemap",
+                                                     "place_directive":  "ExtraPostPlacementOpt",
+                                                     "phys_opt_directive":  "AggressiveExplore",
+                                                     "route_directive":  "NoTimingRelaxation"
+                                                 },
+                     "status":  "pass",
+                     "implementation_status":  "pass",
+                     "timing_closure_status":  "met",
+                     "timing_constraint_status":  "pass",
+                     "drc_status":  "pass",
+                     "wns_ns":  0.318,
+                     "tns_ns":  0,
+                     "whs_ns":  0.027,
+                     "ths_ns":  0,
+                     "no_clock_count":  0,
+                     "unconstrained_internal_endpoint_count":  0,
+                     "no_input_delay_count":  0,
+                     "no_output_delay_count":  0,
+                     "drc_error_count":  0,
+                     "drc_critical_warning_count":  0,
+                     "drc_unapproved_warning_count":  0,
+                     "bram_async_control_warning_count":  0,
+                     "critical_path":  {
+                                           "path":  "<repo>\\build\\vivado\\basys3_robustness\\remap_extra_place\\reports\\post_route_critical_paths.rpt",
+                                           "present":  true,
+                                           "slack_ns":  0.318,
+                                           "source":  "soc/cpu/EXMEMALUOut_reg[6]/C",
+                                           "destination":  "soc/cpu/MEMWBValue_reg[3]/D",
+                                           "path_group":  "sys_clk_pin",
+                                           "logic_levels":  10,
+                                           "cell_types":  "(LUT3=2 LUT4=1 LUT5=1 LUT6=6)"
+                                       },
+                     "utilization":  {
+                                         "path":  "<repo>\\build\\vivado\\basys3_robustness\\remap_extra_place\\reports\\post_route_utilization.rpt",
+                                         "present":  true,
+                                         "lut":  {
+                                                     "used":  12578,
+                                                     "available":  20800,
+                                                     "percent":  60.47
+                                                 },
+                                         "ff":  {
+                                                    "used":  7148,
+                                                    "available":  41600,
+                                                    "percent":  17.18
+                                                },
+                                         "bram":  {
+                                                      "used":  2,
+                                                      "available":  50,
+                                                      "percent":  4
+                                                  },
+                                         "dsp":  {
+                                                     "used":  0,
+                                                     "available":  90,
+                                                     "percent":  0
+                                                 },
+                                         "io":  {
+                                                    "used":  36,
+                                                    "available":  106,
+                                                    "percent":  33.96
+                                                }
+                                     },
+                     "peak_memory_mb":  2654.859,
+                     "out_dir":  "build\\vivado\\basys3_robustness\\remap_extra_place",
+                     "summary_path":  "wave/vivado-basys3-robustness-remap_extra_place.json"
+                 },
+                 {
+                     "name":  "remap_aggressive",
+                     "implementation_strategy":  {
+                                                     "opt_directive":  "ExploreWithRemap",
+                                                     "place_directive":  "Explore",
+                                                     "phys_opt_directive":  "AggressiveExplore",
+                                                     "route_directive":  "AggressiveExplore"
+                                                 },
+                     "status":  "pass",
+                     "implementation_status":  "pass",
+                     "timing_closure_status":  "met",
+                     "timing_constraint_status":  "pass",
+                     "drc_status":  "pass",
+                     "wns_ns":  0.142,
+                     "tns_ns":  0,
+                     "whs_ns":  0.027,
+                     "ths_ns":  0,
+                     "no_clock_count":  0,
+                     "unconstrained_internal_endpoint_count":  0,
+                     "no_input_delay_count":  0,
+                     "no_output_delay_count":  0,
+                     "drc_error_count":  0,
+                     "drc_critical_warning_count":  0,
+                     "drc_unapproved_warning_count":  0,
+                     "bram_async_control_warning_count":  0,
+                     "critical_path":  {
+                                           "path":  "<repo>\\build\\vivado\\basys3_robustness\\remap_aggressive\\reports\\post_route_critical_paths.rpt",
+                                           "present":  true,
+                                           "slack_ns":  0.142,
+                                           "source":  "soc/cpu/EXMEMALUOut_reg[23]/C",
+                                           "destination":  "soc/cpu/MEMWBValue_reg[31]/D",
+                                           "path_group":  "sys_clk_pin",
+                                           "logic_levels":  11,
+                                           "cell_types":  "(LUT3=2 LUT4=2 LUT5=2 LUT6=5)"
+                                       },
+                     "utilization":  {
+                                         "path":  "<repo>\\build\\vivado\\basys3_robustness\\remap_aggressive\\reports\\post_route_utilization.rpt",
+                                         "present":  true,
+                                         "lut":  {
+                                                     "used":  12583,
+                                                     "available":  20800,
+                                                     "percent":  60.5
+                                                 },
+                                         "ff":  {
+                                                    "used":  7148,
+                                                    "available":  41600,
+                                                    "percent":  17.18
+                                                },
+                                         "bram":  {
+                                                      "used":  2,
+                                                      "available":  50,
+                                                      "percent":  4
+                                                  },
+                                         "dsp":  {
+                                                     "used":  0,
+                                                     "available":  90,
+                                                     "percent":  0
+                                                 },
+                                         "io":  {
+                                                    "used":  36,
+                                                    "available":  106,
+                                                    "percent":  33.96
+                                                }
+                                     },
+                     "peak_memory_mb":  2660.527,
+                     "out_dir":  "build\\vivado\\basys3_robustness\\remap_aggressive",
+                     "summary_path":  "wave/vivado-basys3-robustness-remap_aggressive.json"
+                 },
+                 {
+                     "name":  "remap_global_route",
+                     "implementation_strategy":  {
+                                                     "opt_directive":  "ExploreWithRemap",
+                                                     "place_directive":  "Explore",
+                                                     "phys_opt_directive":  "AggressiveExplore",
+                                                     "route_directive":  "MoreGlobalIterations"
+                                                 },
+                     "status":  "pass",
+                     "implementation_status":  "pass",
+                     "timing_closure_status":  "met",
+                     "timing_constraint_status":  "pass",
+                     "drc_status":  "pass",
+                     "wns_ns":  0.188,
+                     "tns_ns":  0,
+                     "whs_ns":  0.027,
+                     "ths_ns":  0,
+                     "no_clock_count":  0,
+                     "unconstrained_internal_endpoint_count":  0,
+                     "no_input_delay_count":  0,
+                     "no_output_delay_count":  0,
+                     "drc_error_count":  0,
+                     "drc_critical_warning_count":  0,
+                     "drc_unapproved_warning_count":  0,
+                     "bram_async_control_warning_count":  0,
+                     "critical_path":  {
+                                           "path":  "<repo>\\build\\vivado\\basys3_robustness\\remap_global_route\\reports\\post_route_critical_paths.rpt",
+                                           "present":  true,
+                                           "slack_ns":  0.188,
+                                           "source":  "soc/cpu/PC_reg[5]/C",
+                                           "destination":  "soc/cpu/PC_reg[29]/D",
+                                           "path_group":  "sys_clk_pin",
+                                           "logic_levels":  10,
+                                           "cell_types":  "(LUT3=1 LUT4=1 LUT5=3 LUT6=4 MUXF7=1)"
+                                       },
+                     "utilization":  {
+                                         "path":  "<repo>\\build\\vivado\\basys3_robustness\\remap_global_route\\reports\\post_route_utilization.rpt",
+                                         "present":  true,
+                                         "lut":  {
+                                                     "used":  12578,
+                                                     "available":  20800,
+                                                     "percent":  60.47
+                                                 },
+                                         "ff":  {
+                                                    "used":  7148,
+                                                    "available":  41600,
+                                                    "percent":  17.18
+                                                },
+                                         "bram":  {
+                                                      "used":  2,
+                                                      "available":  50,
+                                                      "percent":  4
+                                                  },
+                                         "dsp":  {
+                                                     "used":  0,
+                                                     "available":  90,
+                                                     "percent":  0
+                                                 },
+                                         "io":  {
+                                                    "used":  36,
+                                                    "available":  106,
+                                                    "percent":  33.96
+                                                }
+                                     },
+                     "peak_memory_mb":  2668.289,
+                     "out_dir":  "build\\vivado\\basys3_robustness\\remap_global_route",
+                     "summary_path":  "wave/vivado-basys3-robustness-remap_global_route.json"
+                 },
+                 {
+                     "name":  "remap_delay_cost",
+                     "implementation_strategy":  {
+                                                     "opt_directive":  "ExploreWithRemap",
+                                                     "place_directive":  "ExtraPostPlacementOpt",
+                                                     "phys_opt_directive":  "AggressiveExplore",
+                                                     "route_directive":  "HigherDelayCost"
+                                                 },
+                     "status":  "pass",
+                     "implementation_status":  "pass",
+                     "timing_closure_status":  "met",
+                     "timing_constraint_status":  "pass",
+                     "drc_status":  "pass",
+                     "wns_ns":  0.079,
+                     "tns_ns":  0,
+                     "whs_ns":  0.02,
+                     "ths_ns":  0,
+                     "no_clock_count":  0,
+                     "unconstrained_internal_endpoint_count":  0,
+                     "no_input_delay_count":  0,
+                     "no_output_delay_count":  0,
+                     "drc_error_count":  0,
+                     "drc_critical_warning_count":  0,
+                     "drc_unapproved_warning_count":  0,
+                     "bram_async_control_warning_count":  0,
+                     "critical_path":  {
+                                           "path":  "<repo>\\build\\vivado\\basys3_robustness\\remap_delay_cost\\reports\\post_route_critical_paths.rpt",
+                                           "present":  true,
+                                           "slack_ns":  0.079,
+                                           "source":  "soc/cpu/EXMEMForwardRd_reg[1]/C",
+                                           "destination":  "soc/cpu/EXMEMALUOut_reg[2]/D",
+                                           "path_group":  "sys_clk_pin",
+                                           "logic_levels":  9,
+                                           "cell_types":  "(LUT3=1 LUT5=2 LUT6=6)"
+                                       },
+                     "utilization":  {
+                                         "path":  "<repo>\\build\\vivado\\basys3_robustness\\remap_delay_cost\\reports\\post_route_utilization.rpt",
+                                         "present":  true,
+                                         "lut":  {
+                                                     "used":  12578,
+                                                     "available":  20800,
+                                                     "percent":  60.47
+                                                 },
+                                         "ff":  {
+                                                    "used":  7148,
+                                                    "available":  41600,
+                                                    "percent":  17.18
+                                                },
+                                         "bram":  {
+                                                      "used":  2,
+                                                      "available":  50,
+                                                      "percent":  4
+                                                  },
+                                         "dsp":  {
+                                                     "used":  0,
+                                                     "available":  90,
+                                                     "percent":  0
+                                                 },
+                                         "io":  {
+                                                    "used":  36,
+                                                    "available":  106,
+                                                    "percent":  33.96
+                                                }
+                                     },
+                     "peak_memory_mb":  2664.125,
+                     "out_dir":  "build\\vivado\\basys3_robustness\\remap_delay_cost",
+                     "summary_path":  "wave/vivado-basys3-robustness-remap_delay_cost.json"
+                 }
+             ],
+    "claim_boundary":  "This sweep samples documented implementation strategies. It does not prove all placements, random seeds, external synchronous-I/O timing, or physical-board behavior."
+}

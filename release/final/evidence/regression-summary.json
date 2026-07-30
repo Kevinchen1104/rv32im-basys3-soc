@@ -1,0 +1,1154 @@
+{
+    "requested_test":  "all",
+    "generated_at_utc":  "2026-07-30T04:10:39.2227520Z",
+    "total":  163,
+    "passed":  163,
+    "failed":  0,
+    "tests":  [
+                  {
+                      "name":  "main",
+                      "source":  "tb/unit/core/tb_main.v",
+                      "waveform":  "wave/dump.vcd",
+                      "status":  "passed",
+                      "duration_ms":  647
+                  },
+                  {
+                      "name":  "alu",
+                      "source":  "tb/unit/core/tb_alu.v",
+                      "waveform":  "wave/tb_alu.vcd",
+                      "status":  "passed",
+                      "duration_ms":  562
+                  },
+                  {
+                      "name":  "memory",
+                      "source":  "tb/unit/core/tb_memory.v",
+                      "waveform":  "wave/tb_memory.vcd",
+                      "status":  "passed",
+                      "duration_ms":  581
+                  },
+                  {
+                      "name":  "assert_x0",
+                      "source":  "tb/assertions/tb_assert_x0.v",
+                      "waveform":  "wave/tb_assert_x0.vcd",
+                      "status":  "passed",
+                      "duration_ms":  565
+                  },
+                  {
+                      "name":  "assert_flush",
+                      "source":  "tb/assertions/tb_assert_flush.v",
+                      "waveform":  "wave/tb_assert_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  605
+                  },
+                  {
+                      "name":  "assert_reset",
+                      "source":  "tb/assertions/tb_assert_reset.v",
+                      "waveform":  "wave/tb_assert_reset.vcd",
+                      "status":  "passed",
+                      "duration_ms":  603
+                  },
+                  {
+                      "name":  "csr_unit",
+                      "source":  "tb/unit/core/tb_csr_unit.v",
+                      "waveform":  "wave/tb_csr_unit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  503
+                  },
+                  {
+                      "name":  "exception_decode_unit",
+                      "source":  "tb/unit/core/tb_exception_decode_unit.v",
+                      "waveform":  "wave/tb_exception_decode_unit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  505
+                  },
+                  {
+                      "name":  "performance_counter_unit",
+                      "source":  "tb/unit/core/tb_performance_counter_unit.v",
+                      "waveform":  "wave/tb_performance_counter_unit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  506
+                  },
+                  {
+                      "name":  "rv32m_multicycle_unit",
+                      "source":  "tb/unit/core/tb_rv32m_multicycle_unit.v",
+                      "waveform":  "wave/tb_rv32m_multicycle_unit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  603
+                  },
+                  {
+                      "name":  "forwarding_unit",
+                      "source":  "tb/unit/core/tb_forwarding_unit.v",
+                      "waveform":  "wave/tb_forwarding_unit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  507
+                  },
+                  {
+                      "name":  "assert_forwarded_alignment_equivalence",
+                      "source":  "tb/assertions/tb_assert_forwarded_alignment_equivalence.v",
+                      "waveform":  "wave/tb_assert_forwarded_alignment_equivalence.vcd",
+                      "status":  "passed",
+                      "duration_ms":  509
+                  },
+                  {
+                      "name":  "branch_jump_unit",
+                      "source":  "tb/unit/core/tb_branch_jump_unit.v",
+                      "waveform":  "wave/tb_branch_jump_unit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  418
+                  },
+                  {
+                      "name":  "load_store_format_unit",
+                      "source":  "tb/unit/memory/tb_load_store_format_unit.v",
+                      "waveform":  "wave/tb_load_store_format_unit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  528
+                  },
+                  {
+                      "name":  "pipeline_control_unit",
+                      "source":  "tb/unit/core/tb_pipeline_control_unit.v",
+                      "waveform":  "wave/tb_pipeline_control_unit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  480
+                  },
+                  {
+                      "name":  "ras_unit",
+                      "source":  "tb/unit/core/tb_ras_unit.v",
+                      "waveform":  "wave/tb_ras_unit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  874
+                  },
+                  {
+                      "name":  "icache_unit",
+                      "source":  "tb/unit/memory/tb_icache_unit.v",
+                      "waveform":  "wave/tb_icache_unit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1273
+                  },
+                  {
+                      "name":  "dcache_unit",
+                      "source":  "tb/unit/memory/tb_dcache_unit.v",
+                      "waveform":  "wave/tb_dcache_unit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  985
+                  },
+                  {
+                      "name":  "assert_trap",
+                      "source":  "tb/assertions/tb_assert_trap.v",
+                      "waveform":  "wave/tb_assert_trap.vcd",
+                      "status":  "passed",
+                      "duration_ms":  795
+                  },
+                  {
+                      "name":  "assert_trap_side_effect_flush",
+                      "source":  "tb/assertions/tb_assert_trap_side_effect_flush.v",
+                      "waveform":  "wave/tb_assert_trap_side_effect_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  955
+                  },
+                  {
+                      "name":  "assert_exception_branch_priority",
+                      "source":  "tb/assertions/tb_assert_exception_branch_priority.v",
+                      "waveform":  "wave/tb_assert_exception_branch_priority.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1116
+                  },
+                  {
+                      "name":  "assert_illegal_csr",
+                      "source":  "tb/assertions/tb_assert_illegal_csr.v",
+                      "waveform":  "wave/tb_assert_illegal_csr.vcd",
+                      "status":  "passed",
+                      "duration_ms":  754
+                  },
+                  {
+                      "name":  "assert_mret_redirect",
+                      "source":  "tb/assertions/tb_assert_mret_redirect.v",
+                      "waveform":  "wave/tb_assert_mret_redirect.vcd",
+                      "status":  "passed",
+                      "duration_ms":  752
+                  },
+                  {
+                      "name":  "assert_mret_side_effect_flush",
+                      "source":  "tb/assertions/tb_assert_mret_side_effect_flush.v",
+                      "waveform":  "wave/tb_assert_mret_side_effect_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  895
+                  },
+                  {
+                      "name":  "assert_interrupt_mstatus_gating",
+                      "source":  "tb/assertions/tb_assert_interrupt_mstatus_gating.v",
+                      "waveform":  "wave/tb_assert_interrupt_mstatus_gating.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1050
+                  },
+                  {
+                      "name":  "assert_precise_exception_commit",
+                      "source":  "tb/assertions/tb_assert_precise_exception_commit.v",
+                      "waveform":  "wave/tb_assert_precise_exception_commit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  690
+                  },
+                  {
+                      "name":  "assert_control_transfer_legality_alignment",
+                      "source":  "tb/assertions/tb_assert_control_transfer_legality_alignment.v",
+                      "waveform":  "wave/tb_assert_control_transfer_legality_alignment.vcd",
+                      "status":  "passed",
+                      "duration_ms":  890
+                  },
+                  {
+                      "name":  "assert_interrupt_priority_mstatus",
+                      "source":  "tb/assertions/tb_assert_interrupt_priority_mstatus.v",
+                      "waveform":  "wave/tb_assert_interrupt_priority_mstatus.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1159
+                  },
+                  {
+                      "name":  "assert_trap_redirect_factoring",
+                      "source":  "tb/assertions/tb_assert_trap_redirect_factoring.v",
+                      "waveform":  "wave/tb_assert_trap_redirect_factoring.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1102
+                  },
+                  {
+                      "name":  "assert_interrupt_dcache_stall_release",
+                      "source":  "tb/assertions/tb_assert_interrupt_dcache_stall_release.v",
+                      "waveform":  "wave/tb_assert_interrupt_dcache_stall_release.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1291
+                  },
+                  {
+                      "name":  "assert_execute_acceptance_dcache_stall",
+                      "source":  "tb/assertions/tb_assert_execute_acceptance_dcache_stall.v",
+                      "waveform":  "wave/tb_assert_execute_acceptance_dcache_stall.vcd",
+                      "status":  "passed",
+                      "duration_ms":  695
+                  },
+                  {
+                      "name":  "assert_registered_trap_metadata_commit",
+                      "source":  "tb/assertions/tb_assert_registered_trap_metadata_commit.v",
+                      "waveform":  "wave/tb_assert_registered_trap_metadata_commit.vcd",
+                      "status":  "passed",
+                      "duration_ms":  885
+                  },
+                  {
+                      "name":  "assert_rv32m_multicycle_pipeline",
+                      "source":  "tb/assertions/tb_assert_rv32m_multicycle_pipeline.v",
+                      "waveform":  "wave/tb_assert_rv32m_multicycle_pipeline.vcd",
+                      "status":  "passed",
+                      "duration_ms":  722
+                  },
+                  {
+                      "name":  "assert_rv32m_trap_squash",
+                      "source":  "tb/assertions/tb_assert_rv32m_trap_squash.v",
+                      "waveform":  "wave/tb_assert_rv32m_trap_squash.vcd",
+                      "status":  "passed",
+                      "duration_ms":  680
+                  },
+                  {
+                      "name":  "assert_registered_control_redirect",
+                      "source":  "tb/assertions/tb_assert_registered_control_redirect.v",
+                      "waveform":  "wave/tb_assert_registered_control_redirect.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1046
+                  },
+                  {
+                      "name":  "assert_registered_branch_miss_event",
+                      "source":  "tb/assertions/tb_assert_registered_branch_miss_event.v",
+                      "waveform":  "wave/tb_assert_registered_branch_miss_event.vcd",
+                      "status":  "passed",
+                      "duration_ms":  734
+                  },
+                  {
+                      "name":  "assert_registered_timer_pending",
+                      "source":  "tb/assertions/tb_assert_registered_timer_pending.v",
+                      "waveform":  "wave/tb_assert_registered_timer_pending.vcd",
+                      "status":  "passed",
+                      "duration_ms":  528
+                  },
+                  {
+                      "name":  "assert_exmem_invalid_side_effect_isolation",
+                      "source":  "tb/assertions/tb_assert_exmem_invalid_side_effect_isolation.v",
+                      "waveform":  "wave/tb_assert_exmem_invalid_side_effect_isolation.vcd",
+                      "status":  "passed",
+                      "duration_ms":  669
+                  },
+                  {
+                      "name":  "assert_idex_invalid_side_effect_isolation",
+                      "source":  "tb/assertions/tb_assert_idex_invalid_side_effect_isolation.v",
+                      "waveform":  "wave/tb_assert_idex_invalid_side_effect_isolation.vcd",
+                      "status":  "passed",
+                      "duration_ms":  635
+                  },
+                  {
+                      "name":  "assert_jump_flush",
+                      "source":  "tb/assertions/tb_assert_jump_flush.v",
+                      "waveform":  "wave/tb_assert_jump_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  586
+                  },
+                  {
+                      "name":  "assert_jump_side_effect_flush",
+                      "source":  "tb/assertions/tb_assert_jump_side_effect_flush.v",
+                      "waveform":  "wave/tb_assert_jump_side_effect_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  700
+                  },
+                  {
+                      "name":  "assert_jalr_flush",
+                      "source":  "tb/assertions/tb_assert_jalr_flush.v",
+                      "waveform":  "wave/tb_assert_jalr_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  637
+                  },
+                  {
+                      "name":  "assert_jalr_side_effect_flush",
+                      "source":  "tb/assertions/tb_assert_jalr_side_effect_flush.v",
+                      "waveform":  "wave/tb_assert_jalr_side_effect_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  653
+                  },
+                  {
+                      "name":  "assert_store_flush",
+                      "source":  "tb/assertions/tb_assert_store_flush.v",
+                      "waveform":  "wave/tb_assert_store_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  601
+                  },
+                  {
+                      "name":  "assert_mmio_flush",
+                      "source":  "tb/assertions/tb_assert_mmio_flush.v",
+                      "waveform":  "wave/tb_assert_mmio_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  756
+                  },
+                  {
+                      "name":  "assert_branch_mispredict_dcache_stall",
+                      "source":  "tb/assertions/tb_assert_branch_mispredict_dcache_stall.v",
+                      "waveform":  "wave/tb_assert_branch_mispredict_dcache_stall.vcd",
+                      "status":  "passed",
+                      "duration_ms":  784
+                  },
+                  {
+                      "name":  "assert_matvec_scratchpad_flush",
+                      "source":  "tb/assertions/tb_assert_matvec_scratchpad_flush.v",
+                      "waveform":  "wave/tb_assert_matvec_scratchpad_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  595
+                  },
+                  {
+                      "name":  "assert_matvec_scratchpad_interrupt_flush",
+                      "source":  "tb/assertions/tb_assert_matvec_scratchpad_interrupt_flush.v",
+                      "waveform":  "wave/tb_assert_matvec_scratchpad_interrupt_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  642
+                  },
+                  {
+                      "name":  "assert_matvec_dma_arbitration",
+                      "source":  "tb/assertions/tb_assert_matvec_dma_arbitration.v",
+                      "waveform":  "wave/tb_assert_matvec_dma_arbitration.vcd",
+                      "status":  "passed",
+                      "duration_ms":  620
+                  },
+                  {
+                      "name":  "assert_matvec_dma_descriptor_overlap",
+                      "source":  "tb/assertions/tb_assert_matvec_dma_descriptor_overlap.v",
+                      "waveform":  "wave/tb_assert_matvec_dma_descriptor_overlap.vcd",
+                      "status":  "passed",
+                      "duration_ms":  688
+                  },
+                  {
+                      "name":  "assert_timer_interrupt_flush",
+                      "source":  "tb/assertions/tb_assert_timer_interrupt_flush.v",
+                      "waveform":  "wave/tb_assert_timer_interrupt_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  676
+                  },
+                  {
+                      "name":  "external_imem",
+                      "source":  "tb/integration/external_memory/tb_external_imem.v",
+                      "waveform":  "wave/tb_external_imem.vcd",
+                      "status":  "passed",
+                      "duration_ms":  663
+                  },
+                  {
+                      "name":  "external_dmem_bram_sync",
+                      "source":  "tb/unit/memory/tb_external_dmem_bram_sync.v",
+                      "waveform":  "wave/tb_external_dmem_bram_sync.vcd",
+                      "status":  "passed",
+                      "duration_ms":  789
+                  },
+                  {
+                      "name":  "external_dmem",
+                      "source":  "tb/integration/external_memory/tb_external_dmem.v",
+                      "waveform":  "wave/tb_external_dmem.vcd",
+                      "status":  "passed",
+                      "duration_ms":  755
+                  },
+                  {
+                      "name":  "external_dmem_debug_status",
+                      "source":  "tb/integration/external_memory/tb_external_dmem_debug_status.v",
+                      "waveform":  "wave/tb_external_dmem_debug_status.vcd",
+                      "status":  "passed",
+                      "duration_ms":  710
+                  },
+                  {
+                      "name":  "external_dmem_matvec_dma",
+                      "source":  "tb/integration/external_memory/tb_external_dmem_matvec_dma.v",
+                      "waveform":  "wave/tb_external_dmem_matvec_dma.vcd",
+                      "status":  "passed",
+                      "duration_ms":  742
+                  },
+                  {
+                      "name":  "gpio_mmio",
+                      "source":  "tb/unit/peripherals/tb_gpio_mmio.v",
+                      "waveform":  "wave/tb_gpio_mmio.vcd",
+                      "status":  "passed",
+                      "duration_ms":  646
+                  },
+                  {
+                      "name":  "mmio_decode",
+                      "source":  "tb/unit/peripherals/tb_mmio_decode.v",
+                      "waveform":  "wave/tb_mmio_decode.vcd",
+                      "status":  "passed",
+                      "duration_ms":  645
+                  },
+                  {
+                      "name":  "mmio_read_mux",
+                      "source":  "tb/unit/soc/tb_mmio_read_mux.v",
+                      "waveform":  "wave/tb_mmio_read_mux.vcd",
+                      "status":  "passed",
+                      "duration_ms":  574
+                  },
+                  {
+                      "name":  "int8_matvec_scratchpad_accelerator",
+                      "source":  "tb/unit/accelerators/tb_int8_matvec_scratchpad_accelerator.v",
+                      "waveform":  "wave/tb_int8_matvec_scratchpad_accelerator.vcd",
+                      "status":  "passed",
+                      "duration_ms":  645
+                  },
+                  {
+                      "name":  "int8_matvec_dma_lite",
+                      "source":  "tb/unit/accelerators/tb_int8_matvec_dma_lite.v",
+                      "waveform":  "wave/tb_int8_matvec_dma_lite.vcd",
+                      "status":  "passed",
+                      "duration_ms":  716
+                  },
+                  {
+                      "name":  "machine_timer",
+                      "source":  "tb/unit/peripherals/tb_machine_timer.v",
+                      "waveform":  "wave/tb_machine_timer.vcd",
+                      "status":  "passed",
+                      "duration_ms":  593
+                  },
+                  {
+                      "name":  "timer_mmio",
+                      "source":  "tb/unit/peripherals/tb_timer_mmio.v",
+                      "waveform":  "wave/tb_timer_mmio.vcd",
+                      "status":  "passed",
+                      "duration_ms":  699
+                  },
+                  {
+                      "name":  "matvec_perf_counters",
+                      "source":  "tb/unit/accelerators/tb_matvec_perf_counters.v",
+                      "waveform":  "wave/tb_matvec_perf_counters.vcd",
+                      "status":  "passed",
+                      "duration_ms":  603
+                  },
+                  {
+                      "name":  "uart_mmio",
+                      "source":  "tb/unit/peripherals/tb_uart_mmio.v",
+                      "waveform":  "wave/tb_uart_mmio.vcd",
+                      "status":  "passed",
+                      "duration_ms":  707
+                  },
+                  {
+                      "name":  "uart_tx",
+                      "source":  "tb/unit/peripherals/tb_uart_tx.v",
+                      "waveform":  "wave/tb_uart_tx.vcd",
+                      "status":  "passed",
+                      "duration_ms":  594
+                  },
+                  {
+                      "name":  "uart_rx",
+                      "source":  "tb/unit/peripherals/tb_uart_rx.v",
+                      "waveform":  "wave/tb_uart_rx.vcd",
+                      "status":  "passed",
+                      "duration_ms":  586
+                  },
+                  {
+                      "name":  "uart_rx_mmio_buffer",
+                      "source":  "tb/unit/peripherals/tb_uart_rx_mmio_buffer.v",
+                      "waveform":  "wave/tb_uart_rx_mmio_buffer.vcd",
+                      "status":  "passed",
+                      "duration_ms":  552
+                  },
+                  {
+                      "name":  "boot_reset_controller",
+                      "source":  "tb/unit/boot/tb_boot_reset_controller.v",
+                      "waveform":  "wave/tb_boot_reset_controller.vcd",
+                      "status":  "passed",
+                      "duration_ms":  592
+                  },
+                  {
+                      "name":  "uart_packet_boot_imem",
+                      "source":  "tb/integration/boot/tb_uart_packet_boot_imem.v",
+                      "waveform":  "wave/tb_uart_packet_boot_imem.vcd",
+                      "status":  "passed",
+                      "duration_ms":  642
+                  },
+                  {
+                      "name":  "uart_packet_boot_reject",
+                      "source":  "tb/integration/boot/tb_uart_packet_boot_reject.v",
+                      "waveform":  "wave/tb_uart_packet_boot_reject.vcd",
+                      "status":  "passed",
+                      "duration_ms":  566
+                  },
+                  {
+                      "name":  "branch",
+                      "source":  "tb/unit/core/tb_branch.v",
+                      "waveform":  "wave/tb_branch.vcd",
+                      "status":  "passed",
+                      "duration_ms":  615
+                  },
+                  {
+                      "name":  "branch_prediction",
+                      "source":  "tb/unit/core/tb_branch_prediction.v",
+                      "waveform":  "wave/tb_branch_prediction.vcd",
+                      "status":  "passed",
+                      "duration_ms":  613
+                  },
+                  {
+                      "name":  "branch_predictor_update_pipeline",
+                      "source":  "tb/unit/core/tb_branch_predictor_update_pipeline.v",
+                      "waveform":  "wave/tb_branch_predictor_update_pipeline.vcd",
+                      "status":  "passed",
+                      "duration_ms":  539
+                  },
+                  {
+                      "name":  "jal_btb_prediction",
+                      "source":  "tb/unit/core/tb_jal_btb_prediction.v",
+                      "waveform":  "wave/tb_jal_btb_prediction.vcd",
+                      "status":  "passed",
+                      "duration_ms":  625
+                  },
+                  {
+                      "name":  "branch_predictor_warm_recovery",
+                      "source":  "tb/unit/core/tb_branch_predictor_warm_recovery.v",
+                      "waveform":  "wave/tb_branch_predictor_warm_recovery.vcd",
+                      "status":  "passed",
+                      "duration_ms":  650
+                  },
+                  {
+                      "name":  "branch_predictor_recovery",
+                      "source":  "tb/unit/core/tb_branch_predictor_recovery.v",
+                      "waveform":  "wave/tb_branch_predictor_recovery.vcd",
+                      "status":  "passed",
+                      "duration_ms":  579
+                  },
+                  {
+                      "name":  "jump_ras",
+                      "source":  "tb/unit/core/tb_jump_ras.v",
+                      "waveform":  "wave/tb_jump_ras.vcd",
+                      "status":  "passed",
+                      "duration_ms":  594
+                  },
+                  {
+                      "name":  "ras_flush",
+                      "source":  "tb/unit/core/tb_ras_flush.v",
+                      "waveform":  "wave/tb_ras_flush.vcd",
+                      "status":  "passed",
+                      "duration_ms":  660
+                  },
+                  {
+                      "name":  "ras_immediate_return",
+                      "source":  "tb/unit/core/tb_ras_immediate_return.v",
+                      "waveform":  "wave/tb_ras_immediate_return.vcd",
+                      "status":  "passed",
+                      "duration_ms":  703
+                  },
+                  {
+                      "name":  "load_use_decode",
+                      "source":  "tb/unit/core/tb_load_use_decode.v",
+                      "waveform":  "wave/tb_load_use_decode.vcd",
+                      "status":  "passed",
+                      "duration_ms":  578
+                  },
+                  {
+                      "name":  "cache",
+                      "source":  "tb/unit/core/tb_cache.v",
+                      "waveform":  "wave/tb_cache.vcd",
+                      "status":  "passed",
+                      "duration_ms":  621
+                  },
+                  {
+                      "name":  "trace",
+                      "source":  "tb/reference/tb_trace.v",
+                      "waveform":  "wave/tb_trace.vcd",
+                      "status":  "passed",
+                      "duration_ms":  573
+                  },
+                  {
+                      "name":  "trace_reference",
+                      "source":  "tb/reference/tb_trace_reference.v",
+                      "waveform":  "wave/tb_trace_reference.vcd",
+                      "status":  "passed",
+                      "duration_ms":  752
+                  },
+                  {
+                      "name":  "trace_trap_reference",
+                      "source":  "tb/reference/tb_trace_trap_reference.v",
+                      "waveform":  "wave/tb_trace_trap_reference.vcd",
+                      "status":  "passed",
+                      "duration_ms":  586
+                  },
+                  {
+                      "name":  "trace_lockstep_reference",
+                      "source":  "tb/reference/tb_trace_lockstep_reference.v",
+                      "waveform":  "wave/tb_trace_lockstep_reference.vcd",
+                      "status":  "passed",
+                      "duration_ms":  804
+                  },
+                  {
+                      "name":  "pipeline_invariants",
+                      "source":  "tb/assertions/tb_pipeline_invariants.v",
+                      "waveform":  "wave/tb_pipeline_invariants.vcd",
+                      "status":  "passed",
+                      "duration_ms":  853
+                  },
+                  {
+                      "name":  "perf_counters",
+                      "source":  "tb/unit/core/tb_perf_counters.v",
+                      "waveform":  "wave/tb_perf_counters.vcd",
+                      "status":  "passed",
+                      "duration_ms":  926
+                  },
+                  {
+                      "name":  "random_reference",
+                      "source":  "tb/reference/tb_random_reference.v",
+                      "waveform":  "wave/tb_random_reference.vcd",
+                      "status":  "passed",
+                      "duration_ms":  911
+                  },
+                  {
+                      "name":  "random_memory_reference",
+                      "source":  "tb/reference/tb_random_memory_reference.v",
+                      "waveform":  "wave/tb_random_memory_reference.vcd",
+                      "status":  "passed",
+                      "duration_ms":  798
+                  },
+                  {
+                      "name":  "random_control_reference",
+                      "source":  "tb/reference/tb_random_control_reference.v",
+                      "waveform":  "wave/tb_random_control_reference.vcd",
+                      "status":  "passed",
+                      "duration_ms":  807
+                  },
+                  {
+                      "name":  "random_hazard_reference",
+                      "source":  "tb/reference/tb_random_hazard_reference.v",
+                      "waveform":  "wave/tb_random_hazard_reference.vcd",
+                      "status":  "passed",
+                      "duration_ms":  956
+                  },
+                  {
+                      "name":  "random_call_reference",
+                      "source":  "tb/reference/tb_random_call_reference.v",
+                      "waveform":  "wave/tb_random_call_reference.vcd",
+                      "status":  "passed",
+                      "duration_ms":  982
+                  },
+                  {
+                      "name":  "program",
+                      "source":  "tb/program/examples/tb_program.v",
+                      "waveform":  "wave/tb_program.vcd",
+                      "status":  "passed",
+                      "duration_ms":  959
+                  },
+                  {
+                      "name":  "program_call",
+                      "source":  "tb/program/examples/tb_program_call.v",
+                      "waveform":  "wave/tb_program_call.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1167
+                  },
+                  {
+                      "name":  "program_nested",
+                      "source":  "tb/program/examples/tb_program_nested.v",
+                      "waveform":  "wave/tb_program_nested.vcd",
+                      "status":  "passed",
+                      "duration_ms":  756
+                  },
+                  {
+                      "name":  "program_stack",
+                      "source":  "tb/program/examples/tb_program_stack.v",
+                      "waveform":  "wave/tb_program_stack.vcd",
+                      "status":  "passed",
+                      "duration_ms":  674
+                  },
+                  {
+                      "name":  "program_memory",
+                      "source":  "tb/program/isa/tb_program_memory.v",
+                      "waveform":  "wave/tb_program_memory.vcd",
+                      "status":  "passed",
+                      "duration_ms":  665
+                  },
+                  {
+                      "name":  "program_upper",
+                      "source":  "tb/program/isa/tb_program_upper.v",
+                      "waveform":  "wave/tb_program_upper.vcd",
+                      "status":  "passed",
+                      "duration_ms":  768
+                  },
+                  {
+                      "name":  "program_alu",
+                      "source":  "tb/program/isa/tb_program_alu.v",
+                      "waveform":  "wave/tb_program_alu.vcd",
+                      "status":  "passed",
+                      "duration_ms":  694
+                  },
+                  {
+                      "name":  "program_muldiv",
+                      "source":  "tb/program/isa/tb_program_muldiv.v",
+                      "waveform":  "wave/tb_program_muldiv.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1098
+                  },
+                  {
+                      "name":  "program_csr_trap",
+                      "source":  "tb/program/csr_trap/tb_program_csr_trap.v",
+                      "waveform":  "wave/tb_program_csr_trap.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1191
+                  },
+                  {
+                      "name":  "program_mret_trap",
+                      "source":  "tb/program/csr_trap/tb_program_mret_trap.v",
+                      "waveform":  "wave/tb_program_mret_trap.vcd",
+                      "status":  "passed",
+                      "duration_ms":  798
+                  },
+                  {
+                      "name":  "program_mstatus_trap_return",
+                      "source":  "tb/program/csr_trap/tb_program_mstatus_trap_return.v",
+                      "waveform":  "wave/tb_program_mstatus_trap_return.vcd",
+                      "status":  "passed",
+                      "duration_ms":  806
+                  },
+                  {
+                      "name":  "program_privileged_csr_edges",
+                      "source":  "tb/program/csr_trap/tb_program_privileged_csr_edges.v",
+                      "waveform":  "wave/tb_program_privileged_csr_edges.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1089
+                  },
+                  {
+                      "name":  "program_exception_mcause_mtval",
+                      "source":  "tb/program/csr_trap/tb_program_exception_mcause_mtval.v",
+                      "waveform":  "wave/tb_program_exception_mcause_mtval.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1305
+                  },
+                  {
+                      "name":  "program_misaligned_exception",
+                      "source":  "tb/program/csr_trap/tb_program_misaligned_exception.v",
+                      "waveform":  "wave/tb_program_misaligned_exception.vcd",
+                      "status":  "passed",
+                      "duration_ms":  935
+                  },
+                  {
+                      "name":  "program_abi",
+                      "source":  "tb/program/examples/tb_program_abi.v",
+                      "waveform":  "wave/tb_program_abi.vcd",
+                      "status":  "passed",
+                      "duration_ms":  721
+                  },
+                  {
+                      "name":  "program_li",
+                      "source":  "tb/program/examples/tb_program_li.v",
+                      "waveform":  "wave/tb_program_li.vcd",
+                      "status":  "passed",
+                      "duration_ms":  807
+                  },
+                  {
+                      "name":  "program_address",
+                      "source":  "tb/program/examples/tb_program_address.v",
+                      "waveform":  "wave/tb_program_address.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1099
+                  },
+                  {
+                      "name":  "program_pointer",
+                      "source":  "tb/program/examples/tb_program_pointer.v",
+                      "waveform":  "wave/tb_program_pointer.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1043
+                  },
+                  {
+                      "name":  "program_array",
+                      "source":  "tb/program/examples/tb_program_array.v",
+                      "waveform":  "wave/tb_program_array.vcd",
+                      "status":  "passed",
+                      "duration_ms":  982
+                  },
+                  {
+                      "name":  "program_byte_array",
+                      "source":  "tb/program/examples/tb_program_byte_array.v",
+                      "waveform":  "wave/tb_program_byte_array.vcd",
+                      "status":  "passed",
+                      "duration_ms":  767
+                  },
+                  {
+                      "name":  "program_halfword_array",
+                      "source":  "tb/program/examples/tb_program_halfword_array.v",
+                      "waveform":  "wave/tb_program_halfword_array.vcd",
+                      "status":  "passed",
+                      "duration_ms":  841
+                  },
+                  {
+                      "name":  "program_sum_function",
+                      "source":  "tb/program/examples/tb_program_sum_function.v",
+                      "waveform":  "wave/tb_program_sum_function.vcd",
+                      "status":  "passed",
+                      "duration_ms":  891
+                  },
+                  {
+                      "name":  "program_nested_sum",
+                      "source":  "tb/program/examples/tb_program_nested_sum.v",
+                      "waveform":  "wave/tb_program_nested_sum.vcd",
+                      "status":  "passed",
+                      "duration_ms":  949
+                  },
+                  {
+                      "name":  "program_byte_directive",
+                      "source":  "tb/program/examples/tb_program_byte_directive.v",
+                      "waveform":  "wave/tb_program_byte_directive.vcd",
+                      "status":  "passed",
+                      "duration_ms":  797
+                  },
+                  {
+                      "name":  "program_half_directive",
+                      "source":  "tb/program/examples/tb_program_half_directive.v",
+                      "waveform":  "wave/tb_program_half_directive.vcd",
+                      "status":  "passed",
+                      "duration_ms":  848
+                  },
+                  {
+                      "name":  "program_string",
+                      "source":  "tb/program/examples/tb_program_string.v",
+                      "waveform":  "wave/tb_program_string.vcd",
+                      "status":  "passed",
+                      "duration_ms":  842
+                  },
+                  {
+                      "name":  "program_strlen",
+                      "source":  "tb/program/examples/tb_program_strlen.v",
+                      "waveform":  "wave/tb_program_strlen.vcd",
+                      "status":  "passed",
+                      "duration_ms":  856
+                  },
+                  {
+                      "name":  "program_strcmp",
+                      "source":  "tb/program/examples/tb_program_strcmp.v",
+                      "waveform":  "wave/tb_program_strcmp.vcd",
+                      "status":  "passed",
+                      "duration_ms":  857
+                  },
+                  {
+                      "name":  "program_string_escape",
+                      "source":  "tb/program/examples/tb_program_string_escape.v",
+                      "waveform":  "wave/tb_program_string_escape.vcd",
+                      "status":  "passed",
+                      "duration_ms":  846
+                  },
+                  {
+                      "name":  "program_count_char",
+                      "source":  "tb/program/examples/tb_program_count_char.v",
+                      "waveform":  "wave/tb_program_count_char.vcd",
+                      "status":  "passed",
+                      "duration_ms":  766
+                  },
+                  {
+                      "name":  "program_counter_loop",
+                      "source":  "tb/program/examples/tb_program_counter_loop.v",
+                      "waveform":  "wave/tb_program_counter_loop.vcd",
+                      "status":  "passed",
+                      "duration_ms":  702
+                  },
+                  {
+                      "name":  "program_perf_mmio_read",
+                      "source":  "tb/program/soc_io/tb_program_perf_mmio_read.v",
+                      "waveform":  "wave/tb_program_perf_mmio_read.vcd",
+                      "status":  "passed",
+                      "duration_ms":  677
+                  },
+                  {
+                      "name":  "program_uart_gpio_demo",
+                      "source":  "tb/program/soc_io/tb_program_uart_gpio_demo.v",
+                      "waveform":  "wave/tb_program_uart_gpio_demo.vcd",
+                      "status":  "passed",
+                      "duration_ms":  786
+                  },
+                  {
+                      "name":  "program_showcase_demo",
+                      "source":  "tb/program/showcase/tb_program_showcase_demo.v",
+                      "waveform":  "wave/tb_program_showcase_demo.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1335
+                  },
+                  {
+                      "name":  "program_interactive_showcase_demo",
+                      "source":  "tb/program/showcase/tb_program_interactive_showcase_demo.v",
+                      "waveform":  "wave/tb_program_interactive_showcase_demo.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1529
+                  },
+                  {
+                      "name":  "program_hardware_validation_suite",
+                      "source":  "tb/program/showcase/tb_program_hardware_validation_suite.v",
+                      "waveform":  "wave/tb_program_hardware_validation_suite.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1814
+                  },
+                  {
+                      "name":  "program_matvec_scratchpad",
+                      "source":  "tb/program/accelerator/tb_program_matvec_scratchpad.v",
+                      "waveform":  "wave/tb_program_matvec_scratchpad.vcd",
+                      "status":  "passed",
+                      "duration_ms":  648
+                  },
+                  {
+                      "name":  "program_matvec_scratchpad_interrupt",
+                      "source":  "tb/program/accelerator/tb_program_matvec_scratchpad_interrupt.v",
+                      "waveform":  "wave/tb_program_matvec_scratchpad_interrupt.vcd",
+                      "status":  "passed",
+                      "duration_ms":  704
+                  },
+                  {
+                      "name":  "program_matvec_scratchpad_no_interrupt",
+                      "source":  "tb/program/accelerator/tb_program_matvec_scratchpad_no_interrupt.v",
+                      "waveform":  "wave/tb_program_matvec_scratchpad_no_interrupt.vcd",
+                      "status":  "passed",
+                      "duration_ms":  596
+                  },
+                  {
+                      "name":  "program_matvec_dma_demo",
+                      "source":  "tb/program/accelerator/tb_program_matvec_dma_demo.v",
+                      "waveform":  "wave/tb_program_matvec_dma_demo.vcd",
+                      "status":  "passed",
+                      "duration_ms":  680
+                  },
+                  {
+                      "name":  "program_machine_timer_interrupt",
+                      "source":  "tb/program/csr_trap/tb_program_machine_timer_interrupt.v",
+                      "waveform":  "wave/tb_program_machine_timer_interrupt.vcd",
+                      "status":  "passed",
+                      "duration_ms":  735
+                  },
+                  {
+                      "name":  "program_machine_timer_no_interrupt",
+                      "source":  "tb/program/csr_trap/tb_program_machine_timer_no_interrupt.v",
+                      "waveform":  "wave/tb_program_machine_timer_no_interrupt.vcd",
+                      "status":  "passed",
+                      "duration_ms":  691
+                  },
+                  {
+                      "name":  "program_compliance_basic",
+                      "source":  "tb/program/isa/tb_program_compliance_basic.v",
+                      "waveform":  "wave/tb_program_compliance_basic.vcd",
+                      "status":  "passed",
+                      "duration_ms":  840
+                  },
+                  {
+                      "name":  "program_rv32i_alu_compliance",
+                      "source":  "tb/program/isa/tb_program_rv32i_alu_compliance.v",
+                      "waveform":  "wave/tb_program_rv32i_alu_compliance.vcd",
+                      "status":  "passed",
+                      "duration_ms":  950
+                  },
+                  {
+                      "name":  "program_rv32i_control_compliance",
+                      "source":  "tb/program/isa/tb_program_rv32i_control_compliance.v",
+                      "waveform":  "wave/tb_program_rv32i_control_compliance.vcd",
+                      "status":  "passed",
+                      "duration_ms":  876
+                  },
+                  {
+                      "name":  "program_rv32i_memory_compliance",
+                      "source":  "tb/program/isa/tb_program_rv32i_memory_compliance.v",
+                      "waveform":  "wave/tb_program_rv32i_memory_compliance.vcd",
+                      "status":  "passed",
+                      "duration_ms":  741
+                  },
+                  {
+                      "name":  "program_rv32m_compliance",
+                      "source":  "tb/program/isa/tb_program_rv32m_compliance.v",
+                      "waveform":  "wave/tb_program_rv32m_compliance.vcd",
+                      "status":  "passed",
+                      "duration_ms":  874
+                  },
+                  {
+                      "name":  "program_board_smoke",
+                      "source":  "tb/program/showcase/tb_program_board_smoke.v",
+                      "waveform":  "wave/tb_program_board_smoke.vcd",
+                      "status":  "passed",
+                      "duration_ms":  923
+                  },
+                  {
+                      "name":  "fpga_top_board_smoke",
+                      "source":  "tb/integration/fpga/tb_fpga_top_board_smoke.v",
+                      "waveform":  "wave/tb_fpga_top_board_smoke.vcd",
+                      "status":  "passed",
+                      "duration_ms":  919
+                  },
+                  {
+                      "name":  "basys3_board_smoke_top",
+                      "source":  "tb/integration/fpga/tb_basys3_board_smoke_top.v",
+                      "waveform":  "wave/tb_basys3_board_smoke_top.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1006
+                  },
+                  {
+                      "name":  "basys3_full_lowfreq_top",
+                      "source":  "tb/integration/fpga/tb_basys3_full_lowfreq_top.v",
+                      "waveform":  "wave/tb_basys3_full_lowfreq_top.vcd",
+                      "status":  "passed",
+                      "duration_ms":  5711
+                  },
+                  {
+                      "name":  "fpga_top_program_override",
+                      "source":  "tb/integration/fpga/tb_fpga_top_program_override.v",
+                      "waveform":  "wave/tb_fpga_top_program_override.vcd",
+                      "status":  "passed",
+                      "duration_ms":  603
+                  },
+                  {
+                      "name":  "fpga_top_reset_sync",
+                      "source":  "tb/integration/fpga/tb_fpga_top_reset_sync.v",
+                      "waveform":  "wave/tb_fpga_top_reset_sync.vcd",
+                      "status":  "passed",
+                      "duration_ms":  662
+                  },
+                  {
+                      "name":  "fpga_top_reset_active_low",
+                      "source":  "tb/integration/fpga/tb_fpga_top_reset_active_low.v",
+                      "waveform":  "wave/tb_fpga_top_reset_active_low.vcd",
+                      "status":  "passed",
+                      "duration_ms":  719
+                  },
+                  {
+                      "name":  "fpga_top_leds_active_low",
+                      "source":  "tb/integration/fpga/tb_fpga_top_leds_active_low.v",
+                      "waveform":  "wave/tb_fpga_top_leds_active_low.vcd",
+                      "status":  "passed",
+                      "duration_ms":  654
+                  },
+                  {
+                      "name":  "fpga_top_done",
+                      "source":  "tb/integration/fpga/tb_fpga_top_done.v",
+                      "waveform":  "wave/tb_fpga_top_done.vcd",
+                      "status":  "passed",
+                      "duration_ms":  798
+                  },
+                  {
+                      "name":  "fpga_top_smoke_pass",
+                      "source":  "tb/integration/fpga/tb_fpga_top_smoke_pass.v",
+                      "waveform":  "wave/tb_fpga_top_smoke_pass.vcd",
+                      "status":  "passed",
+                      "duration_ms":  882
+                  },
+                  {
+                      "name":  "fpga_top_smoke_fail",
+                      "source":  "tb/integration/fpga/tb_fpga_top_smoke_fail.v",
+                      "waveform":  "wave/tb_fpga_top_smoke_fail.vcd",
+                      "status":  "passed",
+                      "duration_ms":  714
+                  },
+                  {
+                      "name":  "fpga_top_debug_flags",
+                      "source":  "tb/integration/fpga/tb_fpga_top_debug_flags.v",
+                      "waveform":  "wave/tb_fpga_top_debug_flags.vcd",
+                      "status":  "passed",
+                      "duration_ms":  795
+                  },
+                  {
+                      "name":  "fpga_top_leds_debug_flags",
+                      "source":  "tb/integration/fpga/tb_fpga_top_leds_debug_flags.v",
+                      "waveform":  "wave/tb_fpga_top_leds_debug_flags.vcd",
+                      "status":  "passed",
+                      "duration_ms":  762
+                  },
+                  {
+                      "name":  "fpga_top_memory_size",
+                      "source":  "tb/integration/fpga/tb_fpga_top_memory_size.v",
+                      "waveform":  "wave/tb_fpga_top_memory_size.vcd",
+                      "status":  "passed",
+                      "duration_ms":  655
+                  },
+                  {
+                      "name":  "fpga_top_heartbeat",
+                      "source":  "tb/integration/fpga/tb_fpga_top_heartbeat.v",
+                      "waveform":  "wave/tb_fpga_top_heartbeat.vcd",
+                      "status":  "passed",
+                      "duration_ms":  684
+                  },
+                  {
+                      "name":  "fpga_top_config_error",
+                      "source":  "tb/integration/fpga/tb_fpga_top_config_error.v",
+                      "waveform":  "wave/tb_fpga_top_config_error.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1163
+                  },
+                  {
+                      "name":  "fpga_top_uart_tx",
+                      "source":  "tb/integration/fpga/tb_fpga_top_uart_tx.v",
+                      "waveform":  "wave/tb_fpga_top_uart_tx.vcd",
+                      "status":  "passed",
+                      "duration_ms":  635
+                  },
+                  {
+                      "name":  "fpga_uart_boot_top",
+                      "source":  "tb/integration/fpga/tb_fpga_uart_boot_top.v",
+                      "waveform":  "wave/tb_fpga_uart_boot_top.vcd",
+                      "status":  "passed",
+                      "duration_ms":  1619
+                  },
+                  {
+                      "name":  "fpga_uart_boot_showcase",
+                      "source":  "tb/integration/fpga/tb_fpga_uart_boot_showcase.v",
+                      "waveform":  "wave/tb_fpga_uart_boot_showcase.vcd",
+                      "status":  "passed",
+                      "duration_ms":  6293
+                  },
+                  {
+                      "name":  "fpga_uart_boot_bram_soc_showcase",
+                      "source":  "tb/integration/fpga/tb_fpga_uart_boot_bram_soc_showcase.v",
+                      "waveform":  "wave/tb_fpga_uart_boot_bram_soc_showcase.vcd",
+                      "status":  "passed",
+                      "duration_ms":  6180
+                  },
+                  {
+                      "name":  "fpga_uart_boot_runtime_rx_showcase",
+                      "source":  "tb/integration/fpga/tb_fpga_uart_boot_runtime_rx_showcase.v",
+                      "waveform":  "wave/tb_fpga_uart_boot_runtime_rx_showcase.vcd",
+                      "status":  "passed",
+                      "duration_ms":  7676
+                  },
+                  {
+                      "name":  "fpga_uart_boot_hardware_validation_suite",
+                      "source":  "tb/integration/fpga/tb_fpga_uart_boot_hardware_validation_suite.v",
+                      "waveform":  "wave/tb_fpga_uart_boot_hardware_validation_suite.vcd",
+                      "status":  "passed",
+                      "duration_ms":  13384
+                  },
+                  {
+                      "name":  "fpga_debug_led_top",
+                      "source":  "tb/integration/fpga/tb_fpga_debug_led_top.v",
+                      "waveform":  "wave/tb_fpga_debug_led_top.vcd",
+                      "status":  "passed",
+                      "duration_ms":  636
+                  }
+              ],
+    "source_commit":  "d7f1afe8ef1a28205e5448a9c9507bb97005b2f9",
+    "verification_input_fingerprint":  "74864f9e590c5ff6b7ee22adfe1728aacd18352c1244d960f7039f678621d683",
+    "verification_input_count":  437,
+    "verification_working_tree_dirty":  false
+}

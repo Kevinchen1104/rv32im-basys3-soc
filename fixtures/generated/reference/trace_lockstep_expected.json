@@ -1,0 +1,3233 @@
+{
+    "seed":  6061,
+    "requested_instruction_count":  32,
+    "program_words":  268,
+    "trace_count":  252,
+    "row_format":  "pc,instruction,meta,value; meta bit5=reg_write, meta[4:0]=rd",
+    "comparison_contract":  "CPU public retired trace ports: trace_valid, trace_pc, trace_instruction, trace_reg_write, trace_rd, trace_writeback_value",
+    "coverage":  [
+                     "ALU immediate",
+                     "ALU register",
+                     "x0 invariant",
+                     "control flow",
+                     "branch",
+                     "wrong-path suppression",
+                     "jump",
+                     "memory",
+                     "load/store",
+                     "RV32M"
+                 ],
+    "rows":  [
+                 {
+                     "index":  0,
+                     "pc":  "00000000",
+                     "instruction":  "00000093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "00000000",
+                     "note":  "x1 = 0",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  1,
+                     "pc":  "00000004",
+                     "instruction":  "fff00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "ffffffff",
+                     "note":  "x2 = -1",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  2,
+                     "pc":  "00000008",
+                     "instruction":  "800001b7",
+                     "reg_write":  true,
+                     "rd":  "x3",
+                     "writeback_value":  "80000000",
+                     "note":  "x3 = sign bit",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  3,
+                     "pc":  "0000000c",
+                     "instruction":  "01f00213",
+                     "reg_write":  true,
+                     "rd":  "x4",
+                     "writeback_value":  "0000001f",
+                     "note":  "x4 = shift 31",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  4,
+                     "pc":  "00000010",
+                     "instruction":  "00208533",
+                     "reg_write":  true,
+                     "rd":  "x10",
+                     "writeback_value":  "ffffffff",
+                     "note":  "add zero plus -1",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  5,
+                     "pc":  "00000014",
+                     "instruction":  "402085b3",
+                     "reg_write":  true,
+                     "rd":  "x11",
+                     "writeback_value":  "00000001",
+                     "note":  "sub zero minus -1",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  6,
+                     "pc":  "00000018",
+                     "instruction":  "00317633",
+                     "reg_write":  true,
+                     "rd":  "x12",
+                     "writeback_value":  "80000000",
+                     "note":  "and sign bit",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  7,
+                     "pc":  "0000001c",
+                     "instruction":  "0030e6b3",
+                     "reg_write":  true,
+                     "rd":  "x13",
+                     "writeback_value":  "80000000",
+                     "note":  "or sign bit",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  8,
+                     "pc":  "00000020",
+                     "instruction":  "00314733",
+                     "reg_write":  true,
+                     "rd":  "x14",
+                     "writeback_value":  "7fffffff",
+                     "note":  "xor sign bit",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  9,
+                     "pc":  "00000024",
+                     "instruction":  "0011a7b3",
+                     "reg_write":  true,
+                     "rd":  "x15",
+                     "writeback_value":  "00000001",
+                     "note":  "signed sign-bit less than zero",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  10,
+                     "pc":  "00000028",
+                     "instruction":  "0011b833",
+                     "reg_write":  true,
+                     "rd":  "x16",
+                     "writeback_value":  "00000000",
+                     "note":  "unsigned sign-bit greater than zero",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  11,
+                     "pc":  "0000002c",
+                     "instruction":  "001118b3",
+                     "reg_write":  true,
+                     "rd":  "x17",
+                     "writeback_value":  "ffffffff",
+                     "note":  "shift left by 0",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  12,
+                     "pc":  "00000030",
+                     "instruction":  "00411933",
+                     "reg_write":  true,
+                     "rd":  "x18",
+                     "writeback_value":  "80000000",
+                     "note":  "shift left by 31",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  13,
+                     "pc":  "00000034",
+                     "instruction":  "0041d9b3",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "00000001",
+                     "note":  "logical shift right 31",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  14,
+                     "pc":  "00000038",
+                     "instruction":  "4041da33",
+                     "reg_write":  true,
+                     "rd":  "x20",
+                     "writeback_value":  "ffffffff",
+                     "note":  "arithmetic shift right 31",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  15,
+                     "pc":  "0000003c",
+                     "instruction":  "00110a93",
+                     "reg_write":  true,
+                     "rd":  "x21",
+                     "writeback_value":  "00000000",
+                     "note":  "addi -1 + 1",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  16,
+                     "pc":  "00000040",
+                     "instruction":  "0001ab13",
+                     "reg_write":  true,
+                     "rd":  "x22",
+                     "writeback_value":  "00000001",
+                     "note":  "slti sign-bit \u003c 0",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  17,
+                     "pc":  "00000044",
+                     "instruction":  "fff0bb93",
+                     "reg_write":  true,
+                     "rd":  "x23",
+                     "writeback_value":  "00000001",
+                     "note":  "sltiu zero \u003c -1",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  18,
+                     "pc":  "00000048",
+                     "instruction":  "fff1cc13",
+                     "reg_write":  true,
+                     "rd":  "x24",
+                     "writeback_value":  "7fffffff",
+                     "note":  "xori sign-bit with -1",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  19,
+                     "pc":  "0000004c",
+                     "instruction":  "07f0ec93",
+                     "reg_write":  true,
+                     "rd":  "x25",
+                     "writeback_value":  "0000007f",
+                     "note":  "ori small mask",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  20,
+                     "pc":  "00000050",
+                     "instruction":  "05517d13",
+                     "reg_write":  true,
+                     "rd":  "x26",
+                     "writeback_value":  "00000055",
+                     "note":  "andi low mask",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  21,
+                     "pc":  "00000054",
+                     "instruction":  "00011d93",
+                     "reg_write":  true,
+                     "rd":  "x27",
+                     "writeback_value":  "ffffffff",
+                     "note":  "slli by 0",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  22,
+                     "pc":  "00000058",
+                     "instruction":  "01f11e13",
+                     "reg_write":  true,
+                     "rd":  "x28",
+                     "writeback_value":  "80000000",
+                     "note":  "slli by 31",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  23,
+                     "pc":  "0000005c",
+                     "instruction":  "01f1de93",
+                     "reg_write":  true,
+                     "rd":  "x29",
+                     "writeback_value":  "00000001",
+                     "note":  "srli by 31",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  24,
+                     "pc":  "00000060",
+                     "instruction":  "41f1df13",
+                     "reg_write":  true,
+                     "rd":  "x30",
+                     "writeback_value":  "ffffffff",
+                     "note":  "srai by 31",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  25,
+                     "pc":  "00000064",
+                     "instruction":  "06308013",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "attempted x0 write",
+                     "coverage":  [
+                                      "x0 invariant"
+                                  ]
+                 },
+                 {
+                     "index":  26,
+                     "pc":  "00000068",
+                     "instruction":  "00000f93",
+                     "reg_write":  true,
+                     "rd":  "x31",
+                     "writeback_value":  "00000000",
+                     "note":  "read x0 after attempted write",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  27,
+                     "pc":  "0000006c",
+                     "instruction":  "00500293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "00000005",
+                     "note":  "beq taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  28,
+                     "pc":  "00000070",
+                     "instruction":  "00500313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "00000005",
+                     "note":  "beq taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  29,
+                     "pc":  "00000074",
+                     "instruction":  "00628463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "beq taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  30,
+                     "pc":  "0000007c",
+                     "instruction":  "08c00993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "0000008c",
+                     "note":  "beq taken target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  31,
+                     "pc":  "00000080",
+                     "instruction":  "00500293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "00000005",
+                     "note":  "beq not taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  32,
+                     "pc":  "00000084",
+                     "instruction":  "00600313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "00000006",
+                     "note":  "beq not taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  33,
+                     "pc":  "00000088",
+                     "instruction":  "00628463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "beq not taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  34,
+                     "pc":  "0000008c",
+                     "instruction":  "02900913",
+                     "reg_write":  true,
+                     "rd":  "x18",
+                     "writeback_value":  "00000029",
+                     "note":  "beq not taken fallthrough",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  35,
+                     "pc":  "00000090",
+                     "instruction":  "08d00993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "0000008d",
+                     "note":  "beq not taken sequential target",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  36,
+                     "pc":  "00000094",
+                     "instruction":  "00500293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "00000005",
+                     "note":  "bne taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  37,
+                     "pc":  "00000098",
+                     "instruction":  "00600313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "00000006",
+                     "note":  "bne taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  38,
+                     "pc":  "0000009c",
+                     "instruction":  "00629463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "bne taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  39,
+                     "pc":  "000000a4",
+                     "instruction":  "08e00993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "0000008e",
+                     "note":  "bne taken target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  40,
+                     "pc":  "000000a8",
+                     "instruction":  "00500293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "00000005",
+                     "note":  "bne not taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  41,
+                     "pc":  "000000ac",
+                     "instruction":  "00500313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "00000005",
+                     "note":  "bne not taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  42,
+                     "pc":  "000000b0",
+                     "instruction":  "00629463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "bne not taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  43,
+                     "pc":  "000000b4",
+                     "instruction":  "02b00913",
+                     "reg_write":  true,
+                     "rd":  "x18",
+                     "writeback_value":  "0000002b",
+                     "note":  "bne not taken fallthrough",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  44,
+                     "pc":  "000000b8",
+                     "instruction":  "08f00993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "0000008f",
+                     "note":  "bne not taken sequential target",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  45,
+                     "pc":  "000000bc",
+                     "instruction":  "fff00293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "ffffffff",
+                     "note":  "blt signed taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  46,
+                     "pc":  "000000c0",
+                     "instruction":  "00100313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "00000001",
+                     "note":  "blt signed taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  47,
+                     "pc":  "000000c4",
+                     "instruction":  "0062c463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "blt signed taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  48,
+                     "pc":  "000000cc",
+                     "instruction":  "09000993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "00000090",
+                     "note":  "blt signed taken target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  49,
+                     "pc":  "000000d0",
+                     "instruction":  "800002b7",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "80000000",
+                     "note":  "bge signed not taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  50,
+                     "pc":  "000000d4",
+                     "instruction":  "fff00313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "ffffffff",
+                     "note":  "bge signed not taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  51,
+                     "pc":  "000000d8",
+                     "instruction":  "0062d463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "bge signed not taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  52,
+                     "pc":  "000000dc",
+                     "instruction":  "02d00913",
+                     "reg_write":  true,
+                     "rd":  "x18",
+                     "writeback_value":  "0000002d",
+                     "note":  "bge signed not taken fallthrough",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  53,
+                     "pc":  "000000e0",
+                     "instruction":  "09100993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "00000091",
+                     "note":  "bge signed not taken sequential target",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  54,
+                     "pc":  "000000e4",
+                     "instruction":  "00100293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "00000001",
+                     "note":  "bltu unsigned taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  55,
+                     "pc":  "000000e8",
+                     "instruction":  "80000337",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "80000000",
+                     "note":  "bltu unsigned taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  56,
+                     "pc":  "000000ec",
+                     "instruction":  "0062e463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "bltu unsigned taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  57,
+                     "pc":  "000000f4",
+                     "instruction":  "09200993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "00000092",
+                     "note":  "bltu unsigned taken target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  58,
+                     "pc":  "000000f8",
+                     "instruction":  "800002b7",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "80000000",
+                     "note":  "bgeu unsigned taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  59,
+                     "pc":  "000000fc",
+                     "instruction":  "00100313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "00000001",
+                     "note":  "bgeu unsigned taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  60,
+                     "pc":  "00000100",
+                     "instruction":  "0062f463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "bgeu unsigned taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  61,
+                     "pc":  "00000108",
+                     "instruction":  "09300993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "00000093",
+                     "note":  "bgeu unsigned taken target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  62,
+                     "pc":  "0000010c",
+                     "instruction":  "00500293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "00000005",
+                     "note":  "blt signed not taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  63,
+                     "pc":  "00000110",
+                     "instruction":  "fff00313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "ffffffff",
+                     "note":  "blt signed not taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  64,
+                     "pc":  "00000114",
+                     "instruction":  "0062c463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "blt signed not taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  65,
+                     "pc":  "00000118",
+                     "instruction":  "03000913",
+                     "reg_write":  true,
+                     "rd":  "x18",
+                     "writeback_value":  "00000030",
+                     "note":  "blt signed not taken fallthrough",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  66,
+                     "pc":  "0000011c",
+                     "instruction":  "09400993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "00000094",
+                     "note":  "blt signed not taken sequential target",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  67,
+                     "pc":  "00000120",
+                     "instruction":  "fff00293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "ffffffff",
+                     "note":  "bge signed taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  68,
+                     "pc":  "00000124",
+                     "instruction":  "80000337",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "80000000",
+                     "note":  "bge signed taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  69,
+                     "pc":  "00000128",
+                     "instruction":  "0062d463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "bge signed taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  70,
+                     "pc":  "00000130",
+                     "instruction":  "09500993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "00000095",
+                     "note":  "bge signed taken target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  71,
+                     "pc":  "00000134",
+                     "instruction":  "800002b7",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "80000000",
+                     "note":  "bltu unsigned not taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  72,
+                     "pc":  "00000138",
+                     "instruction":  "00100313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "00000001",
+                     "note":  "bltu unsigned not taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  73,
+                     "pc":  "0000013c",
+                     "instruction":  "0062e463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "bltu unsigned not taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  74,
+                     "pc":  "00000140",
+                     "instruction":  "03200913",
+                     "reg_write":  true,
+                     "rd":  "x18",
+                     "writeback_value":  "00000032",
+                     "note":  "bltu unsigned not taken fallthrough",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  75,
+                     "pc":  "00000144",
+                     "instruction":  "09600993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "00000096",
+                     "note":  "bltu unsigned not taken sequential target",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  76,
+                     "pc":  "00000148",
+                     "instruction":  "00100293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "00000001",
+                     "note":  "bgeu unsigned not taken left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  77,
+                     "pc":  "0000014c",
+                     "instruction":  "80000337",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "80000000",
+                     "note":  "bgeu unsigned not taken right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  78,
+                     "pc":  "00000150",
+                     "instruction":  "0062f463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "bgeu unsigned not taken",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  79,
+                     "pc":  "00000154",
+                     "instruction":  "03300913",
+                     "reg_write":  true,
+                     "rd":  "x18",
+                     "writeback_value":  "00000033",
+                     "note":  "bgeu unsigned not taken fallthrough",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  80,
+                     "pc":  "00000158",
+                     "instruction":  "09700993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "00000097",
+                     "note":  "bgeu unsigned not taken sequential target",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  81,
+                     "pc":  "0000015c",
+                     "instruction":  "008003ef",
+                     "reg_write":  true,
+                     "rd":  "x7",
+                     "writeback_value":  "00000160",
+                     "note":  "jal link and wrong-path skip",
+                     "coverage":  [
+                                      "control flow",
+                                      "jump"
+                                  ]
+                 },
+                 {
+                     "index":  82,
+                     "pc":  "00000164",
+                     "instruction":  "30a00a93",
+                     "reg_write":  true,
+                     "rd":  "x21",
+                     "writeback_value":  "0000030a",
+                     "note":  "jal target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  83,
+                     "pc":  "00000168",
+                     "instruction":  "17500413",
+                     "reg_write":  true,
+                     "rd":  "x8",
+                     "writeback_value":  "00000175",
+                     "note":  "jalr odd target setup",
+                     "coverage":  [
+                                      "control flow",
+                                      "jump"
+                                  ]
+                 },
+                 {
+                     "index":  84,
+                     "pc":  "0000016c",
+                     "instruction":  "000404e7",
+                     "reg_write":  true,
+                     "rd":  "x9",
+                     "writeback_value":  "00000170",
+                     "note":  "jalr clears bit 0 and links",
+                     "coverage":  [
+                                      "control flow",
+                                      "jump"
+                                  ]
+                 },
+                 {
+                     "index":  85,
+                     "pc":  "00000174",
+                     "instruction":  "30c00b93",
+                     "reg_write":  true,
+                     "rd":  "x23",
+                     "writeback_value":  "0000030c",
+                     "note":  "jalr aligned target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  86,
+                     "pc":  "00000178",
+                     "instruction":  "00000193",
+                     "reg_write":  true,
+                     "rd":  "x3",
+                     "writeback_value":  "00000000",
+                     "note":  "memory base",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  87,
+                     "pc":  "0000017c",
+                     "instruction":  "88776237",
+                     "reg_write":  true,
+                     "rd":  "x4",
+                     "writeback_value":  "88776000",
+                     "note":  "word store pattern",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  88,
+                     "pc":  "00000180",
+                     "instruction":  "65520213",
+                     "reg_write":  true,
+                     "rd":  "x4",
+                     "writeback_value":  "88776655",
+                     "note":  "word store pattern",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  89,
+                     "pc":  "00000184",
+                     "instruction":  "0041a023",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "sw word pattern",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  90,
+                     "pc":  "00000188",
+                     "instruction":  "0001a283",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "88776655",
+                     "note":  "lw word pattern",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  91,
+                     "pc":  "0000018c",
+                     "instruction":  "00318303",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "ffffff88",
+                     "note":  "lb signed high byte",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  92,
+                     "pc":  "00000190",
+                     "instruction":  "0031c383",
+                     "reg_write":  true,
+                     "rd":  "x7",
+                     "writeback_value":  "00000088",
+                     "note":  "lbu high byte",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  93,
+                     "pc":  "00000194",
+                     "instruction":  "0aa00413",
+                     "reg_write":  true,
+                     "rd":  "x8",
+                     "writeback_value":  "000000aa",
+                     "note":  "byte overlap value",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  94,
+                     "pc":  "00000198",
+                     "instruction":  "008180a3",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "sb overlapping byte",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  95,
+                     "pc":  "0000019c",
+                     "instruction":  "0001a483",
+                     "reg_write":  true,
+                     "rd":  "x9",
+                     "writeback_value":  "8877aa55",
+                     "note":  "lw after sb overlap",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  96,
+                     "pc":  "000001a0",
+                     "instruction":  "00008537",
+                     "reg_write":  true,
+                     "rd":  "x10",
+                     "writeback_value":  "00008000",
+                     "note":  "halfword overlap value",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  97,
+                     "pc":  "000001a4",
+                     "instruction":  "00150513",
+                     "reg_write":  true,
+                     "rd":  "x10",
+                     "writeback_value":  "00008001",
+                     "note":  "halfword overlap value",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  98,
+                     "pc":  "000001a8",
+                     "instruction":  "00a19123",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "sh overlapping high half",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  99,
+                     "pc":  "000001ac",
+                     "instruction":  "00219583",
+                     "reg_write":  true,
+                     "rd":  "x11",
+                     "writeback_value":  "ffff8001",
+                     "note":  "lh signed overlap",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  100,
+                     "pc":  "000001b0",
+                     "instruction":  "0021d603",
+                     "reg_write":  true,
+                     "rd":  "x12",
+                     "writeback_value":  "00008001",
+                     "note":  "lhu unsigned overlap",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  101,
+                     "pc":  "000001b4",
+                     "instruction":  "0001a683",
+                     "reg_write":  true,
+                     "rd":  "x13",
+                     "writeback_value":  "8001aa55",
+                     "note":  "lw after sh overlap",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  102,
+                     "pc":  "000001b8",
+                     "instruction":  "800000b7",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "80000000",
+                     "note":  "rv32m lhs INT_MIN",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  103,
+                     "pc":  "000001bc",
+                     "instruction":  "fff00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "ffffffff",
+                     "note":  "rv32m rhs -1",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  104,
+                     "pc":  "000001c0",
+                     "instruction":  "02208733",
+                     "reg_write":  true,
+                     "rd":  "x14",
+                     "writeback_value":  "80000000",
+                     "note":  "mul INT_MIN * -1",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  105,
+                     "pc":  "000001c4",
+                     "instruction":  "022097b3",
+                     "reg_write":  true,
+                     "rd":  "x15",
+                     "writeback_value":  "00000000",
+                     "note":  "mulh INT_MIN * -1",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  106,
+                     "pc":  "000001c8",
+                     "instruction":  "0220a833",
+                     "reg_write":  true,
+                     "rd":  "x16",
+                     "writeback_value":  "80000000",
+                     "note":  "mulhsu signed/unsigned",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  107,
+                     "pc":  "000001cc",
+                     "instruction":  "0220b8b3",
+                     "reg_write":  true,
+                     "rd":  "x17",
+                     "writeback_value":  "7fffffff",
+                     "note":  "mulhu unsigned high",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  108,
+                     "pc":  "000001d0",
+                     "instruction":  "0220c933",
+                     "reg_write":  true,
+                     "rd":  "x18",
+                     "writeback_value":  "80000000",
+                     "note":  "div INT_MIN / -1",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  109,
+                     "pc":  "000001d4",
+                     "instruction":  "0220e9b3",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "00000000",
+                     "note":  "rem INT_MIN % -1",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  110,
+                     "pc":  "000001d8",
+                     "instruction":  "00000113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "00000000",
+                     "note":  "rv32m divisor zero",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  111,
+                     "pc":  "000001dc",
+                     "instruction":  "0220ca33",
+                     "reg_write":  true,
+                     "rd":  "x20",
+                     "writeback_value":  "ffffffff",
+                     "note":  "div by zero",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  112,
+                     "pc":  "000001e0",
+                     "instruction":  "0220dab3",
+                     "reg_write":  true,
+                     "rd":  "x21",
+                     "writeback_value":  "ffffffff",
+                     "note":  "divu by zero",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  113,
+                     "pc":  "000001e4",
+                     "instruction":  "0220eb33",
+                     "reg_write":  true,
+                     "rd":  "x22",
+                     "writeback_value":  "80000000",
+                     "note":  "rem by zero",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  114,
+                     "pc":  "000001e8",
+                     "instruction":  "0220fbb3",
+                     "reg_write":  true,
+                     "rd":  "x23",
+                     "writeback_value":  "80000000",
+                     "note":  "remu by zero",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  115,
+                     "pc":  "000001ec",
+                     "instruction":  "ff900093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffff9",
+                     "note":  "rv32m lhs -7",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  116,
+                     "pc":  "000001f0",
+                     "instruction":  "00300113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "00000003",
+                     "note":  "rv32m rhs 3",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  117,
+                     "pc":  "000001f4",
+                     "instruction":  "0220cc33",
+                     "reg_write":  true,
+                     "rd":  "x24",
+                     "writeback_value":  "fffffffe",
+                     "note":  "signed div negative",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  118,
+                     "pc":  "000001f8",
+                     "instruction":  "0220ecb3",
+                     "reg_write":  true,
+                     "rd":  "x25",
+                     "writeback_value":  "ffffffff",
+                     "note":  "signed rem negative",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  119,
+                     "pc":  "000001fc",
+                     "instruction":  "0220dd33",
+                     "reg_write":  true,
+                     "rd":  "x26",
+                     "writeback_value":  "55555553",
+                     "note":  "unsigned div edge",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  120,
+                     "pc":  "00000200",
+                     "instruction":  "0220fdb3",
+                     "reg_write":  true,
+                     "rd":  "x27",
+                     "writeback_value":  "00000000",
+                     "note":  "unsigned rem edge",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  121,
+                     "pc":  "00000204",
+                     "instruction":  "a5600093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffa56",
+                     "note":  "seeded lhs 0",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  122,
+                     "pc":  "00000208",
+                     "instruction":  "ba400113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffba4",
+                     "note":  "seeded rhs 0",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  123,
+                     "pc":  "0000020c",
+                     "instruction":  "00208533",
+                     "reg_write":  true,
+                     "rd":  "x10",
+                     "writeback_value":  "fffff5fa",
+                     "note":  "seeded add 0",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  124,
+                     "pc":  "00000210",
+                     "instruction":  "d5900093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffd59",
+                     "note":  "seeded lhs 1",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  125,
+                     "pc":  "00000214",
+                     "instruction":  "bc500113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffbc5",
+                     "note":  "seeded rhs 1",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  126,
+                     "pc":  "00000218",
+                     "instruction":  "0020c5b3",
+                     "reg_write":  true,
+                     "rd":  "x11",
+                     "writeback_value":  "0000069c",
+                     "note":  "seeded xor 1",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  127,
+                     "pc":  "0000021c",
+                     "instruction":  "29300093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "00000293",
+                     "note":  "seeded lhs 2",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  128,
+                     "pc":  "00000220",
+                     "instruction":  "c0e00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffc0e",
+                     "note":  "seeded rhs 2",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  129,
+                     "pc":  "00000224",
+                     "instruction":  "01209613",
+                     "reg_write":  true,
+                     "rd":  "x12",
+                     "writeback_value":  "0a4c0000",
+                     "note":  "seeded slli 2",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  130,
+                     "pc":  "00000228",
+                     "instruction":  "a6b00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffa6b",
+                     "note":  "seeded lhs 3",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  131,
+                     "pc":  "0000022c",
+                     "instruction":  "53100113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "00000531",
+                     "note":  "seeded rhs 3",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  132,
+                     "pc":  "00000230",
+                     "instruction":  "4080d693",
+                     "reg_write":  true,
+                     "rd":  "x13",
+                     "writeback_value":  "fffffffa",
+                     "note":  "seeded srai 3",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  133,
+                     "pc":  "00000234",
+                     "instruction":  "1d900093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "000001d9",
+                     "note":  "seeded lhs 4",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  134,
+                     "pc":  "00000238",
+                     "instruction":  "e0a00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffe0a",
+                     "note":  "seeded rhs 4",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  135,
+                     "pc":  "0000023c",
+                     "instruction":  "1d900293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "000001d9",
+                     "note":  "seeded beq 4 left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  136,
+                     "pc":  "00000240",
+                     "instruction":  "1d900313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "000001d9",
+                     "note":  "seeded beq 4 right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  137,
+                     "pc":  "00000244",
+                     "instruction":  "00628463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded beq 4",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  138,
+                     "pc":  "0000024c",
+                     "instruction":  "0b800993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "000000b8",
+                     "note":  "seeded beq 4 target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  139,
+                     "pc":  "00000250",
+                     "instruction":  "c6000093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffc60",
+                     "note":  "seeded lhs 5",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  140,
+                     "pc":  "00000254",
+                     "instruction":  "3c900113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "000003c9",
+                     "note":  "seeded rhs 5",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  141,
+                     "pc":  "00000258",
+                     "instruction":  "c6000293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "fffffc60",
+                     "note":  "seeded bne 5 left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  142,
+                     "pc":  "0000025c",
+                     "instruction":  "3c900313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "000003c9",
+                     "note":  "seeded bne 5 right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  143,
+                     "pc":  "00000260",
+                     "instruction":  "00629463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded bne 5",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  144,
+                     "pc":  "00000268",
+                     "instruction":  "0d900993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "000000d9",
+                     "note":  "seeded bne 5 target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  145,
+                     "pc":  "0000026c",
+                     "instruction":  "02f00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "0000002f",
+                     "note":  "seeded lhs 6",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  146,
+                     "pc":  "00000270",
+                     "instruction":  "c0600113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffc06",
+                     "note":  "seeded rhs 6",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  147,
+                     "pc":  "00000274",
+                     "instruction":  "02208733",
+                     "reg_write":  true,
+                     "rd":  "x14",
+                     "writeback_value":  "ffff451a",
+                     "note":  "seeded mul 6",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  148,
+                     "pc":  "00000278",
+                     "instruction":  "28a00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "0000028a",
+                     "note":  "seeded lhs 7",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  149,
+                     "pc":  "0000027c",
+                     "instruction":  "4fa00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "000004fa",
+                     "note":  "seeded rhs 7",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  150,
+                     "pc":  "00000280",
+                     "instruction":  "00000193",
+                     "reg_write":  true,
+                     "rd":  "x3",
+                     "writeback_value":  "00000000",
+                     "note":  "seeded memory base 7",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  151,
+                     "pc":  "00000284",
+                     "instruction":  "0211ae23",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded sw 7",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  152,
+                     "pc":  "00000288",
+                     "instruction":  "03c1a783",
+                     "reg_write":  true,
+                     "rd":  "x15",
+                     "writeback_value":  "0000028a",
+                     "note":  "seeded lw 7",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  153,
+                     "pc":  "0000028c",
+                     "instruction":  "40300093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "00000403",
+                     "note":  "seeded lhs 8",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  154,
+                     "pc":  "00000290",
+                     "instruction":  "a9d00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffa9d",
+                     "note":  "seeded rhs 8",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  155,
+                     "pc":  "00000294",
+                     "instruction":  "00208533",
+                     "reg_write":  true,
+                     "rd":  "x10",
+                     "writeback_value":  "fffffea0",
+                     "note":  "seeded add 8",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  156,
+                     "pc":  "00000298",
+                     "instruction":  "a5200093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffa52",
+                     "note":  "seeded lhs 9",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  157,
+                     "pc":  "0000029c",
+                     "instruction":  "55700113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "00000557",
+                     "note":  "seeded rhs 9",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  158,
+                     "pc":  "000002a0",
+                     "instruction":  "0020c5b3",
+                     "reg_write":  true,
+                     "rd":  "x11",
+                     "writeback_value":  "ffffff05",
+                     "note":  "seeded xor 9",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  159,
+                     "pc":  "000002a4",
+                     "instruction":  "d4c00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffd4c",
+                     "note":  "seeded lhs 10",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  160,
+                     "pc":  "000002a8",
+                     "instruction":  "eb000113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffeb0",
+                     "note":  "seeded rhs 10",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  161,
+                     "pc":  "000002ac",
+                     "instruction":  "01609613",
+                     "reg_write":  true,
+                     "rd":  "x12",
+                     "writeback_value":  "53000000",
+                     "note":  "seeded slli 10",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  162,
+                     "pc":  "000002b0",
+                     "instruction":  "5bc00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "000005bc",
+                     "note":  "seeded lhs 11",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  163,
+                     "pc":  "000002b4",
+                     "instruction":  "78200113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "00000782",
+                     "note":  "seeded rhs 11",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  164,
+                     "pc":  "000002b8",
+                     "instruction":  "4040d693",
+                     "reg_write":  true,
+                     "rd":  "x13",
+                     "writeback_value":  "0000005b",
+                     "note":  "seeded srai 11",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  165,
+                     "pc":  "000002bc",
+                     "instruction":  "2c700093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "000002c7",
+                     "note":  "seeded lhs 12",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  166,
+                     "pc":  "000002c0",
+                     "instruction":  "dd900113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffdd9",
+                     "note":  "seeded rhs 12",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  167,
+                     "pc":  "000002c4",
+                     "instruction":  "2c700293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "000002c7",
+                     "note":  "seeded beq 12 left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  168,
+                     "pc":  "000002c8",
+                     "instruction":  "2c700313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "000002c7",
+                     "note":  "seeded beq 12 right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  169,
+                     "pc":  "000002cc",
+                     "instruction":  "00628463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded beq 12",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  170,
+                     "pc":  "000002d4",
+                     "instruction":  "0c000993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "000000c0",
+                     "note":  "seeded beq 12 target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  171,
+                     "pc":  "000002d8",
+                     "instruction":  "45f00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "0000045f",
+                     "note":  "seeded lhs 13",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  172,
+                     "pc":  "000002dc",
+                     "instruction":  "76400113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "00000764",
+                     "note":  "seeded rhs 13",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  173,
+                     "pc":  "000002e0",
+                     "instruction":  "45f00293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "0000045f",
+                     "note":  "seeded bne 13 left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  174,
+                     "pc":  "000002e4",
+                     "instruction":  "76400313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "00000764",
+                     "note":  "seeded bne 13 right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  175,
+                     "pc":  "000002e8",
+                     "instruction":  "00629463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded bne 13",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  176,
+                     "pc":  "000002f0",
+                     "instruction":  "0e100993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "000000e1",
+                     "note":  "seeded bne 13 target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  177,
+                     "pc":  "000002f4",
+                     "instruction":  "12000093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "00000120",
+                     "note":  "seeded lhs 14",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  178,
+                     "pc":  "000002f8",
+                     "instruction":  "71000113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "00000710",
+                     "note":  "seeded rhs 14",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  179,
+                     "pc":  "000002fc",
+                     "instruction":  "02208733",
+                     "reg_write":  true,
+                     "rd":  "x14",
+                     "writeback_value":  "0007f200",
+                     "note":  "seeded mul 14",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  180,
+                     "pc":  "00000300",
+                     "instruction":  "83a00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffff83a",
+                     "note":  "seeded lhs 15",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  181,
+                     "pc":  "00000304",
+                     "instruction":  "ef400113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffef4",
+                     "note":  "seeded rhs 15",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  182,
+                     "pc":  "00000308",
+                     "instruction":  "00000193",
+                     "reg_write":  true,
+                     "rd":  "x3",
+                     "writeback_value":  "00000000",
+                     "note":  "seeded memory base 15",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  183,
+                     "pc":  "0000030c",
+                     "instruction":  "0211ae23",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded sw 15",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  184,
+                     "pc":  "00000310",
+                     "instruction":  "03c1a783",
+                     "reg_write":  true,
+                     "rd":  "x15",
+                     "writeback_value":  "fffff83a",
+                     "note":  "seeded lw 15",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  185,
+                     "pc":  "00000314",
+                     "instruction":  "27d00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "0000027d",
+                     "note":  "seeded lhs 16",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  186,
+                     "pc":  "00000318",
+                     "instruction":  "72000113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "00000720",
+                     "note":  "seeded rhs 16",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  187,
+                     "pc":  "0000031c",
+                     "instruction":  "00208533",
+                     "reg_write":  true,
+                     "rd":  "x10",
+                     "writeback_value":  "0000099d",
+                     "note":  "seeded add 16",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  188,
+                     "pc":  "00000320",
+                     "instruction":  "cd000093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffcd0",
+                     "note":  "seeded lhs 17",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  189,
+                     "pc":  "00000324",
+                     "instruction":  "e9700113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffe97",
+                     "note":  "seeded rhs 17",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  190,
+                     "pc":  "00000328",
+                     "instruction":  "0020c5b3",
+                     "reg_write":  true,
+                     "rd":  "x11",
+                     "writeback_value":  "00000247",
+                     "note":  "seeded xor 17",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  191,
+                     "pc":  "0000032c",
+                     "instruction":  "02a00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "0000002a",
+                     "note":  "seeded lhs 18",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  192,
+                     "pc":  "00000330",
+                     "instruction":  "1b300113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "000001b3",
+                     "note":  "seeded rhs 18",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  193,
+                     "pc":  "00000334",
+                     "instruction":  "01c09613",
+                     "reg_write":  true,
+                     "rd":  "x12",
+                     "writeback_value":  "a0000000",
+                     "note":  "seeded slli 18",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  194,
+                     "pc":  "00000338",
+                     "instruction":  "a9100093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffa91",
+                     "note":  "seeded lhs 19",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  195,
+                     "pc":  "0000033c",
+                     "instruction":  "fbf00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "ffffffbf",
+                     "note":  "seeded rhs 19",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  196,
+                     "pc":  "00000340",
+                     "instruction":  "40b0d693",
+                     "reg_write":  true,
+                     "rd":  "x13",
+                     "writeback_value":  "ffffffff",
+                     "note":  "seeded srai 19",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  197,
+                     "pc":  "00000344",
+                     "instruction":  "eb200093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffeb2",
+                     "note":  "seeded lhs 20",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  198,
+                     "pc":  "00000348",
+                     "instruction":  "e8700113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffe87",
+                     "note":  "seeded rhs 20",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  199,
+                     "pc":  "0000034c",
+                     "instruction":  "eb200293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "fffffeb2",
+                     "note":  "seeded beq 20 left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  200,
+                     "pc":  "00000350",
+                     "instruction":  "eb200313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "fffffeb2",
+                     "note":  "seeded beq 20 right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  201,
+                     "pc":  "00000354",
+                     "instruction":  "00628463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded beq 20",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  202,
+                     "pc":  "0000035c",
+                     "instruction":  "0c800993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "000000c8",
+                     "note":  "seeded beq 20 target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  203,
+                     "pc":  "00000360",
+                     "instruction":  "c4b00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffc4b",
+                     "note":  "seeded lhs 21",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  204,
+                     "pc":  "00000364",
+                     "instruction":  "ccc00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffccc",
+                     "note":  "seeded rhs 21",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  205,
+                     "pc":  "00000368",
+                     "instruction":  "c4b00293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "fffffc4b",
+                     "note":  "seeded bne 21 left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  206,
+                     "pc":  "0000036c",
+                     "instruction":  "ccc00313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "fffffccc",
+                     "note":  "seeded bne 21 right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  207,
+                     "pc":  "00000370",
+                     "instruction":  "00629463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded bne 21",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  208,
+                     "pc":  "00000378",
+                     "instruction":  "0e900993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "000000e9",
+                     "note":  "seeded bne 21 target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  209,
+                     "pc":  "0000037c",
+                     "instruction":  "12b00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "0000012b",
+                     "note":  "seeded lhs 22",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  210,
+                     "pc":  "00000380",
+                     "instruction":  "ea000113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffea0",
+                     "note":  "seeded rhs 22",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  211,
+                     "pc":  "00000384",
+                     "instruction":  "02208733",
+                     "reg_write":  true,
+                     "rd":  "x14",
+                     "writeback_value":  "fffe64e0",
+                     "note":  "seeded mul 22",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  212,
+                     "pc":  "00000388",
+                     "instruction":  "ff400093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "fffffff4",
+                     "note":  "seeded lhs 23",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  213,
+                     "pc":  "0000038c",
+                     "instruction":  "c6d00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffc6d",
+                     "note":  "seeded rhs 23",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  214,
+                     "pc":  "00000390",
+                     "instruction":  "00000193",
+                     "reg_write":  true,
+                     "rd":  "x3",
+                     "writeback_value":  "00000000",
+                     "note":  "seeded memory base 23",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  215,
+                     "pc":  "00000394",
+                     "instruction":  "0211ae23",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded sw 23",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  216,
+                     "pc":  "00000398",
+                     "instruction":  "03c1a783",
+                     "reg_write":  true,
+                     "rd":  "x15",
+                     "writeback_value":  "fffffff4",
+                     "note":  "seeded lw 23",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  217,
+                     "pc":  "0000039c",
+                     "instruction":  "49700093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "00000497",
+                     "note":  "seeded lhs 24",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  218,
+                     "pc":  "000003a0",
+                     "instruction":  "cff00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffcff",
+                     "note":  "seeded rhs 24",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  219,
+                     "pc":  "000003a4",
+                     "instruction":  "00208533",
+                     "reg_write":  true,
+                     "rd":  "x10",
+                     "writeback_value":  "00000196",
+                     "note":  "seeded add 24",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  220,
+                     "pc":  "000003a8",
+                     "instruction":  "65700093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "00000657",
+                     "note":  "seeded lhs 25",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  221,
+                     "pc":  "000003ac",
+                     "instruction":  "6a800113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "000006a8",
+                     "note":  "seeded rhs 25",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  222,
+                     "pc":  "000003b0",
+                     "instruction":  "0020c5b3",
+                     "reg_write":  true,
+                     "rd":  "x11",
+                     "writeback_value":  "000000ff",
+                     "note":  "seeded xor 25",
+                     "coverage":  [
+                                      "ALU register"
+                                  ]
+                 },
+                 {
+                     "index":  223,
+                     "pc":  "000003b4",
+                     "instruction":  "05e00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "0000005e",
+                     "note":  "seeded lhs 26",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  224,
+                     "pc":  "000003b8",
+                     "instruction":  "4d700113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "000004d7",
+                     "note":  "seeded rhs 26",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  225,
+                     "pc":  "000003bc",
+                     "instruction":  "00909613",
+                     "reg_write":  true,
+                     "rd":  "x12",
+                     "writeback_value":  "0000bc00",
+                     "note":  "seeded slli 26",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  226,
+                     "pc":  "000003c0",
+                     "instruction":  "f2300093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "ffffff23",
+                     "note":  "seeded lhs 27",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  227,
+                     "pc":  "000003c4",
+                     "instruction":  "fa400113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "ffffffa4",
+                     "note":  "seeded rhs 27",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  228,
+                     "pc":  "000003c8",
+                     "instruction":  "40e0d693",
+                     "reg_write":  true,
+                     "rd":  "x13",
+                     "writeback_value":  "ffffffff",
+                     "note":  "seeded srai 27",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  229,
+                     "pc":  "000003cc",
+                     "instruction":  "00200093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "00000002",
+                     "note":  "seeded lhs 28",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  230,
+                     "pc":  "000003d0",
+                     "instruction":  "27400113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "00000274",
+                     "note":  "seeded rhs 28",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  231,
+                     "pc":  "000003d4",
+                     "instruction":  "00200293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "00000002",
+                     "note":  "seeded beq 28 left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  232,
+                     "pc":  "000003d8",
+                     "instruction":  "00200313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "00000002",
+                     "note":  "seeded beq 28 right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  233,
+                     "pc":  "000003dc",
+                     "instruction":  "00628463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded beq 28",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  234,
+                     "pc":  "000003e4",
+                     "instruction":  "0d000993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "000000d0",
+                     "note":  "seeded beq 28 target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  235,
+                     "pc":  "000003e8",
+                     "instruction":  "4e900093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "000004e9",
+                     "note":  "seeded lhs 29",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  236,
+                     "pc":  "000003ec",
+                     "instruction":  "d4f00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffffd4f",
+                     "note":  "seeded rhs 29",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  237,
+                     "pc":  "000003f0",
+                     "instruction":  "4e900293",
+                     "reg_write":  true,
+                     "rd":  "x5",
+                     "writeback_value":  "000004e9",
+                     "note":  "seeded bne 29 left",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  238,
+                     "pc":  "000003f4",
+                     "instruction":  "d4f00313",
+                     "reg_write":  true,
+                     "rd":  "x6",
+                     "writeback_value":  "fffffd4f",
+                     "note":  "seeded bne 29 right",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  239,
+                     "pc":  "000003f8",
+                     "instruction":  "00629463",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded bne 29",
+                     "coverage":  [
+                                      "control flow",
+                                      "branch"
+                                  ]
+                 },
+                 {
+                     "index":  240,
+                     "pc":  "00000400",
+                     "instruction":  "0f100993",
+                     "reg_write":  true,
+                     "rd":  "x19",
+                     "writeback_value":  "000000f1",
+                     "note":  "seeded bne 29 target",
+                     "coverage":  [
+                                      "control flow",
+                                      "wrong-path suppression"
+                                  ]
+                 },
+                 {
+                     "index":  241,
+                     "pc":  "00000404",
+                     "instruction":  "38e00093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "0000038e",
+                     "note":  "seeded lhs 30",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  242,
+                     "pc":  "00000408",
+                     "instruction":  "93b00113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "fffff93b",
+                     "note":  "seeded rhs 30",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  243,
+                     "pc":  "0000040c",
+                     "instruction":  "02208733",
+                     "reg_write":  true,
+                     "rd":  "x14",
+                     "writeback_value":  "ffe7efba",
+                     "note":  "seeded mul 30",
+                     "coverage":  [
+                                      "RV32M"
+                                  ]
+                 },
+                 {
+                     "index":  244,
+                     "pc":  "00000410",
+                     "instruction":  "18900093",
+                     "reg_write":  true,
+                     "rd":  "x1",
+                     "writeback_value":  "00000189",
+                     "note":  "seeded lhs 31",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  245,
+                     "pc":  "00000414",
+                     "instruction":  "36900113",
+                     "reg_write":  true,
+                     "rd":  "x2",
+                     "writeback_value":  "00000369",
+                     "note":  "seeded rhs 31",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  246,
+                     "pc":  "00000418",
+                     "instruction":  "00000193",
+                     "reg_write":  true,
+                     "rd":  "x3",
+                     "writeback_value":  "00000000",
+                     "note":  "seeded memory base 31",
+                     "coverage":  [
+                                      "ALU immediate"
+                                  ]
+                 },
+                 {
+                     "index":  247,
+                     "pc":  "0000041c",
+                     "instruction":  "0211ae23",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "seeded sw 31",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  248,
+                     "pc":  "00000420",
+                     "instruction":  "03c1a783",
+                     "reg_write":  true,
+                     "rd":  "x15",
+                     "writeback_value":  "00000189",
+                     "note":  "seeded lw 31",
+                     "coverage":  [
+                                      "memory",
+                                      "load/store"
+                                  ]
+                 },
+                 {
+                     "index":  249,
+                     "pc":  "00000424",
+                     "instruction":  "00000013",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "tail nop 0",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  250,
+                     "pc":  "00000428",
+                     "instruction":  "00000013",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "tail nop 1",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 },
+                 {
+                     "index":  251,
+                     "pc":  "0000042c",
+                     "instruction":  "00000013",
+                     "reg_write":  false,
+                     "rd":  null,
+                     "writeback_value":  null,
+                     "note":  "tail nop 2",
+                     "coverage":  [
+                                      "control flow"
+                                  ]
+                 }
+             ],
+    "wrong_path_rows":  [
+                            {
+                                "pc":  "00000078",
+                                "instruction":  "02800913",
+                                "note":  "beq taken wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "000000a0",
+                                "instruction":  "02a00913",
+                                "note":  "bne taken wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "000000c8",
+                                "instruction":  "02c00913",
+                                "note":  "blt signed taken wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "000000f0",
+                                "instruction":  "02e00913",
+                                "note":  "bltu unsigned taken wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "00000104",
+                                "instruction":  "02f00913",
+                                "note":  "bgeu unsigned taken wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "0000012c",
+                                "instruction":  "03100913",
+                                "note":  "bge signed taken wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "00000160",
+                                "instruction":  "30900a13",
+                                "note":  "jal wrong-path register write",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "00000170",
+                                "instruction":  "30b00b13",
+                                "note":  "jalr wrong-path register write",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "00000248",
+                                "instruction":  "05400913",
+                                "note":  "seeded beq 4 wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "00000264",
+                                "instruction":  "07500913",
+                                "note":  "seeded bne 5 wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "000002d0",
+                                "instruction":  "05c00913",
+                                "note":  "seeded beq 12 wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "000002ec",
+                                "instruction":  "07d00913",
+                                "note":  "seeded bne 13 wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "00000358",
+                                "instruction":  "06400913",
+                                "note":  "seeded beq 20 wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "00000374",
+                                "instruction":  "08500913",
+                                "note":  "seeded bne 21 wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "000003e0",
+                                "instruction":  "06c00913",
+                                "note":  "seeded beq 28 wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            },
+                            {
+                                "pc":  "000003fc",
+                                "instruction":  "08d00913",
+                                "note":  "seeded bne 29 wrong-path fallthrough",
+                                "coverage":  [
+                                                 "wrong-path suppression"
+                                             ]
+                            }
+                        ]
+}

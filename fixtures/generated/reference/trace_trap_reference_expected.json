@@ -1,0 +1,133 @@
+{
+    "schema_version":  1,
+    "name":  "trace_trap_reference",
+    "trace_contract":  {
+                           "observable_fields":  [
+                                                     "trace_valid",
+                                                     "trace_pc",
+                                                     "trace_instruction",
+                                                     "trace_rd",
+                                                     "trace_reg_write",
+                                                     "trace_writeback_value"
+                                                 ],
+                           "retired_only":  true,
+                           "trap_event_fields_present":  false,
+                           "faulting_ecall_trace_row":  "not emitted by current RTL",
+                           "wrong_path_rule":  "fall-through instructions flushed by trap entry or mret redirect must not appear as retired trace rows",
+                           "limitation":  "This checks observable retired trace order only; CSR cause/PC side effects are checked by separate trap regressions."
+                       },
+    "expected_trace_rows":  [
+                                {
+                                    "order":  0,
+                                    "pc":  "0x00000000",
+                                    "instruction_word":  "0x02000293",
+                                    "mnemonic":  "addi x5, x0, 32",
+                                    "kind":  "normal",
+                                    "rd":  5,
+                                    "reg_write":  true,
+                                    "writeback_value":  "0x00000020",
+                                    "note":  "Prepare mtvec with the trap-handler PC."
+                                },
+                                {
+                                    "order":  1,
+                                    "pc":  "0x00000004",
+                                    "instruction_word":  "0x30529073",
+                                    "mnemonic":  "csrrw x0, mtvec, x5",
+                                    "kind":  "normal",
+                                    "rd":  0,
+                                    "reg_write":  false,
+                                    "writeback_value":  null,
+                                    "note":  "Retired CSR setup row; rd=x0 is observable as no register write."
+                                },
+                                {
+                                    "order":  2,
+                                    "pc":  "0x00000008",
+                                    "instruction_word":  "0x00700313",
+                                    "mnemonic":  "addi x6, x0, 7",
+                                    "kind":  "normal",
+                                    "rd":  6,
+                                    "reg_write":  true,
+                                    "writeback_value":  "0x00000007",
+                                    "note":  "Normal retirement before the trap-causing ecall."
+                                },
+                                {
+                                    "order":  3,
+                                    "pc":  "0x00000020",
+                                    "instruction_word":  "0x04d00393",
+                                    "mnemonic":  "addi x7, x0, 77",
+                                    "kind":  "trap_handler",
+                                    "rd":  7,
+                                    "reg_write":  true,
+                                    "writeback_value":  "0x0000004d",
+                                    "note":  "First retired trap-handler instruction after ecall redirects to mtvec."
+                                },
+                                {
+                                    "order":  4,
+                                    "pc":  "0x00000024",
+                                    "instruction_word":  "0x03800e13",
+                                    "mnemonic":  "addi x28, x0, 56",
+                                    "kind":  "trap_handler",
+                                    "rd":  28,
+                                    "reg_write":  true,
+                                    "writeback_value":  "0x00000038",
+                                    "note":  "Prepare the explicit mret return target."
+                                },
+                                {
+                                    "order":  5,
+                                    "pc":  "0x00000028",
+                                    "instruction_word":  "0x341e1073",
+                                    "mnemonic":  "csrrw x0, mepc, x28",
+                                    "kind":  "trap_handler",
+                                    "rd":  0,
+                                    "reg_write":  false,
+                                    "writeback_value":  null,
+                                    "note":  "Handler writes mepc for the directed return path; old value is not written because rd=x0."
+                                },
+                                {
+                                    "order":  6,
+                                    "pc":  "0x0000002c",
+                                    "instruction_word":  "0x30200073",
+                                    "mnemonic":  "mret",
+                                    "kind":  "mret",
+                                    "rd":  0,
+                                    "reg_write":  false,
+                                    "writeback_value":  null,
+                                    "note":  "mret retires as a non-writeback SYSTEM row and redirects to mepc."
+                                },
+                                {
+                                    "order":  7,
+                                    "pc":  "0x00000038",
+                                    "instruction_word":  "0x7ad00f13",
+                                    "mnemonic":  "addi x30, x0, 0x7ad",
+                                    "kind":  "return_path",
+                                    "rd":  30,
+                                    "reg_write":  true,
+                                    "writeback_value":  "0x000007ad",
+                                    "note":  "Final architectural completion marker on the mret target path."
+                                }
+                            ],
+    "wrong_path_pcs":  [
+                           {
+                               "pc":  "0x00000010",
+                               "note":  "Fall-through instruction after ecall trap entry must not retire."
+                           },
+                           {
+                               "pc":  "0x00000014",
+                               "note":  "Younger trap fall-through instruction must not retire."
+                           },
+                           {
+                               "pc":  "0x00000030",
+                               "note":  "Fall-through instruction after mret redirect must not retire."
+                           },
+                           {
+                               "pc":  "0x00000034",
+                               "note":  "Younger mret fall-through instruction must not retire."
+                           }
+                       ],
+    "completion_marker":  {
+                              "pc":  "0x00000038",
+                              "register":  "x30",
+                              "value":  "0x000007ad"
+                          },
+    "program_words":  15
+}

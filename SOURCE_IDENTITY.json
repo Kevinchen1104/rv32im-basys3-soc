@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "identity_mode": "content_fingerprint",
+  "release_identity": {
+    "source_fingerprint": "ac14c293a9e0cae8d27876321955f2cf950f93c333a602184f522fdb0833c724",
+    "verification_input_fingerprint": "74864f9e590c5ff6b7ee22adfe1728aacd18352c1244d960f7039f678621d683",
+    "verification_input_count": 437,
+    "documentation_input_fingerprint": "456bb369212330da62b4947df703176d1e879b4aab3a78da2a169600331c5b29",
+    "documentation_input_count": 374,
+    "bitstream_sha256": "d0243a04f7e79565ffa7ef8615e35088847311484fdea0c6ea271eb811564a70",
+    "physical_evidence_summary_sha256": "357aa598d58a025e7f6c1efdd4241d4e40e96f861e8a149d787fa84f1ba47b51"
+  },
+  "identity_projection": {
+    "files": {
+      ".github/workflows/release-consistency.yml": {
+        "recorded_sha256": "5902e4a2d490aa1dfe305a4e993cfc4be72eea0be6b6518f58487c6fd332bd09",
+        "published_sha256": "edc13b9c3e4de07de070265d17abbe45cf3f20a20e9b6769137e4e257e8b4adf"
+      },
+      "scripts/final-audit.ps1": {
+        "recorded_sha256": "9350aeb93a4cb72153b7cbfd0b2d65dfa01a493c5a89c5bb00ce98840b2c2f15",
+        "published_sha256": "9d95cf853a10c121b61e8191ebfe24ce0044315f7f5bed7ff4bac4b7ea7f86e9"
+      },
+      "scripts/verification-source-identity.ps1": {
+        "recorded_sha256": "27062a8cef2d2f73ef194d58dcfe14cddcfff552ca157fdb205c2c75a6e42ef8",
+        "published_sha256": "59e56e8e6e945243a390039f1fc53d1ee55967df2a4b09f4a3eddf685b8359e7"
+      }
+    }
+  },
+  "artifact_manifests": {
+    "release/final/artifacts.json": "8e1fa21b85a61d4194f04ff146d2a2f7239b741ea3e1273494382e91d1d4b5cd",
+    "release/fpga/basys3/artifacts.json": "60f30f161a3d9686ad6eaff867dfe6c420664cca57e67faf3b8c7662cd79a5e8",
+    "release/fpga/generic_uart_boot_runtime/artifacts.json": "bfc264b1088398612ce9e54555403cd55de2855daafa17fca5f384ee43e8078e"
+  }
+}

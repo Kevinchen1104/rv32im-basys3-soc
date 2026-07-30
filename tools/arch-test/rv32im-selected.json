@@ -1,0 +1,387 @@
+{
+  "name": "rv32im-selected",
+  "description": "Selected official RISC-V architectural tests for the locally implemented RV32I/RV32M surface. This is an integration profile, not an official compliance claim.",
+  "upstream": {
+    "repo": "https://github.com/riscv-non-isa/riscv-arch-test.git",
+    "checkout": "external/riscv-arch-test"
+  },
+  "target": {
+    "xlen": 32,
+    "march": "rv32im_zicsr",
+    "mabi": "ilp32",
+    "memory_words": 131072
+  },
+  "status_values": [
+    "passed_official_reference",
+    "passed_local_reference",
+    "failed_signature",
+    "failed",
+    "unsupported",
+    "blocked_no_tool",
+    "blocked_no_reference",
+    "build_failed",
+    "timeout"
+  ],
+  "tests": [
+    {
+      "id": "rv32i-I-add-01",
+      "category": "rv32i_alu",
+      "suite": "rv32i_m/I",
+      "mnemonic": "add",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/add-01.S",
+        "riscv-test-suite/rv32i_m/I/src/add.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-sub-01",
+      "category": "rv32i_alu",
+      "suite": "rv32i_m/I",
+      "mnemonic": "sub",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/sub-01.S",
+        "riscv-test-suite/rv32i_m/I/src/sub.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-and-01",
+      "category": "rv32i_alu",
+      "suite": "rv32i_m/I",
+      "mnemonic": "and",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/and-01.S",
+        "riscv-test-suite/rv32i_m/I/src/and.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-or-01",
+      "category": "rv32i_alu",
+      "suite": "rv32i_m/I",
+      "mnemonic": "or",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/or-01.S",
+        "riscv-test-suite/rv32i_m/I/src/or.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-xor-01",
+      "category": "rv32i_alu",
+      "suite": "rv32i_m/I",
+      "mnemonic": "xor",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/xor-01.S",
+        "riscv-test-suite/rv32i_m/I/src/xor.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-slt-01",
+      "category": "rv32i_alu",
+      "suite": "rv32i_m/I",
+      "mnemonic": "slt",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/slt-01.S",
+        "riscv-test-suite/rv32i_m/I/src/slt.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-sltu-01",
+      "category": "rv32i_alu",
+      "suite": "rv32i_m/I",
+      "mnemonic": "sltu",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/sltu-01.S",
+        "riscv-test-suite/rv32i_m/I/src/sltu.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-sll-01",
+      "category": "rv32i_alu",
+      "suite": "rv32i_m/I",
+      "mnemonic": "sll",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/sll-01.S",
+        "riscv-test-suite/rv32i_m/I/src/sll.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-srl-01",
+      "category": "rv32i_alu",
+      "suite": "rv32i_m/I",
+      "mnemonic": "srl",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/srl-01.S",
+        "riscv-test-suite/rv32i_m/I/src/srl.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-sra-01",
+      "category": "rv32i_alu",
+      "suite": "rv32i_m/I",
+      "mnemonic": "sra",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/sra-01.S",
+        "riscv-test-suite/rv32i_m/I/src/sra.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-addi-01",
+      "category": "rv32i_alu_immediate",
+      "suite": "rv32i_m/I",
+      "mnemonic": "addi",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/addi-01.S",
+        "riscv-test-suite/rv32i_m/I/src/addi.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-andi-01",
+      "category": "rv32i_alu_immediate",
+      "suite": "rv32i_m/I",
+      "mnemonic": "andi",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/andi-01.S",
+        "riscv-test-suite/rv32i_m/I/src/andi.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-beq-01",
+      "category": "rv32i_control",
+      "suite": "rv32i_m/I",
+      "mnemonic": "beq",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/beq-01.S",
+        "riscv-test-suite/rv32i_m/I/src/beq.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-bne-01",
+      "category": "rv32i_control",
+      "suite": "rv32i_m/I",
+      "mnemonic": "bne",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/bne-01.S",
+        "riscv-test-suite/rv32i_m/I/src/bne.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-blt-01",
+      "category": "rv32i_control",
+      "suite": "rv32i_m/I",
+      "mnemonic": "blt",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/blt-01.S",
+        "riscv-test-suite/rv32i_m/I/src/blt.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-bge-01",
+      "category": "rv32i_control",
+      "suite": "rv32i_m/I",
+      "mnemonic": "bge",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/bge-01.S",
+        "riscv-test-suite/rv32i_m/I/src/bge.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-bltu-01",
+      "category": "rv32i_control",
+      "suite": "rv32i_m/I",
+      "mnemonic": "bltu",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/bltu-01.S",
+        "riscv-test-suite/rv32i_m/I/src/bltu.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-bgeu-01",
+      "category": "rv32i_control",
+      "suite": "rv32i_m/I",
+      "mnemonic": "bgeu",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/bgeu-01.S",
+        "riscv-test-suite/rv32i_m/I/src/bgeu.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-jal-01",
+      "category": "rv32i_control",
+      "suite": "rv32i_m/I",
+      "mnemonic": "jal",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/jal-01.S",
+        "riscv-test-suite/rv32i_m/I/src/jal.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-jalr-01",
+      "category": "rv32i_control",
+      "suite": "rv32i_m/I",
+      "mnemonic": "jalr",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/jalr-01.S",
+        "riscv-test-suite/rv32i_m/I/src/jalr.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-lb-align-01",
+      "category": "rv32i_memory",
+      "suite": "rv32i_m/I",
+      "mnemonic": "lb",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/lb-align-01.S",
+        "riscv-test-suite/rv32i_m/I/src/lb-01.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-lbu-align-01",
+      "category": "rv32i_memory",
+      "suite": "rv32i_m/I",
+      "mnemonic": "lbu",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/lbu-align-01.S",
+        "riscv-test-suite/rv32i_m/I/src/lbu-01.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-lh-align-01",
+      "category": "rv32i_memory",
+      "suite": "rv32i_m/I",
+      "mnemonic": "lh",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/lh-align-01.S",
+        "riscv-test-suite/rv32i_m/I/src/lh-01.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-lhu-align-01",
+      "category": "rv32i_memory",
+      "suite": "rv32i_m/I",
+      "mnemonic": "lhu",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/lhu-align-01.S",
+        "riscv-test-suite/rv32i_m/I/src/lhu-01.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-lw-align-01",
+      "category": "rv32i_memory",
+      "suite": "rv32i_m/I",
+      "mnemonic": "lw",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/lw-align-01.S",
+        "riscv-test-suite/rv32i_m/I/src/lw-01.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-sb-align-01",
+      "category": "rv32i_memory",
+      "suite": "rv32i_m/I",
+      "mnemonic": "sb",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/sb-align-01.S",
+        "riscv-test-suite/rv32i_m/I/src/sb-01.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-sh-align-01",
+      "category": "rv32i_memory",
+      "suite": "rv32i_m/I",
+      "mnemonic": "sh",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/sh-align-01.S",
+        "riscv-test-suite/rv32i_m/I/src/sh-01.S"
+      ]
+    },
+    {
+      "id": "rv32i-I-sw-align-01",
+      "category": "rv32i_memory",
+      "suite": "rv32i_m/I",
+      "mnemonic": "sw",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/I/src/sw-align-01.S",
+        "riscv-test-suite/rv32i_m/I/src/sw-01.S"
+      ]
+    },
+    {
+      "id": "rv32m-M-mul-01",
+      "category": "rv32m",
+      "suite": "rv32i_m/M",
+      "mnemonic": "mul",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/M/src/mul-01.S",
+        "riscv-test-suite/rv32i_m/M/src/mul.S"
+      ]
+    },
+    {
+      "id": "rv32m-M-mulh-01",
+      "category": "rv32m",
+      "suite": "rv32i_m/M",
+      "mnemonic": "mulh",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/M/src/mulh-01.S",
+        "riscv-test-suite/rv32i_m/M/src/mulh.S"
+      ]
+    },
+    {
+      "id": "rv32m-M-mulhsu-01",
+      "category": "rv32m",
+      "suite": "rv32i_m/M",
+      "mnemonic": "mulhsu",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/M/src/mulhsu-01.S",
+        "riscv-test-suite/rv32i_m/M/src/mulhsu.S"
+      ]
+    },
+    {
+      "id": "rv32m-M-mulhu-01",
+      "category": "rv32m",
+      "suite": "rv32i_m/M",
+      "mnemonic": "mulhu",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/M/src/mulhu-01.S",
+        "riscv-test-suite/rv32i_m/M/src/mulhu.S"
+      ]
+    },
+    {
+      "id": "rv32m-M-div-01",
+      "category": "rv32m",
+      "suite": "rv32i_m/M",
+      "mnemonic": "div",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/M/src/div-01.S",
+        "riscv-test-suite/rv32i_m/M/src/div.S"
+      ]
+    },
+    {
+      "id": "rv32m-M-divu-01",
+      "category": "rv32m",
+      "suite": "rv32i_m/M",
+      "mnemonic": "divu",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/M/src/divu-01.S",
+        "riscv-test-suite/rv32i_m/M/src/divu.S"
+      ]
+    },
+    {
+      "id": "rv32m-M-rem-01",
+      "category": "rv32m",
+      "suite": "rv32i_m/M",
+      "mnemonic": "rem",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/M/src/rem-01.S",
+        "riscv-test-suite/rv32i_m/M/src/rem.S"
+      ]
+    },
+    {
+      "id": "rv32m-M-remu-01",
+      "category": "rv32m",
+      "suite": "rv32i_m/M",
+      "mnemonic": "remu",
+      "path_globs": [
+        "riscv-test-suite/rv32i_m/M/src/remu-01.S",
+        "riscv-test-suite/rv32i_m/M/src/remu.S"
+      ]
+    }
+  ]
+}

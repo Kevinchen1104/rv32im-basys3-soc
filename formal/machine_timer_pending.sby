@@ -1,0 +1,15 @@
+[options]
+mode bmc
+depth 6
+
+[engines]
+smtbmc
+
+[script]
+read -formal -sv machine_timer.v
+read -formal -sv machine_timer_pending.sv
+prep -top machine_timer_pending_formal
+
+[files]
+rtl/peripherals/timer/machine_timer.v
+formal/machine_timer_pending.sv

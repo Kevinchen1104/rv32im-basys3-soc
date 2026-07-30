@@ -1,0 +1,19 @@
+{
+    "generated_at_utc":  "2026-07-30T05:46:13.6646556Z",
+    "status":  "available",
+    "require":  false,
+    "tool":  {
+                 "name":  "Vivado",
+                 "command":  "vivado",
+                 "path":  "<vivado>",
+                 "version":  "vivado v2026.1 (64-bit)\nTool Version Limit: 2026.06\nSW Build 6511674 on Tue Jun 16 11:02:23 MDT 2026\nIP Build 6504888 on Tue Jun 09 09:05:25 MDT 2026\nSharedData Build 6501428 on Mon Jun 08 17:34:18 MDT 2026\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\nCopyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved."
+             },
+    "basys3_target":  {
+                          "status":  "available",
+                          "part":  "xc7a35tcpg236-1",
+                          "top":  "RISCVCPU_basys3_top",
+                          "physical_validation_status":  "not_run",
+                          "timing_closure_status":  "not_run"
+                      },
+    "claim_boundary":  "Vivado may be unavailable; status reports blocked_no_vivado. Detection is not synthesis, implementation, timing closure, bitstream generation, or board validation."
+}

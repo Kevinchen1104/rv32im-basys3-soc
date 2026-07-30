@@ -1,0 +1,15 @@
+[options]
+mode bmc
+depth 8
+
+[engines]
+smtbmc
+
+[script]
+read -formal -sv performance_counter_unit.v
+read -formal -sv registered_branch_miss_event.sv
+prep -top registered_branch_miss_event_formal
+
+[files]
+rtl/soc/perf/performance_counter_unit.v
+formal/registered_branch_miss_event.sv

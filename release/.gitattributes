@@ -1,0 +1,5 @@
+**/*.md -text whitespace=cr-at-eol
+**/*.json -text whitespace=cr-at-eol
+**/*.f -text whitespace=cr-at-eol
+**/*.rpt -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+**/*.txt -text whitespace=cr-at-eol

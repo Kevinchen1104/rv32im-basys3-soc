@@ -1,0 +1,57 @@
+{
+  "Schema": "riscv-cpu-performance-counter-thresholds-v1",
+  "Status": "example-only",
+  "ClaimBoundary": "Review thresholds for simulation counter snapshots only; not a benchmark, CPI, FPGA frequency, or performance claim.",
+  "Rules": [
+    {
+      "Scenario": "perf_counters",
+      "ReviewMode": "strict",
+      "Reason": "Directed smoke window should stay stable unless the testbench or counter implementation changes.",
+      "Metrics": {
+        "Cycles": {
+          "MaxAbsDelta": 0
+        },
+        "Retired": {
+          "MaxAbsDelta": 0
+        },
+        "BranchMisses": {
+          "MaxAbsDelta": 0
+        },
+        "ICacheMisses": {
+          "MaxAbsDelta": 0
+        },
+        "DCacheMisses": {
+          "MaxAbsDelta": 0
+        },
+        "StallCycles": {
+          "MaxAbsDelta": 0
+        }
+      }
+    },
+    {
+      "Scenario": "program_counter_loop",
+      "ReviewMode": "review",
+      "Reason": "Tiny assembled workload may move after intentional pipeline or cache changes, but deltas should be explained.",
+      "Metrics": {
+        "Cycles": {
+          "MaxAbsDelta": 25
+        },
+        "Retired": {
+          "MaxAbsDelta": 0
+        },
+        "BranchMisses": {
+          "MaxAbsDelta": 2
+        },
+        "ICacheMisses": {
+          "MaxAbsDelta": 2
+        },
+        "DCacheMisses": {
+          "MaxAbsDelta": 1
+        },
+        "StallCycles": {
+          "MaxAbsDelta": 25
+        }
+      }
+    }
+  ]
+}

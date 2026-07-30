@@ -1,0 +1,15 @@
+[options]
+mode bmc
+depth 6
+
+[engines]
+smtbmc
+
+[script]
+read -formal -sv branch_predictor.v
+read -formal -sv branch_predictor_payload_capture.sv
+prep -top branch_predictor_payload_capture_formal
+
+[files]
+rtl/core/frontend/branch_predictor.v
+formal/branch_predictor_payload_capture.sv

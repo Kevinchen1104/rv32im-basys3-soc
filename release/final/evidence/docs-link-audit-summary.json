@@ -1,0 +1,15 @@
+{
+    "generated_at_utc":  "2026-07-30T07:30:58.9711100Z",
+    "status":  "pass",
+    "scanned_markdown_files":  25,
+    "checked_local_references":  78,
+    "missing_local_references":  [
+
+                                 ],
+    "boundary":  "Docs link audit checks local Markdown links and repo-root inline code references. It skips URLs, anchors, placeholders, wildcards, and release/final docs snapshots.",
+    "documentation_repository_head":  "7cd71138fd790d25751c0d4b720f18dcfc0eeba1",
+    "documentation_input_fingerprint":  "456bb369212330da62b4947df703176d1e879b4aab3a78da2a169600331c5b29",
+    "documentation_input_count":  374,
+    "documentation_source_working_tree_dirty":  false,
+    "documentation_input_scope":  "README, public docs/board metadata, audited source headers, workflows, and generated release text/metadata; generated audit copies and final artifact manifest excluded"
+}

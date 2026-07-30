@@ -1,0 +1,112 @@
+[
+    {
+        "path":  "COMMANDS.md",
+        "bytes":  783,
+        "sha256":  "fa5d1d977b1e1e8c77e7723ee102b67dea8dedb8c11cc5ea469dfdc1bfc05bfe"
+    },
+    {
+        "path":  "evidence/physical/hardware-validation-transcript.txt",
+        "bytes":  82,
+        "sha256":  "e79c0a5cf34d98c178a4f4fe0a6f0cd65472daf786f0d523c2e97338725e6282"
+    },
+    {
+        "path":  "evidence/physical/interactive-transcript.txt",
+        "bytes":  74,
+        "sha256":  "3640188d8d3f56b1a613d7cb900d04798814d4654f50f48d738a66f11ef33736"
+    },
+    {
+        "path":  "evidence/physical/README.md",
+        "bytes":  3349,
+        "sha256":  "7b80766dbdc9581d5666d725c5798567b357f5fbb60b924b8ba2d708cad17bc4"
+    },
+    {
+        "path":  "evidence/physical/showcase-transcript.txt",
+        "bytes":  64,
+        "sha256":  "983a592b146062541104b69e82c2abe463b498d70c659545141f05fa8d73ef9a"
+    },
+    {
+        "path":  "evidence/physical/summary.json",
+        "bytes":  7526,
+        "sha256":  "357aa598d58a025e7f6c1efdd4241d4e40e96f861e8a149d787fa84f1ba47b51"
+    },
+    {
+        "path":  "evidence/physical/xsdb-programming-summary.json",
+        "bytes":  1343,
+        "sha256":  "4879c87ef527995800f0dcf7a221429ca338e8ae44abb9236c66e05e7523cead"
+    },
+    {
+        "path":  "evidence/reports/post_route_clocks.rpt",
+        "bytes":  181,
+        "sha256":  "709355648a23de1b1f8bd77264a767891512bae45281fedc650dde7213589319"
+    },
+    {
+        "path":  "evidence/reports/post_route_critical_paths.rpt",
+        "bytes":  92959,
+        "sha256":  "b110a5549cdb4bbd120515c1eaa50453e74ee4e8cbae94174d103eecad7f05a3"
+    },
+    {
+        "path":  "evidence/reports/post_route_drc.rpt",
+        "bytes":  1365,
+        "sha256":  "18d94362ccb6c891321f237bd2f3d0d919b37776dd32f84fd3effb50800bf1d6"
+    },
+    {
+        "path":  "evidence/reports/post_route_timing_exceptions.rpt",
+        "bytes":  1685,
+        "sha256":  "49a7410706e91fbbae34c49ee8f08a33ce42fd2b53abf3a6a9069b05234bb629"
+    },
+    {
+        "path":  "evidence/reports/post_route_timing_summary.rpt",
+        "bytes":  23811,
+        "sha256":  "dbd5d3ff053a33208fac192f1c619011a8593a9f02267669156ce7c032378c54"
+    },
+    {
+        "path":  "evidence/reports/post_route_utilization.rpt",
+        "bytes":  11472,
+        "sha256":  "8e4d1841c65f10e22a430d1bf46610d79db315810651944f29049a6ddd352116"
+    },
+    {
+        "path":  "evidence/reports/post_synth_clocks.rpt",
+        "bytes":  181,
+        "sha256":  "709355648a23de1b1f8bd77264a767891512bae45281fedc650dde7213589319"
+    },
+    {
+        "path":  "evidence/reports/post_synth_critical_paths.rpt",
+        "bytes":  92076,
+        "sha256":  "fee5603a52604683c024d46d03691708059b56bd788b2d986db26c3bdec48391"
+    },
+    {
+        "path":  "evidence/reports/post_synth_drc.rpt",
+        "bytes":  1364,
+        "sha256":  "3b0d05c51c603d637117b248d907871276fc65f2ccc56b2ec6c58ade17577c45"
+    },
+    {
+        "path":  "evidence/reports/post_synth_timing_summary.rpt",
+        "bytes":  25064,
+        "sha256":  "8fb1c6a557bce7ff16b866d25a9352902c181daa6fa744d49bd0fdafcc8345c8"
+    },
+    {
+        "path":  "evidence/reports/post_synth_utilization.rpt",
+        "bytes":  9288,
+        "sha256":  "4ff49a4fc2c81a731350d0ba60aa439d03dfe5c330938bb45387bd1dc62c46c4"
+    },
+    {
+        "path":  "evidence/vivado-basys3-build-summary.json",
+        "bytes":  26720,
+        "sha256":  "46fe7d80c0aea318bc9e55f8bbedeaf7eaea2c6a27f9fcb07b3df8ef4cb9e3d7"
+    },
+    {
+        "path":  "evidence/vivado-basys3-robustness-summary.json",
+        "bytes":  22638,
+        "sha256":  "448f7555d5e12475e9ec8973ca5f683e4e310e354af5d35fb14f0c56174a7bcd"
+    },
+    {
+        "path":  "fpga_sources.f",
+        "bytes":  1491,
+        "sha256":  "c86bc176c33364a534346e20a800b10307dddaaf5d3a18dd0f4b1364fc163619"
+    },
+    {
+        "path":  "status.json",
+        "bytes":  3295,
+        "sha256":  "633ae83fa8869cf0afd3f77586e7c04b52c52bf9a75eabcb448adc6930baafce"
+    }
+]

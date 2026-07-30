@@ -1,0 +1,2578 @@
+{
+    "schema_version":  2,
+    "tests":  [
+                  {
+                      "name":  "main",
+                      "source":  "tb/unit/core/tb_main.v",
+                      "category":  "smoke",
+                      "tags":  [
+                                   "smoke",
+                                   "alu",
+                                   "memory",
+                                   "control_flow",
+                                   "cache",
+                                   "ras"
+                               ],
+                      "contract":  "Covers the baseline five-stage CPU smoke path: ALU, load/store, branches, jumps, cache stalls, and RAS call/return behavior.",
+                      "boundary":  "Broad directed smoke only; not a complete ISA, timing, or formal proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "alu",
+                      "source":  "tb/unit/core/tb_alu.v",
+                      "category":  "alu",
+                      "tags":  [
+                                   "alu"
+                               ],
+                      "contract":  "Checks explicit arithmetic/non-arithmetic result classification and final selection directly and through architectural dependencies: ADD/SUB/ADDI/AUIPC, every supported load/store width, positive/negative offsets and wraparound, logic/shift/compare/immediate/LUI/CSR, all RV32M funct3 values, unsupported decode, forwarded operands, alignment-low/full-address equivalence, and EX-to-memory address consistency.",
+                      "boundary":  "Directed combinational and CPU-level execute slice only; a separate depth-1 symbolic harness checks arbitrary classification/result equivalence. Neither proves physical single-adder structure, all pipeline interactions, or static timing.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "memory",
+                      "source":  "tb/unit/core/tb_memory.v",
+                      "category":  "memory",
+                      "tags":  [
+                                   "memory"
+                               ],
+                      "contract":  "Checks word, byte, and halfword load/store behavior plus load-use memory interaction.",
+                      "boundary":  "Directed internal-memory test; not a broad memory-system proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_x0",
+                      "source":  "tb/assertions/tb_assert_x0.v",
+                      "category":  "alu",
+                      "tags":  [
+                                   "alu",
+                                   "x0_invariant"
+                               ],
+                      "contract":  "Proves attempted writes through several paths do not change architectural x0.",
+                      "boundary":  "Focused invariant check; not a full register-file formal proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_flush",
+                      "source":  "tb/assertions/tb_assert_flush.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks taken-branch redirect suppresses younger wrong-path register writeback.",
+                      "boundary":  "Branch writeback suppression only; side effects are covered by separate tests.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_reset",
+                      "source":  "tb/assertions/tb_assert_reset.v",
+                      "category":  "smoke",
+                      "tags":  [
+                                   "smoke",
+                                   "reset"
+                               ],
+                      "contract":  "Checks reset restores core control state, counters, CSR state, RAS state, cache FSMs, and outputs.",
+                      "boundary":  "Directed reset-state snapshot; not all mid-transaction reset timings are covered.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "csr_unit",
+                      "source":  "tb/unit/core/tb_csr_unit.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap"
+                               ],
+                      "contract":  "Standalone CSR unit supports the local machine-mode CSR subset, including mtvec/mepc alignment, mtval storage, mstatus/mie/mip WARL masking, immediate trap-entry mstatus updates, one-cycle registered mepc/mcause/mtval commit, back-to-back metadata capture/commit, reset cancellation, direct-write priority, and mret side effects.",
+                      "boundary":  "CSR storage unit only; CPU-level exception legality, redirect timing, interrupt entry, nested-gating, and flush side effects are covered by CPU tests. This is not a full privileged architecture.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "exception_decode_unit",
+                      "source":  "tb/unit/core/tb_exception_decode_unit.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "exception"
+                               ],
+                      "contract":  "Standalone exception/legal-instruction decode unit classifies legal instructions, strict JALR funct3 legality, implemented CSR accesses including mie/mip/mtval, ecall/ebreak/mret, and misaligned instruction/data accesses; integrated CPU tests cover acceptance priority and trap-cause mapping.",
+                      "boundary":  "Combinational decode test only; does not verify CSR storage, redirect priority, pipeline flush order, or trap handler execution.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "performance_counter_unit",
+                      "source":  "tb/unit/core/tb_performance_counter_unit.v",
+                      "category":  "performance_counter",
+                      "tags":  [
+                                   "performance_counter",
+                                   "accelerator",
+                                   "ai_hardware"
+                               ],
+                      "contract":  "Standalone performance counter unit increments cycle, retired, miss, stall, and MATVEC event counters from explicit event inputs.",
+                      "boundary":  "Counter register/update test only; does not verify CPU event generation, pipeline timing, cache behavior, or accelerator behavior.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_registered_branch_miss_event",
+                      "source":  "tb/assertions/tb_assert_registered_branch_miss_event.v",
+                      "category":  "performance_counter",
+                      "tags":  [
+                                   "performance_counter",
+                                   "control_flow",
+                                   "invariant_monitor"
+                               ],
+                      "contract":  "Cycle-by-cycle CPU assertions prove accepted branch misses enter a one-cycle capture before increment, stalled raw mismatches are rejected, release accepts once, correct predictions and JAL misses do not count, and visible totals remain exact.",
+                      "boundary":  "Directed CPU scenario plus monitor only; standalone unit checks cover back-to-back events, reset, and rollover, while a separate bounded symbolic smoke covers arbitrary event inputs.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "machine_timer",
+                      "source":  "tb/unit/peripherals/tb_machine_timer.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "mmio"
+                               ],
+                      "contract":  "Standalone machine timer peripheral resets mtime/mtimecmp/pending, increments mtime, preserves low/high write priority, and checks one-cycle sampled MTIP assertion/deassertion across thresholds, compare postponement, low-half carry, and 64-bit rollover.",
+                      "boundary":  "Local CLINT-like timer register block only; not a full CLINT, complete privileged architecture, nested interrupt, delegation, or board-timing proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_registered_timer_pending",
+                      "source":  "tb/assertions/tb_assert_registered_timer_pending.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "mmio",
+                                   "invariant_monitor"
+                               ],
+                      "contract":  "Cycle-by-cycle checks prove timer_irq equals the preceding mtime\u003e=mtimecmp sample across threshold crossing, consecutive compare writes, non-sticky deassertion, and reset.",
+                      "boundary":  "Directed standalone timer monitor plus a separate bounded recurrence proof; CPU interrupt gating, trap priority, firmware behavior, timing closure, and physical evidence are covered separately.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_exmem_invalid_side_effect_isolation",
+                      "source":  "tb/assertions/tb_assert_exmem_invalid_side_effect_isolation.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "memory",
+                                   "mmio",
+                                   "side_effect_flush",
+                                   "invariant_monitor"
+                               ],
+                      "contract":  "Forces nonzero stale invalid EX/MEM load/store/ALU payload and write metadata, proving no D-cache/external-memory request, normal-memory/debug/MMIO write, writeback, retirement, or trace event; exception, interrupt, redirect, and RV32M bubbles clear validity/control metadata while retaining payload, and D-cache hold preserves a valid transaction.",
+                      "boundary":  "Directed hierarchical pipeline monitor only; existing cache, flush, stall-release, RV32M, trace, and program tests cover broader integration. This is not a complete pipeline formal proof, timing result, or physical evidence.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_idex_invalid_side_effect_isolation",
+                      "source":  "tb/assertions/tb_assert_idex_invalid_side_effect_isolation.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "hazard",
+                                   "csr_trap",
+                                   "side_effect_flush",
+                                   "invariant_monitor"
+                               ],
+                      "contract":  "Forces nonzero stale invalid ID/EX ALU, memory, control, CSR/trap, RV32M, and MMIO-like payload, proving no exception/redirect, predictor/RAS/CSR update, RV32M start, false load-use interlock, valid EX/MEM row, memory/MMIO commit, writeback, retirement, or trace; directed redirect/load-use/I-cache bubbles clear only validity, while D-cache/RV32M holds and MEM/WB repair preserve live-transaction behavior.",
+                      "boundary":  "Directed hierarchical pipeline monitor only; existing control, exception, RV32M, cache, trace, and program tests cover broader integration. This is not a complete pipeline formal proof, timing result, or physical evidence.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "forwarding_unit",
+                      "source":  "tb/unit/core/tb_forwarding_unit.v",
+                      "category":  "hazard",
+                      "tags":  [
+                                   "hazard",
+                                   "forwarding"
+                               ],
+                      "contract":  "Standalone forwarding unit consumes core-owned producer-valid inputs and selects EX operands, EX/MEM PC+4, and store-data bypass values with EX/MEM priority over MEM/WB, invalid/x0 producer rejection, and no match from a nonzero producer to an x0 consumer.",
+                      "boundary":  "Combinational forwarding mux test only; does not verify pipeline timing, stalls, or instruction retirement.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_forwarded_alignment_equivalence",
+                      "source":  "tb/assertions/tb_assert_forwarded_alignment_equivalence.v",
+                      "category":  "hazard",
+                      "tags":  [
+                                   "hazard",
+                                   "forwarding",
+                                   "invariant_monitor"
+                               ],
+                      "contract":  "Directed standalone checks prove the dedicated two-bit alignment-base forwarding path matches full rs1 forwarding for no bypass, EX/MEM and MEM/WB bypass, EX/MEM priority, x0 exclusion, PC+4, all four low-bit values, and differing upper bits.",
+                      "boundary":  "Directed combinational equivalence evidence only; a separate one-step symbolic smoke covers arbitrary rs1, rs2, store-data, producer-valid, priority, and x0 ownership inputs, while CPU-level tests cover integration, traps, stalls, and precise mtval behavior.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "branch_jump_unit",
+                      "source":  "tb/unit/core/tb_branch_jump_unit.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow",
+                                   "branch",
+                                   "jump"
+                               ],
+                      "contract":  "Standalone EX-stage branch/jump resolve unit computes branch decisions, aligned JALR targets, correct redirect PCs, and prediction mismatch signals for correct, wrong-target, and not-taken predictions.",
+                      "boundary":  "Combinational resolve test only; does not verify branch predictor tables, RAS update policy, pipeline flush priority, or PC update ordering.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "pipeline_control_unit",
+                      "source":  "tb/unit/core/tb_pipeline_control_unit.v",
+                      "category":  "hazard",
+                      "tags":  [
+                                   "hazard",
+                                   "control_flow"
+                               ],
+                      "contract":  "Standalone pipeline control unit preserves IF/ID/EX stall, redirect, bubble, and advance priority decisions.",
+                      "boundary":  "Combinational control-decision test only; does not move or verify pipeline register update bodies, PC target values, MEM/WB update, or trace timing.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "rv32m_multicycle_unit",
+                      "source":  "tb/unit/core/tb_rv32m_multicycle_unit.v",
+                      "category":  "alu",
+                      "tags":  [
+                                   "alu"
+                               ],
+                      "contract":  "Standalone multicycle RV32M unit checks all eight multiply/divide/remainder operations, signed and unsigned edge cases, fixed iterative completion, busy rejection, and reset cancellation.",
+                      "boundary":  "Directed arithmetic-unit simulation only; not pipeline retirement evidence, exhaustive arithmetic proof, FPGA timing closure, or a throughput claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "ras_unit",
+                      "source":  "tb/unit/core/tb_ras_unit.v",
+                      "category":  "ras",
+                      "tags":  [
+                                   "ras",
+                                   "control_flow"
+                               ],
+                      "contract":  "Standalone return-address stack predicts only canonical returns while resolved calls push return PCs and resolved returns pop an 8-entry stack with overflow/underflow checks.",
+                      "boundary":  "RAS prediction/update test only; does not verify branch predictor tables, redirect priority, PC update ordering, or full call/return program execution.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "icache_unit",
+                      "source":  "tb/unit/memory/tb_icache_unit.v",
+                      "category":  "cache",
+                      "tags":  [
+                                   "cache",
+                                   "icache"
+                               ],
+                      "contract":  "Standalone instruction cache unit checks 2-set, 2-way, 4-word-line hits, grouped tag mismatches, balanced word selection, invalid-way and LRU replacement, duplicate-tag priority, captured refill addressing, redirect cancellation, miss NOP behavior, reset, and external instruction-memory backpressure.",
+                      "boundary":  "I-cache storage/lookup/FSM/LRU test with direct internal-state setup for physical set/way cases; does not verify CPU next-PC priority, IF/ID pipeline timing, D-cache behavior, or branch prediction.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "dcache_unit",
+                      "source":  "tb/unit/memory/tb_dcache_unit.v",
+                      "category":  "cache",
+                      "tags":  [
+                                   "cache",
+                                   "dcache",
+                                   "memory"
+                               ],
+                      "contract":  "Standalone data cache unit checks four-index parallel full-tag lookup, high-tag non-aliasing, clean and dirty misses with captured metadata, store-miss byte merging, delayed external ready, one miss pulse per accepted transaction, MMIO bypass, DMA snoop hit/miss updates, reset cancellation, and back-to-back requests.",
+                      "boundary":  "D-cache storage/FSM test only; does not verify CPU MEM/WB pipeline timing, MMIO side effects, or full memory consistency.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_trap",
+                      "source":  "tb/assertions/tb_assert_trap.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks ecall trap redirect state and post-trap wrong-path register write suppression.",
+                      "boundary":  "Focused machine-mode trap slice; not a full privileged architecture test.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_trap_side_effect_flush",
+                      "source":  "tb/assertions/tb_assert_trap_side_effect_flush.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "side_effect_flush",
+                                   "control_flow",
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks trap redirect suppresses younger wrong-path data-memory and GPIO MMIO stores while the handler executes.",
+                      "boundary":  "Directed ecall side-effect case only; does not cover every exception priority.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_exception_branch_priority",
+                      "source":  "tb/assertions/tb_assert_exception_branch_priority.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "control_flow",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Checks an ecall trap redirects to mtvec and wins over a younger JAL path, including suppression of branch-target, fall-through, data-memory, and GPIO MMIO wrong-path markers.",
+                      "boundary":  "Directed exception-versus-jump priority slice only; does not cover every exception source, branch type, interrupt, or cache-stall interaction.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_illegal_csr",
+                      "source":  "tb/assertions/tb_assert_illegal_csr.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks invalid CSR access traps with mcause/mepc state and suppresses destination writeback and wrong-path execution.",
+                      "boundary":  "Invalid CSR negative test only; not all CSR privilege rules are implemented.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_mret_redirect",
+                      "source":  "tb/assertions/tb_assert_mret_redirect.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks mret redirects to mepc and suppresses post-mret wrong-path register writes.",
+                      "boundary":  "Focused mret redirect slice only; mstatus trap-return side effects are covered by separate CSR/program tests and no full privilege stack is claimed.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_mret_side_effect_flush",
+                      "source":  "tb/assertions/tb_assert_mret_side_effect_flush.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "side_effect_flush",
+                                   "control_flow",
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks mret redirect suppresses younger wrong-path data-memory and GPIO MMIO stores while the return target executes.",
+                      "boundary":  "Directed mret side-effect case only; not a full CSR/trap priority proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_interrupt_mstatus_gating",
+                      "source":  "tb/assertions/tb_assert_interrupt_mstatus_gating.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks timer interrupt trap entry clears mstatus.MIE, saves old MIE in mstatus.MPIE, keeps a still-pending MTIP from retrapping while the handler executes, and restores MIE through mret.",
+                      "boundary":  "Minimal mstatus.MIE/MPIE interrupt-gating slice only; not a nested interrupt architecture, privilege-stack proof, delegation model, full CLINT, or full privileged implementation.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_precise_exception_commit",
+                      "source":  "tb/assertions/tb_assert_precise_exception_commit.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "exception",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Checks illegal-instruction, misaligned-load, and misaligned-store traps are precise: faulting register writes are blocked, faulting/wrong-path stores do not reach MEM, wrong-path register writes are suppressed, and mepc/mcause/mtval capture the documented values including full 32-bit forwarded fault addresses.",
+                      "boundary":  "Selected illegal and data-address exception precision only; control-transfer alignment is covered by assert_control_transfer_legality_alignment.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_control_transfer_legality_alignment",
+                      "source":  "tb/assertions/tb_assert_control_transfer_legality_alignment.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "exception",
+                                   "control_flow",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Checks nonzero JALR funct3 encodings trap as illegal instructions and verifies precise instruction-address-misaligned traps for taken branch, JAL, and JALR, including N/N+1/N+2 metadata handoff, newly pending versus already deferred interrupt boundaries, D-cache stall/release, pending reset, and untaken-branch fallthrough.",
+                      "boundary":  "Focused IALIGN=32 control-transfer exception behavior only; not a complete ISA or privileged architecture proof.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_interrupt_priority_mstatus",
+                      "source":  "tb/assertions/tb_assert_interrupt_priority_mstatus.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks pending MTIP/MEIP do not trap while mstatus.MIE=0, and simultaneous enabled MEIP/MTIP selects machine external interrupt priority with mcause=0x8000000b and mtval=0.",
+                      "boundary":  "Focused local interrupt gating and priority check only; not nested interrupt support, CLINT/PLIC compatibility, delegation, or full privileged architecture.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_trap_redirect_factoring",
+                      "source":  "tb/assertions/tb_assert_trap_redirect_factoring.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "exception",
+                                   "control_flow",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Checks stall-independent interrupt eligibility, accepted-entry and redirect-application equivalence, exception/mret priority over pending interrupts, control/deferred guards, MEIP-over-MTIP cause selection, one-shot accepted interrupt CSR effects, and precise misaligned-store mtval/store suppression.",
+                      "boundary":  "Focused selected machine-mode trap/redirect control only; not nested interrupts, delegation, complete privileged behavior, timing closure, or physical-board evidence.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_interrupt_dcache_stall_release",
+                      "source":  "tb/assertions/tb_assert_interrupt_dcache_stall_release.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "cache",
+                                   "mmio",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Checks every mapped MMIO register and byte alias bypasses D-cache while undefined page offsets do not, GPIO MMIO load/store effects occur once, interrupt eligibility remains visible during a D-cache stall, and exception/interrupt/mret architectural effects wait for the single post-stall acceptance boundary with priority preserved.",
+                      "boundary":  "Focused hierarchical CPU-state assertion check for selected MMIO/cache/trap interactions; not exhaustive cache traffic, complete privileged behavior, timing closure, or physical-board evidence.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_execute_acceptance_dcache_stall",
+                      "source":  "tb/assertions/tb_assert_execute_acceptance_dcache_stall.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "cache",
+                                   "hazard",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Uses real multi-cycle D-cache load misses to hold a younger CSRRW or illegal instruction in ID/EX, then checks that CSR writes and synchronous trap entry remain inert during backpressure, occur exactly once after release, preserve CSRRW pre-write readback, and retain precise mstatus/mepc/mcause/mtval state.",
+                      "boundary":  "Directed execute-acceptance evidence for selected CSR and illegal-instruction cases; not exhaustive cache traffic, every synchronous exception, complete privileged behavior, timing closure, or physical-board evidence.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_registered_trap_metadata_commit",
+                      "source":  "tb/assertions/tb_assert_registered_trap_metadata_commit.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "exception",
+                                   "cache",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Checks the integrated trap metadata pipeline: accepted traps redirect and clear mstatus.MIE immediately, register one pending event, commit aligned mepc/mcause/full mtval one edge later, expose committed metadata to the first handler CSR reads, preserve mret, suppress wrong-path CSR writes, select MEIP over MTIP, and accept a stalled interrupt exactly once.",
+                      "boundary":  "Directed selected machine-mode exception/interrupt evidence plus standalone back-to-back CSR-unit coverage; not arbitrary nested traps, delegation, complete privileged proof, timing closure, or physical-board evidence.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_rv32m_multicycle_pipeline",
+                      "source":  "tb/assertions/tb_assert_rv32m_multicycle_pipeline.v",
+                      "category":  "hazard",
+                      "tags":  [
+                                   "alu",
+                                   "hazard",
+                                   "forwarding",
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks multicycle RV32M execution holds younger instructions, forwards dependent/load/store values, preserves x0, retires each M operation once, and defers a pending timer interrupt until division completes.",
+                      "boundary":  "Selected directed pipeline interactions only; not exhaustive RV32M, cache, interrupt-priority, formal, physical-board, or timing evidence.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_rv32m_trap_squash",
+                      "source":  "tb/assertions/tb_assert_rv32m_trap_squash.v",
+                      "category":  "hazard",
+                      "tags":  [
+                                   "alu",
+                                   "hazard",
+                                   "csr_trap",
+                                   "exception",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Checks that an older out-of-range load/store access fault cannot start or retain an adjacent younger MUL/DIV, then uses a handler and mret to execute a different M instruction and reject stale-result reuse.",
+                      "boundary":  "Directed load/store access-fault and RV32M squash interactions only; not exhaustive trap, arithmetic, cache, formal, timing, or physical-board evidence.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_registered_control_redirect",
+                      "source":  "tb/assertions/tb_assert_registered_control_redirect.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "control_flow",
+                                   "hazard",
+                                   "forwarding",
+                                   "csr_trap",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Checks every accepted branch/jump resolution independently captures registered target and fallthrough candidates plus a one-bit not-taken selector, with the selected recovery PC matching branch/JAL/JALR semantics. Directed phases cover BEQ/BNE taken and not-taken, signed BLT/BGE boundaries, unsigned BLTU/BGEU boundaries, direction and target mismatch, correct prediction, JAL, aligned JALR, consecutive accepted control events, D-cache-stalled metadata stability, reset, forwarding, predictor/RAS/counter single events, deferred interrupt behavior, and wrong-path register/memory/MMIO/CSR/trap/RV32M suppression.",
+                      "boundary":  "Directed hierarchical pipeline scenarios only; not exhaustive control-flow, interrupt, formal, timing, or physical-board proof.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_jump_flush",
+                      "source":  "tb/assertions/tb_assert_jump_flush.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks jal redirect links PC+4, reaches the target, and suppresses younger wrong-path writeback.",
+                      "boundary":  "JAL directed slice only; JALR is separate.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_jump_side_effect_flush",
+                      "source":  "tb/assertions/tb_assert_jump_side_effect_flush.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "side_effect_flush",
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks jal redirect suppresses younger wrong-path data-memory and GPIO MMIO stores while the target path executes.",
+                      "boundary":  "Directed JAL side-effect case only; does not cover all indirect redirects.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_jalr_flush",
+                      "source":  "tb/assertions/tb_assert_jalr_flush.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks jalr clears target bit 0, writes the link value, and suppresses younger wrong-path writeback.",
+                      "boundary":  "Directed JALR slice; side-effect JALR coverage is covered by assert_jalr_side_effect_flush.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_jalr_side_effect_flush",
+                      "source":  "tb/assertions/tb_assert_jalr_side_effect_flush.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "side_effect_flush",
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks jalr redirect clears target bit 0, writes PC+4 to the link register, suppresses younger wrong-path data-memory and GPIO MMIO stores, and executes the aligned target path.",
+                      "boundary":  "Directed JALR side-effect case only; not a broad indirect-jump or formal flush proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_store_flush",
+                      "source":  "tb/assertions/tb_assert_store_flush.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "side_effect_flush",
+                                   "control_flow",
+                                   "memory"
+                               ],
+                      "contract":  "Checks a branch-flushed wrong-path store does not reach MEM and does not modify data memory.",
+                      "boundary":  "Directed branch store side-effect case only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_mmio_flush",
+                      "source":  "tb/assertions/tb_assert_mmio_flush.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "side_effect_flush",
+                                   "control_flow",
+                                   "mmio"
+                               ],
+                      "contract":  "Checks a branch-flushed wrong-path GPIO MMIO store does not reach MEM and does not change external GPIO state.",
+                      "boundary":  "Directed branch MMIO side-effect case only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_branch_mispredict_dcache_stall",
+                      "source":  "tb/assertions/tb_assert_branch_mispredict_dcache_stall.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "side_effect_flush",
+                                   "control_flow",
+                                   "cache",
+                                   "memory"
+                               ],
+                      "contract":  "Checks a taken branch whose raw EX mispredict overlaps a D-cache miss/stall is accepted once after the stall, held as one registered recovery request, redirected once to the correct path, and suppresses wrong-path register, data-memory, and GPIO MMIO side effects.",
+                      "boundary":  "Directed branch-mispredict plus D-cache-miss interaction only; does not cover all predictor states, dirty write-back patterns, or external-memory timing.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_matvec_scratchpad_flush",
+                      "source":  "tb/assertions/tb_assert_matvec_scratchpad_flush.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "control_flow",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Branch, jump, and trap redirects suppress younger wrong-path stores to MATVEC Scratchpad CTRL so the scratchpad accelerator does not start or update busy, done, perf, row, or result state.",
+                      "boundary":  "Directed wrong-path side-effect regression for MATVEC Scratchpad start only; not a full formal proof of all accelerator MMIO ordering cases.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_matvec_scratchpad_interrupt_flush",
+                      "source":  "tb/assertions/tb_assert_matvec_scratchpad_interrupt_flush.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "control_flow",
+                                   "csr_trap",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "A MATVEC Scratchpad external-interrupt redirect suppresses the interrupted instruction plus younger wrong-path data-memory and GPIO MMIO stores.",
+                      "boundary":  "Directed interrupt redirect safety test using hierarchical MATVEC Scratchpad pending injection; the real completion-to-interrupt path is covered by the CPU program test.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_matvec_dma_arbitration",
+                      "source":  "tb/assertions/tb_assert_matvec_dma_arbitration.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "memory",
+                                   "cache",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Checks the local DMA-lite ownership policy: ordinary CPU memory remains stalled through DMA read and compute-only stages, compute stages issue no DMEM request, D-cache traffic does not overlap DMA requests, and each output row is written exactly once.",
+                      "boundary":  "Focused arbitration/ownership monitor for the local DMA-lite slice only; not a multi-master interconnect proof, cache-coherent protocol, or production DMA verification suite.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_matvec_dma_descriptor_overlap",
+                      "source":  "tb/assertions/tb_assert_matvec_dma_descriptor_overlap.v",
+                      "category":  "accelerator",
+                      "tags":  [
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "memory",
+                                   "mmio"
+                               ],
+                      "contract":  "Programs an overlapping MATVEC DMA-lite matrix/output descriptor through the CPU MMIO path and checks that error bit 9 is reported before any DMEM request or accelerator side effect.",
+                      "boundary":  "Directed CPU-integration descriptor validation evidence; it does not prove arbitrary address arithmetic or a production DMA isolation policy.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "assert_timer_interrupt_flush",
+                      "source":  "tb/assertions/tb_assert_timer_interrupt_flush.v",
+                      "category":  "side_effect_flush",
+                      "tags":  [
+                                   "control_flow",
+                                   "csr_trap",
+                                   "mmio",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "A forced machine-timer interrupt redirect suppresses the interrupted instruction plus younger wrong-path data-memory, GPIO, timer, and UART MMIO stores, publishes a public pass signature, and separately checks simultaneous MEIP/MTIP priority selects MEIP.",
+                      "boundary":  "Directed interrupt redirect and priority assertion using hierarchical pending injection; the real timer compare-to-interrupt path is covered by CPU program tests.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "external_imem",
+                      "source":  "tb/integration/external_memory/tb_external_imem.v",
+                      "category":  "external_memory",
+                      "tags":  [
+                                   "external_memory"
+                               ],
+                      "contract":  "Checks instruction fetch through the external instruction memory interface.",
+                      "boundary":  "Directed fetch path only; not a complete memory fabric proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "external_dmem_bram_sync",
+                      "source":  "tb/unit/memory/tb_external_dmem_bram_sync.v",
+                      "category":  "external_memory",
+                      "tags":  [
+                                   "external_memory",
+                                   "memory"
+                               ],
+                      "contract":  "Checks the one-outstanding synchronous external-DMEM line memory for simulation-only SIM_INIT_HEX packing, one-cycle-later response timing, held-request suppression, back-to-back lines, all 16 byte-enable lanes, partial writes, read-after-write, reset cancellation without memory clearing, write priority for simultaneous read/write, simulation mirror consistency, and zero/ignored out-of-range accesses without high-bit aliasing.",
+                      "boundary":  "Focused memory-block protocol simulation only; BRAM primitive inference requires separate synthesis evidence and this is not CPU-cache, timing-closure, or physical-board proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "external_dmem",
+                      "source":  "tb/integration/external_memory/tb_external_dmem.v",
+                      "category":  "external_memory",
+                      "tags":  [
+                                   "external_memory"
+                               ],
+                      "contract":  "Checks data load/store traffic through the external data memory interface and requires the public D-cache miss counter to report exactly the two accepted miss transactions.",
+                      "boundary":  "Directed data path only; not a cache-coherent interface proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "external_dmem_debug_status",
+                      "source":  "tb/integration/external_memory/tb_external_dmem_debug_status.v",
+                      "category":  "external_memory",
+                      "tags":  [
+                                   "external_memory",
+                                   "memory",
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Runs board_smoke with USE_EXTERNAL_DMEM=1, checks external DMem read/write traffic, verifies the public debug_status latch reports the pass marker from a committed store to byte address 0x100, and confirms internal DMemory is not the external-DMEM observation point.",
+                      "boundary":  "Focused debug-status and external-DMEM integration evidence only; not broad memory fabric stress or board validation.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "external_dmem_matvec_dma",
+                      "source":  "tb/integration/external_memory/tb_external_dmem_matvec_dma.v",
+                      "category":  "external_memory",
+                      "tags":  [
+                                   "external_memory",
+                                   "memory",
+                                   "accelerator",
+                                   "ai_hardware"
+                               ],
+                      "contract":  "Runs matvec_dma_demo with USE_EXTERNAL_DMEM=1, checks public debug_status pass/fail, observes external DMem read/write traffic, verifies DMA-written output words in the external DMem BRAM, and confirms internal DMemory is not the observation point.",
+                      "boundary":  "Focused external-DMEM DMA-lite evidence only; not a cache-coherent fabric, production DMA subsystem, timing result, or board validation.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "gpio_mmio",
+                      "source":  "tb/unit/peripherals/tb_gpio_mmio.v",
+                      "category":  "mmio",
+                      "tags":  [
+                                   "mmio",
+                                   "memory"
+                               ],
+                      "contract":  "Checks GPIO MMIO input/output windows and D-cache bypass behavior.",
+                      "boundary":  "Directed GPIO map only; no board-specific electrical claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "mmio_decode",
+                      "source":  "tb/unit/peripherals/tb_mmio_decode.v",
+                      "category":  "mmio",
+                      "tags":  [
+                                   "mmio",
+                                   "accelerator",
+                                   "ai_hardware"
+                               ],
+                      "contract":  "Standalone MMIO decode selects GPIO, UART, performance-counter, MATVEC Scratchpad, machine-timer, and MATVEC DMA-lite registers with word-aligned matching, and verifies that 0x0400..0x05ff produces no MMIO selection.",
+                      "boundary":  "Combinational address-decode test only; does not verify CPU pipeline timing or MMIO side effects.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "mmio_read_mux",
+                      "source":  "tb/unit/soc/tb_mmio_read_mux.v",
+                      "category":  "mmio",
+                      "tags":  [
+                                   "mmio",
+                                   "load_store"
+                               ],
+                      "contract":  "Hierarchical MMIO read selection returns the exact GPIO, UART, accelerator, performance-counter, timer, and DMA-lite readback word for every mapped register while preserving low address-bit aliases and shared subword load formatting.",
+                      "boundary":  "Directed combinational mux and formatter evidence only; does not prove write side effects, interrupt delivery, CPU timing closure, or physical-board behavior.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "timer_mmio",
+                      "source":  "tb/unit/peripherals/tb_timer_mmio.v",
+                      "category":  "mmio",
+                      "tags":  [
+                                   "csr_trap",
+                                   "mmio"
+                               ],
+                      "contract":  "CPU load/store traffic selects the 0x800 machine-timer MMIO window, reads and writes the intentionally split mtime/mtimecmp halves, bypasses D-cache, exposes the one-cycle registered timer pending state through mip.MTIP, and leaves unrelated GPIO/UART MMIO behavior intact.",
+                      "boundary":  "Focused CPU/MMIO timer integration smoke only; does not prove all subword timings, full CLINT behavior, or privileged interrupt semantics.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "int8_matvec_scratchpad_accelerator",
+                      "source":  "tb/unit/accelerators/tb_int8_matvec_scratchpad_accelerator.v",
+                      "category":  "accelerator",
+                      "tags":  [
+                                   "accelerator",
+                                   "ai_hardware"
+                               ],
+                      "contract":  "Checks the standalone MATVEC Scratchpad accelerator for coherent immediate readback across all 16 row/result indices, selected-row writes, matching and non-matching result commits, ignored busy writes, exact 4/16/64-cycle latency at row_count values 1/4/16, signed int8 edge product sums, registered load/multiply/reduce/commit boundaries, row/index alignment, ordered single writes, reset in every stage, sticky flags, live interrupt_enable completion behavior, final-COMMIT clear/enable collision priority, irq_pending clear/reassertion, retained results, back-to-back jobs, and exact local counters.",
+                      "boundary":  "Standalone accelerator module directed simulation only; CPU interrupt redirect is covered separately; not DMA, cache coherence, systolic-array behavior, throughput, timing, or board evidence.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "int8_matvec_dma_lite",
+                      "source":  "tb/unit/accelerators/tb_int8_matvec_dma_lite.v",
+                      "category":  "accelerator",
+                      "tags":  [
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "memory"
+                               ],
+                      "contract":  "Checks the standalone DMEM-backed MATVEC DMA-lite controller for registered transaction addresses and row/multiply/reduce stages, rows 1..4, full-width invalid ROWS rejection, 33-bit capacity/wrap validation, matrix/output overlap rejection, signed int8 edge products, exact vector/row/output request ordering, stable address/control/data under backpressure, equivalent snoop and external-line operands, exact accepted read/write/job counters, reset during compute, busy-time ignores, and polling-only irq behavior.",
+                      "boundary":  "Standalone controller and simple DMem handshake only; not a production DMA engine, cache-coherent accelerator, throughput proof, or board result.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "matvec_perf_counters",
+                      "source":  "tb/unit/accelerators/tb_matvec_perf_counters.v",
+                      "category":  "performance_counter",
+                      "tags":  [
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "performance_counter"
+                               ],
+                      "contract":  "CPU top-level MATVEC counters report accepted starts, done events, and busy cycles for one accelerator operation.",
+                      "boundary":  "Directed counter smoke test only; no performance, timing, throughput, or benchmark speedup claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_matvec_scratchpad",
+                      "source":  "tb/program/accelerator/tb_program_matvec_scratchpad.v",
+                      "category":  "accelerator",
+                      "tags":  [
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "mmio",
+                                   "memory"
+                               ],
+                      "contract":  "CPU drives the MATVEC Scratchpad accelerator through MMIO, programs vector and multiple rows, starts the accelerator, polls done, selects and reads results, checks exact y0..y3 values in assembly, and exposes a pass/fail signature through debug_status.",
+                      "boundary":  "Black-box CPU/MMIO integration test using public debug_status observation; no DMA, no performance claim, no broad random accelerator verification.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_matvec_scratchpad_interrupt",
+                      "source":  "tb/program/accelerator/tb_program_matvec_scratchpad_interrupt.v",
+                      "category":  "accelerator",
+                      "tags":  [
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "csr_trap",
+                                   "mmio",
+                                   "memory"
+                               ],
+                      "contract":  "CPU software configures mtvec, mie.MEIE, mstatus.MIE, enables MATVEC Scratchpad interrupts, starts the accelerator, handles the completion interrupt, reads status/results in the handler, clears irq/done, returns with mret, and exposes a public debug_status pass/fail signature.",
+                      "boundary":  "Black-box CPU/MMIO interrupt integration test for the minimal machine external interrupt slice only; not full privileged ISA, nested interrupts, delegation, timer/software interrupts, vectored mtvec, DMA, or performance evidence.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_matvec_scratchpad_no_interrupt",
+                      "source":  "tb/program/accelerator/tb_program_matvec_scratchpad_no_interrupt.v",
+                      "category":  "accelerator",
+                      "tags":  [
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "csr_trap",
+                                   "mmio",
+                                   "memory"
+                               ],
+                      "contract":  "With CPU interrupt CSRs enabled but MATVEC Scratchpad interrupt_enable left clear, accelerator completion does not trap; software polls done, reads the result, clears status, and exposes a public debug_status pass/fail signature.",
+                      "boundary":  "Negative interrupt-enable test for MATVEC Scratchpad only; does not prove all interrupt masking, priority, or pending-source cases.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_matvec_dma_demo",
+                      "source":  "tb/program/accelerator/tb_program_matvec_dma_demo.v",
+                      "category":  "accelerator",
+                      "tags":  [
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "mmio",
+                                   "memory"
+                               ],
+                      "contract":  "CPU software writes packed int8 vector and matrix rows into DMemory, programs the MATVEC DMA-lite MMIO descriptor, starts the job, polls done, reads int32 output words from DMemory, checks exact results, checks local DMA counters, clears done, and exposes a public debug_status pass/fail signature.",
+                      "boundary":  "Polling-mode memory-resident accelerator demo only; not an interrupt test, cache-coherent DMA engine, production AI accelerator, timing result, or benchmark speedup claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_machine_timer_interrupt",
+                      "source":  "tb/program/csr_trap/tb_program_machine_timer_interrupt.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "mmio"
+                               ],
+                      "contract":  "CPU software programs the machine timer compare value, enables mstatus.MIE and mie.MTIE, takes an MTIP interrupt through mtvec, records mcause/mepc/mip in the handler, postpones the timer, returns with mret, and exposes a public debug_status pass/fail signature.",
+                      "boundary":  "Local machine timer interrupt vertical slice only; not a full CLINT, full privileged architecture, nested interrupt, delegation, vectored mtvec, or timing/performance proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_machine_timer_no_interrupt",
+                      "source":  "tb/program/csr_trap/tb_program_machine_timer_no_interrupt.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "mmio"
+                               ],
+                      "contract":  "CPU software lets the machine timer become pending while mie.MTIE remains disabled, observes MTIP by polling, proves the handler does not run within a bounded loop, and exposes a public debug_status pass/fail signature.",
+                      "boundary":  "Negative source-mask test for the local machine timer only; does not prove every interrupt masking, priority, nesting, or pending-source combination.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "uart_mmio",
+                      "source":  "tb/unit/peripherals/tb_uart_mmio.v",
+                      "category":  "mmio",
+                      "tags":  [
+                                   "mmio",
+                                   "uart"
+                               ],
+                      "contract":  "Checks CPU-visible UART MMIO data/status behavior, sticky RX-overrun visibility in status bit 2, and a busy TX store held by pipeline backpressure until one accepted transmit pulse.",
+                      "boundary":  "MMIO register slice only; serial TX/RX blocks have separate tests.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "uart_tx",
+                      "source":  "tb/unit/peripherals/tb_uart_tx.v",
+                      "category":  "uart",
+                      "tags":  [
+                                   "uart"
+                               ],
+                      "contract":  "Checks UART TX idle-high reset, single-byte and multi-byte start/data/stop serialization, ready/busy behavior, ignored valid attempts while busy, and deterministic inactive behavior for CLKS_PER_BIT=0.",
+                      "boundary":  "Block-level directed serial test; no board baud tolerance, physical UART, or production UART subsystem claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "uart_rx",
+                      "source":  "tb/unit/peripherals/tb_uart_rx.v",
+                      "category":  "uart",
+                      "tags":  [
+                                   "uart"
+                               ],
+                      "contract":  "Checks two-flop synchronized UART RX serial byte sampling, valid latency, framing behavior, and deterministic inactive/error behavior for CLKS_PER_BIT=0.",
+                      "boundary":  "Block-level directed receive test; no noisy-line robustness claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "uart_rx_mmio_buffer",
+                      "source":  "tb/unit/peripherals/tb_uart_rx_mmio_buffer.v",
+                      "category":  "uart",
+                      "tags":  [
+                                   "uart",
+                                   "mmio"
+                               ],
+                      "contract":  "Checks the runtime UART RX MMIO buffer latches one received byte until the CPU RXDATA read pulse, preserves valid while unread, reports sticky overrun for a second unread byte, and clears state on reset; CPU UART status exposes that overrun flag separately.",
+                      "boundary":  "One-byte receive buffer only; no UART line sampling, FIFO depth, interrupt, or noisy-line robustness claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "boot_reset_controller",
+                      "source":  "tb/unit/boot/tb_boot_reset_controller.v",
+                      "category":  "boot",
+                      "tags":  [
+                                   "boot"
+                               ],
+                      "contract":  "Checks CPU reset gating for direct boot and loader-controlled boot release.",
+                      "boundary":  "Controller-level reset sequencing only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "uart_packet_boot_imem",
+                      "source":  "tb/integration/boot/tb_uart_packet_boot_imem.v",
+                      "category":  "boot",
+                      "tags":  [
+                                   "boot",
+                                   "uart"
+                               ],
+                      "contract":  "Checks a valid packetized UART boot image loads IMEM, clears unused tail words to NOP before release, rejects high-address read aliasing with a NOP line, releases CPU reset, and runs board_smoke.",
+                      "boundary":  "Simulation-tested packet boot fabric only; not physically board-validated and not a deploy-ready boot ROM.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "uart_packet_boot_reject",
+                      "source":  "tb/integration/boot/tb_uart_packet_boot_reject.v",
+                      "category":  "boot",
+                      "tags":  [
+                                   "boot",
+                                   "uart"
+                               ],
+                      "contract":  "Checks packetized UART boot rejects malformed headers and zero-length images, scrubs checksum-failed payloads, recovers cleanly from reset during an incomplete packet with a shorter retry, and supports a one-word backing memory without zero-width elaboration.",
+                      "boundary":  "Focused malformed-packet and retry cases only; no timeout or exhaustive packet fuzzing.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "uart_boot_packet_fixture",
+                      "source":  "scripts/uart-boot-packet.ps1",
+                      "category":  "boot",
+                      "tags":  [
+                                   "boot",
+                                   "uart",
+                                   "assembler"
+                               ],
+                      "contract":  "Checks the host-side UART boot packet generator reproduces the checked-in board_smoke packet fixture.",
+                      "boundary":  "Host packet construction and deterministic fixture freshness only; COM-port transmission is manual and not part of regression.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "showcase_demo_script",
+                      "source":  "scripts/showcase-demo.ps1",
+                      "category":  "ai_hardware",
+                      "tags":  [
+                                   "ai_hardware",
+                                   "boot",
+                                   "uart",
+                                   "mmio",
+                                   "accelerator",
+                                   "performance_counter"
+                               ],
+                      "contract":  "Assembles the showcase program, checks its packetized UART boot fixture, runs direct and packet-boot showcase tests, and writes wave/showcase-summary.json.",
+                      "boundary":  "Convenience orchestration and summary artifact only; simulation evidence, not physical board evidence or benchmark evidence.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "fpga_tool_detect",
+                      "source":  "scripts/fpga-tool-detect.ps1",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper",
+                                   "smoke"
+                               ],
+                      "contract":  "Detects FPGA-related local tools including Vivado, Quartus, Yosys, nextpnr variants, and openFPGALoader, then writes wave/fpga-tool-detect.json without failing when vendor tools are absent.",
+                      "boundary":  "Tool availability/readiness report only; does not run implementation, timing analysis, bitstream generation, or physical board validation and makes no timing or board claim.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "fpga_release_package",
+                      "source":  "scripts/fpga-release.ps1",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper",
+                                   "boot",
+                                   "smoke"
+                               ],
+                      "contract":  "Builds the generic UART boot runtime evidence-only package with commands, source manifest, status metadata, and clone-safe artifact hashes under release/fpga/generic_uart_boot_runtime.",
+                      "boundary":  "Generated metadata package only; repository sources remain authoritative, no binary is packaged, and this generic profile does not inherit the Basys3 physical claim.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "vivado_detect",
+                      "source":  "scripts/vivado-detect.ps1",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper",
+                                   "smoke"
+                               ],
+                      "contract":  "Detects Vivado on PATH and common Windows install paths, then writes wave/vivado-detect-summary.json. Missing Vivado is reported as blocked_no_vivado without failing unless -Require is used.",
+                      "boundary":  "Tool detection only; not synthesis, implementation, timing closure, bitstream generation, or physical board validation.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "vivado_basys3_build",
+                      "source":  "scripts/vivado-basys3-build.ps1",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper",
+                                   "smoke"
+                               ],
+                      "contract":  "Runs the Basys3-targeted Vivado non-project flow in synth-only mode by default, or reports blocked_no_vivado when Vivado is unavailable, and writes wave/vivado-basys3-build-summary.json.",
+                      "boundary":  "Vivado build-script evidence only. Timing claims require matching implementation reports per target; the script does not create physical behavior, UART boot/runtime, or accelerator board evidence.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "fpga_release_basys3",
+                      "source":  "scripts/fpga-release.ps1",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper",
+                                   "boot",
+                                   "smoke"
+                               ],
+                      "contract":  "Rebuilds the Basys3 evidence-only package with commands, source manifest, clone-safe artifact hashes, source-fingerprint-matched Vivado reports, and the integrity-checked scoped physical summary and exact UART transcripts; bitstream size and SHA-256 remain metadata only.",
+                      "boundary":  "Generated evidence package only. Timing is accepted only from matching post-route WNS/TNS evidence; the bitstream binary is not packaged; machine-captured XSDB/UART evidence remains distinct from operator-reported LED/reset observations.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "project_doctor",
+                      "source":  "scripts/project-doctor.ps1",
+                      "category":  "smoke",
+                      "tags":  [
+                                   "smoke",
+                                   "fpga_wrapper",
+                                   "assembler"
+                               ],
+                      "contract":  "Checks required and optional local tool readiness, MSYS2/RISC-V GNU toolchain availability, FPGA tool detection, arch-test upstream availability, and evidence script presence, then writes wave/project-doctor-summary.json.",
+                      "boundary":  "Local environment readiness report only; optional missing tools do not invalidate the portable simulation gate and this is not hardware, timing, board, benchmark, or official compliance evidence.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "demo_smoke",
+                      "source":  "scripts/demo-smoke.ps1",
+                      "category":  "smoke",
+                      "tags":  [
+                                   "smoke",
+                                   "boot",
+                                   "uart",
+                                   "mmio",
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "performance_counter",
+                                   "external_memory",
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Runs the showcase and interactive demos, MATVEC DMA-lite program and external-DMEM smokes, selected arch-test integration/report, and generic FPGA release packaging while saving per-step transcripts and wave/demo-smoke-summary.json.",
+                      "boundary":  "Focused demonstration orchestration only; not the full regression, timing closure, physical board validation, benchmark evidence, or an official compliance result.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "release_freeze",
+                      "source":  "scripts/release-freeze.ps1",
+                      "category":  "smoke",
+                      "tags":  [
+                                   "smoke",
+                                   "boot",
+                                   "fpga_wrapper",
+                                   "assembler"
+                               ],
+                      "contract":  "Rebuilds both evidence-only FPGA packages, requires the current evidence index, and creates a compact release/final package containing machine-readable summaries, source manifests, and clone-safe artifact hashes without duplicating repository content.",
+                      "boundary":  "Generated evidence handoff only; excludes source, documentation, firmware, board, tool, build-tree, and bitstream copies and does not establish physical board behavior or full correctness.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "branch",
+                      "source":  "tb/unit/core/tb_branch.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks branch decisions and unsigned branch behavior through architectural results.",
+                      "boundary":  "Directed branch set; not exhaustive control-flow generation.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "branch_prediction",
+                      "source":  "tb/unit/core/tb_branch_prediction.v",
+                      "category":  "predictor",
+                      "tags":  [
+                                   "predictor",
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks warmed taken branches use BHT/BTB prediction without another redirect flush.",
+                      "boundary":  "Directed warm prediction slice; not a performance benchmark.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "branch_predictor_warm_recovery",
+                      "source":  "tb/unit/core/tb_branch_predictor_warm_recovery.v",
+                      "category":  "predictor",
+                      "tags":  [
+                                   "predictor",
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks natural loop warm-up and predicted-taken/actual-not-taken recovery to PC+4.",
+                      "boundary":  "Natural warm-up slice only; not randomized predictor stress.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "branch_predictor_update_pipeline",
+                      "source":  "tb/unit/core/tb_branch_predictor_update_pipeline.v",
+                      "category":  "predictor",
+                      "tags":  [
+                                   "predictor",
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks unconditional pending-payload capture with pending-valid-only table side effects, typed conditional-branch and direct-JAL registered updates, one-cycle latency, BHT saturation, JAL-independent BHT state, BTB writes, valid/invalid and different/same-index ordering, reset cancellation, and query/update overlap behavior.",
+                      "boundary":  "Standalone directed predictor-unit simulation plus a separate bounded payload/valid recurrence and table-stability proof; not workload prediction accuracy, full CPU control-flow proof, timing closure, or physical-board evidence.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "jal_btb_prediction",
+                      "source":  "tb/unit/core/tb_jal_btb_prediction.v",
+                      "category":  "predictor",
+                      "tags":  [
+                                   "predictor",
+                                   "control_flow",
+                                   "jump",
+                                   "ras"
+                               ],
+                      "contract":  "Runs one direct call site twice and checks cold JAL correction, registered BTB training, warm target prediction without another jump mispredict, RAS push/pop, exact continuation retirement, and wrong-path suppression.",
+                      "boundary":  "Focused CPU-level direct-JAL/return scenario only; not exhaustive BTB alias stress, prediction-accuracy evidence, timing closure, or physical-board validation.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "branch_predictor_recovery",
+                      "source":  "tb/unit/core/tb_branch_predictor_recovery.v",
+                      "category":  "predictor",
+                      "tags":  [
+                                   "predictor",
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks direct predictor-state recovery cases, wrong targets, BTB alias gating, and correct-prediction no-miss behavior.",
+                      "boundary":  "Uses direct state injection for focused recovery cases; not natural workload coverage.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "jump_ras",
+                      "source":  "tb/unit/core/tb_jump_ras.v",
+                      "category":  "ras",
+                      "tags":  [
+                                   "ras",
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks jump and return-address-stack call/return behavior.",
+                      "boundary":  "Directed RAS behavior only; no deep randomized call stack coverage.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "ras_flush",
+                      "source":  "tb/unit/core/tb_ras_flush.v",
+                      "category":  "ras",
+                      "tags":  [
+                                   "ras",
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks wrong-path call/return fetches do not permanently pollute RAS state.",
+                      "boundary":  "Focused wrong-path RAS case only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "ras_immediate_return",
+                      "source":  "tb/unit/core/tb_ras_immediate_return.v",
+                      "category":  "ras",
+                      "tags":  [
+                                   "ras",
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks immediate return architectural correctness and final empty RAS state.",
+                      "boundary":  "Documents repair-by-mispredict behavior; not a complete immediate-return predictor.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "load_use_decode",
+                      "source":  "tb/unit/core/tb_load_use_decode.v",
+                      "category":  "hazard",
+                      "tags":  [
+                                   "hazard"
+                               ],
+                      "contract":  "Checks load-use decode distinguishes real source dependencies from I-type immediate bit aliases.",
+                      "boundary":  "Focused hazard decode case only; broader hazards are covered elsewhere.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "cache",
+                      "source":  "tb/unit/core/tb_cache.v",
+                      "category":  "cache",
+                      "tags":  [
+                                   "cache"
+                               ],
+                      "contract":  "Checks cache refill and dirty D-cache write-back behavior through architectural loads.",
+                      "boundary":  "Small directed cache slice; not a complete replacement-policy stress test.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "trace",
+                      "source":  "tb/reference/tb_trace.v",
+                      "category":  "trace_reference",
+                      "tags":  [
+                                   "trace_reference"
+                               ],
+                      "contract":  "Checks the WB-stage trace port reports retired writeback events.",
+                      "boundary":  "Trace visibility only; reference comparison is separate.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "trace_reference",
+                      "source":  "tb/reference/tb_trace_reference.v",
+                      "category":  "trace_reference",
+                      "tags":  [
+                                   "trace_reference"
+                               ],
+                      "contract":  "Compares generated expected trace rows against CPU trace output for ALU/register, load/store, branch/jump, subword, and CSR rows.",
+                      "boundary":  "Deterministic trace suite, not a full ISA or broad control-flow reference model.",
+                      "evidence_level":  "trace_reference",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "trace_trap_reference",
+                      "source":  "tb/reference/tb_trace_trap_reference.v",
+                      "category":  "trace_reference",
+                      "tags":  [
+                                   "trace_reference",
+                                   "csr_trap",
+                                   "control_flow",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Checks observable retired trace order and wrong-path trace suppression for a directed trap-entry and mret-return program.",
+                      "boundary":  "This validates observable retire trace behavior for a directed trap/mret program; it is not a complete architectural trace spec, not formal verification, and not full privileged ISA compliance.",
+                      "evidence_level":  "trace_reference",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "trace_lockstep_reference",
+                      "source":  "tb/reference/tb_trace_lockstep_reference.v",
+                      "category":  "trace_reference",
+                      "tags":  [
+                                   "trace_reference",
+                                   "random_reference",
+                                   "alu",
+                                   "memory",
+                                   "control_flow"
+                               ],
+                      "contract":  "Compares the CPU public retired trace stream against a local RV32IM software reference fixture for selected ALU/immediate, x0, control-flow, memory, and RV32M rows.",
+                      "boundary":  "Selected local differential verification only; not an official compliance suite, not exhaustive RV32IM coverage, not cycle-accurate timing proof, and not formal verification.",
+                      "evidence_level":  "trace_reference",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "trace_lockstep_seed_smoke",
+                      "source":  "scripts/trace-lockstep-seed-smoke.ps1",
+                      "category":  "trace_reference",
+                      "tags":  [
+                                   "trace_reference",
+                                   "random_reference",
+                                   "alu",
+                                   "memory",
+                                   "control_flow"
+                               ],
+                      "contract":  "Runs bounded temporary-seed RV32IM retired-trace lockstep differential fixtures through the same public trace-port testbench without changing checked-in canonical artifacts.",
+                      "boundary":  "Three deterministic smoke seeds only; not broad constrained-random, not coverage closure, not an official compliance suite, and not a replacement for directed tests.",
+                      "evidence_level":  "multi_seed_generated_smoke",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "pipeline_invariants",
+                      "source":  "tb/assertions/tb_pipeline_invariants.v",
+                      "category":  "invariant_monitor",
+                      "tags":  [
+                                   "invariant_monitor",
+                                   "hazard",
+                                   "control_flow",
+                                   "side_effect_flush",
+                                   "trace_reference",
+                                   "csr_trap"
+                               ],
+                      "contract":  "Runs a reusable simulation assertion monitor across generated hazard, generated call/return, and directed trap/mret scenarios to check x0 stability, PC alignment, valid-gated commit and side effects, trace commit consistency, reset cleanup, and bounded wrong-path poison safety.",
+                      "boundary":  "Simulation assertion monitor over directed/generated scenarios; not formal verification, not exhaustive property proof, not timing signoff, not complete pipeline correctness proof, and not full RISC-V compliance.",
+                      "evidence_level":  "assertion_monitor",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "perf_counters",
+                      "source":  "tb/unit/core/tb_perf_counters.v",
+                      "category":  "performance_counter",
+                      "tags":  [
+                                   "performance_counter"
+                               ],
+                      "contract":  "Checks performance counters reset and count runtime events on a directed workload.",
+                      "boundary":  "Counter sanity only; not a benchmark or calibrated performance claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "random_reference",
+                      "source":  "tb/reference/tb_random_reference.v",
+                      "category":  "random_reference",
+                      "tags":  [
+                                   "random_reference"
+                               ],
+                      "contract":  "Compares CPU architectural register state against a generated branch-free random reference program.",
+                      "boundary":  "Branch-free register/ALU focused; not broad constrained-random verification.",
+                      "evidence_level":  "random_reference",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "random_memory_reference",
+                      "source":  "tb/reference/tb_random_memory_reference.v",
+                      "category":  "random_reference",
+                      "tags":  [
+                                   "random_reference",
+                                   "random_memory_reference",
+                                   "memory"
+                               ],
+                      "contract":  "Compares CPU register and data-memory state against a fixed-seed generated memory reference program; final DMemory checking covers every generated memory operation word while JSON metadata records load results, store values, widths, affected words, and checksum progress.",
+                      "boundary":  "Branch-free fixed-seed generated memory slice; not broad constrained-random verification, full memory-system proof, or RISC-V compliance.",
+                      "evidence_level":  "random_reference",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "random_control_reference",
+                      "source":  "tb/reference/tb_random_control_reference.v",
+                      "category":  "random_reference",
+                      "tags":  [
+                                   "random_reference",
+                                   "control_flow"
+                               ],
+                      "contract":  "Compares CPU final architectural register and sentinel DMemory state against a fixed-seed generated control-flow program interpreted by a PC-driven software reference model; metadata records static instructions, executed rows, execution order, branch/jump targets, and wrong-path side-effect suppression.",
+                      "boundary":  "Fixed-seed, no-loop, final-state control-flow slice; not broad constrained-random verification, full ISA/control-flow compliance, cycle-accurate pipeline modeling, or formal verification.",
+                      "evidence_level":  "random_reference",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "random_hazard_reference",
+                      "source":  "tb/reference/tb_random_hazard_reference.v",
+                      "category":  "random_reference",
+                      "tags":  [
+                                   "random_reference",
+                                   "hazard",
+                                   "memory",
+                                   "control_flow"
+                               ],
+                      "contract":  "Compares CPU final architectural register and DMemory state against a fixed-seed hazard-biased generated reference program covering load-use, ALU forwarding, store-data forwarding, load-to-store, branch operand forwarding, branch-after-load, not-taken fallthrough, and taken-branch wrong-path suppression.",
+                      "boundary":  "Fixed-seed, no-loop, final-state mixed hazard slice; not broad constrained-random verification, full pipeline proof, full RISC-V compliance, cycle-accurate pipeline modeling, or formal verification.",
+                      "evidence_level":  "random_reference",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "random_call_reference",
+                      "source":  "tb/reference/tb_random_call_reference.v",
+                      "category":  "random_reference",
+                      "tags":  [
+                                   "random_reference",
+                                   "control_flow",
+                                   "ras",
+                                   "memory",
+                                   "hazard"
+                               ],
+                      "contract":  "Compares CPU final architectural register and DMemory state against a fixed-seed PC-driven generated call/return reference program covering nested JAL/JALR calls, return-address links, stack save/restore, stack memory load/store, callee dependencies, and wrong-path side-effect suppression after returns.",
+                      "boundary":  "Fixed-seed, no-unbounded-loop, final-state call/return reference slice; not broad constrained-random verification, complete RAS proof, full RISC-V compliance, cycle-accurate pipeline modeling, or formal verification.",
+                      "evidence_level":  "random_reference",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "generated_reference_seed_smoke",
+                      "source":  "scripts/generated-reference-seed-smoke.ps1",
+                      "category":  "random_reference",
+                      "tags":  [
+                                   "random_reference",
+                                   "memory",
+                                   "control_flow",
+                                   "hazard",
+                                   "ras"
+                               ],
+                      "contract":  "Runs a deterministic bounded multi-seed smoke over generated memory, control-flow, mixed hazard, and nested call/return reference families while restoring the checked-in default artifacts afterward.",
+                      "boundary":  "Deterministic bounded multi-seed smoke over generated reference families; not broad constrained-random, not coverage closure, not formal verification, and not a replacement for checked-in default artifact freshness.",
+                      "evidence_level":  "multi_seed_generated_smoke",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "program",
+                      "source":  "tb/program/examples/tb_program.v",
+                      "category":  "smoke",
+                      "tags":  [
+                                   "smoke"
+                               ],
+                      "contract":  "Checks an assembled sum program executes and stores the expected architectural result.",
+                      "boundary":  "Loaded-program smoke only; not all assembler features.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "load_store_format_unit",
+                      "source":  "tb/unit/memory/tb_load_store_format_unit.v",
+                      "category":  "memory",
+                      "tags":  [
+                                   "memory",
+                                   "load_store"
+                               ],
+                      "contract":  "Standalone load/store formatter preserves CPU little-endian LB/LH/LW/LBU/LHU extension and SB/SH/SW merge behavior.",
+                      "boundary":  "Combinational formatting test only; does not verify D-cache FSM timing, MMIO timing, stalls, or pipeline register updates.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_call",
+                      "source":  "tb/program/examples/tb_program_call.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks an assembled call program returns a value through jal/jalr flow.",
+                      "boundary":  "Single call path only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_nested",
+                      "source":  "tb/program/examples/tb_program_nested.v",
+                      "category":  "ras",
+                      "tags":  [
+                                   "ras"
+                               ],
+                      "contract":  "Checks nested calls execute and return correctly with RAS depth behavior.",
+                      "boundary":  "Small nested-call program only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_stack",
+                      "source":  "tb/program/examples/tb_program_stack.v",
+                      "category":  "memory",
+                      "tags":  [
+                                   "memory"
+                               ],
+                      "contract":  "Checks stack-call program restores sp and returns the expected result.",
+                      "boundary":  "Directed stack discipline example only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_memory",
+                      "source":  "tb/program/isa/tb_program_memory.v",
+                      "category":  "memory",
+                      "tags":  [
+                                   "memory"
+                               ],
+                      "contract":  "Checks assembled word/subword memory operations and unsigned branches.",
+                      "boundary":  "Directed memory program only; not randomized memory stress.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_upper",
+                      "source":  "tb/program/isa/tb_program_upper.v",
+                      "category":  "alu",
+                      "tags":  [
+                                   "alu"
+                               ],
+                      "contract":  "Checks upper-immediate constants and signed branch selections in an assembled program.",
+                      "boundary":  "Directed upper/immediate slice only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_alu",
+                      "source":  "tb/program/isa/tb_program_alu.v",
+                      "category":  "alu",
+                      "tags":  [
+                                   "alu"
+                               ],
+                      "contract":  "Checks assembled register/immediate ALU operations across shifts, compares, and logic.",
+                      "boundary":  "Directed ALU program; not exhaustive random ALU testing.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_muldiv",
+                      "source":  "tb/program/isa/tb_program_muldiv.v",
+                      "category":  "alu",
+                      "tags":  [
+                                   "alu"
+                               ],
+                      "contract":  "Checks RV32M multiply, divide, and remainder instruction behavior including directed edge cases.",
+                      "boundary":  "ISA behavior slice only; no multi-cycle timing or performance claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_csr_trap",
+                      "source":  "tb/program/csr_trap/tb_program_csr_trap.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks assembled CSR/trap program records exception causes and PCs.",
+                      "boundary":  "Basic machine trap subset only; not full privileged compliance.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_mret_trap",
+                      "source":  "tb/program/csr_trap/tb_program_mret_trap.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks assembled trap program records causes and resumes through mret/mepc.",
+                      "boundary":  "Directed mret program flow only; no interrupt stack support claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_mstatus_trap_return",
+                      "source":  "tb/program/csr_trap/tb_program_mstatus_trap_return.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks an assembled ecall handler observes trap-entry mstatus.MIE=0 and MPIE=1, returns with mret, observes post-return MIE=1 and MPIE=1, and exposes a public debug_status pass/fail signature.",
+                      "boundary":  "Directed minimal mstatus.MIE/MPIE trap-return program only; not full mret semantics, privilege-level transitions, delegation, vectored mtvec, nested interrupt support, or full privileged compliance evidence.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_privileged_csr_edges",
+                      "source":  "tb/program/csr_trap/tb_program_privileged_csr_edges.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap"
+                               ],
+                      "contract":  "Checks an assembled program observes mtvec direct-mode alignment, mepc IALIGN=32 alignment, mstatus machine-only MPP plus MIE/MPIE WARL behavior, mie/mip implemented-bit masking, mtval read/write, and aligned mret return through a public debug_status pass/fail signature.",
+                      "boundary":  "Selected local machine-mode CSR edge coverage only; not a full privileged architecture, privilege-level transition model, delegation model, or official privileged compliance suite.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_exception_mcause_mtval",
+                      "source":  "tb/program/csr_trap/tb_program_exception_mcause_mtval.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "exception"
+                               ],
+                      "contract":  "Checks assembled ecall, ebreak, illegal-instruction, and instruction/load/store access-fault handlers observe the expected mcause, mepc, and mtval values, resume through mret, and publish a public debug_status pass/fail signature.",
+                      "boundary":  "Selected synchronous exception evidence only; not a full privileged architecture, every exception priority combination, or a trap trace compliance suite.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_misaligned_exception",
+                      "source":  "tb/program/csr_trap/tb_program_misaligned_exception.v",
+                      "category":  "csr_trap",
+                      "tags":  [
+                                   "csr_trap",
+                                   "exception",
+                                   "memory"
+                               ],
+                      "contract":  "Checks assembled misaligned lw and sw traps observe mcause=4/6, mepc at the faulting instruction, mtval as the faulting data address, load destination suppression, store side-effect suppression, and public debug_status pass/fail.",
+                      "boundary":  "Selected data-address misalignment behavior only; no misaligned instruction-fetch trap, virtual memory, atomics, or full privileged architecture claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_abi",
+                      "source":  "tb/program/examples/tb_program_abi.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks ABI-style call/return behavior and register aliases in an assembled program.",
+                      "boundary":  "Small ABI example only; not ABI compliance.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_li",
+                      "source":  "tb/program/examples/tb_program_li.v",
+                      "category":  "assembler",
+                      "tags":  [
+                                   "assembler"
+                               ],
+                      "contract":  "Checks expanded li pseudo-instructions load full-width constants and preserve label targets.",
+                      "boundary":  "Assembler pseudo slice only; not complete assembler compliance.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_address",
+                      "source":  "tb/program/examples/tb_program_address.v",
+                      "category":  "assembler",
+                      "tags":  [
+                                   "assembler"
+                               ],
+                      "contract":  "Checks la-style address expansion for forward and backward labels.",
+                      "boundary":  "Directed address pseudo coverage only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_pointer",
+                      "source":  "tb/program/examples/tb_program_pointer.v",
+                      "category":  "memory",
+                      "tags":  [
+                                   "memory"
+                               ],
+                      "contract":  "Checks la-derived pointer loads and stores through data memory.",
+                      "boundary":  "Small pointer example only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_array",
+                      "source":  "tb/program/examples/tb_program_array.v",
+                      "category":  "memory",
+                      "tags":  [
+                                   "memory"
+                               ],
+                      "contract":  "Checks pointer loop over .word data and stored sum result.",
+                      "boundary":  "Directed array loop only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_byte_array",
+                      "source":  "tb/program/examples/tb_program_byte_array.v",
+                      "category":  "memory",
+                      "tags":  [
+                                   "memory"
+                               ],
+                      "contract":  "Checks lbu pointer loop over packed byte data.",
+                      "boundary":  "Directed byte-array program only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_halfword_array",
+                      "source":  "tb/program/examples/tb_program_halfword_array.v",
+                      "category":  "memory",
+                      "tags":  [
+                                   "memory"
+                               ],
+                      "contract":  "Checks lhu pointer loop over packed halfword data.",
+                      "boundary":  "Directed halfword-array program only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_sum_function",
+                      "source":  "tb/program/examples/tb_program_sum_function.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks function call with pointer/count arguments and array-sum return value.",
+                      "boundary":  "Small leaf-function flow only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_nested_sum",
+                      "source":  "tb/program/examples/tb_program_nested_sum.v",
+                      "category":  "ras",
+                      "tags":  [
+                                   "ras",
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks non-leaf nested function calls restore frame state and return array-sum result.",
+                      "boundary":  "Directed nested-call program only; not deep randomized call stacks.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_byte_directive",
+                      "source":  "tb/program/examples/tb_program_byte_directive.v",
+                      "category":  "assembler",
+                      "tags":  [
+                                   "assembler"
+                               ],
+                      "contract":  "Checks .byte data, .align padding, and aligned loaded sum behavior.",
+                      "boundary":  "Directive slice only; not complete assembler directive coverage.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_half_directive",
+                      "source":  "tb/program/examples/tb_program_half_directive.v",
+                      "category":  "assembler",
+                      "tags":  [
+                                   "assembler"
+                               ],
+                      "contract":  "Checks .half data, .align padding, and aligned loaded sum behavior.",
+                      "boundary":  "Directive slice only; not complete assembler directive coverage.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_string",
+                      "source":  "tb/program/examples/tb_program_string.v",
+                      "category":  "assembler",
+                      "tags":  [
+                                   "assembler"
+                               ],
+                      "contract":  "Checks zero-terminated string data scanning in an assembled program.",
+                      "boundary":  "Small string data example only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_strlen",
+                      "source":  "tb/program/examples/tb_program_strlen.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks leaf strlen-style function returns byte length from string data.",
+                      "boundary":  "Small string function only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_strcmp",
+                      "source":  "tb/program/examples/tb_program_strcmp.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks strcmp-style function returns expected equality/difference results.",
+                      "boundary":  "Directed string compare program only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_string_escape",
+                      "source":  "tb/program/examples/tb_program_string_escape.v",
+                      "category":  "assembler",
+                      "tags":  [
+                                   "assembler"
+                               ],
+                      "contract":  "Checks .string escapes emit expected bytes and a terminator.",
+                      "boundary":  "String escape directive slice only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_count_char",
+                      "source":  "tb/program/examples/tb_program_count_char.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks count-char function over string data with matching and absent-byte cases.",
+                      "boundary":  "Directed string loop program only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_counter_loop",
+                      "source":  "tb/program/examples/tb_program_counter_loop.v",
+                      "category":  "performance_counter",
+                      "tags":  [
+                                   "performance_counter"
+                               ],
+                      "contract":  "Checks a small counter-loop workload stores a sum and emits performance counter INFO rows.",
+                      "boundary":  "Counter sampling workload only; not a benchmark result.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_perf_mmio_read",
+                      "source":  "tb/program/soc_io/tb_program_perf_mmio_read.v",
+                      "category":  "performance_counter",
+                      "tags":  [
+                                   "performance_counter",
+                                   "mmio"
+                               ],
+                      "contract":  "CPU program reads performance counters through the 0x600 MMIO window, proves cycle and retired counters are nonzero, checks MATVEC counters remain zero before any MATVEC start, verifies a store to the read-only counter window is ignored, and exposes a public pass/fail signature through debug_status.",
+                      "boundary":  "Bring-up observability smoke only; not a timing, CPI, speedup, benchmark, or throughput claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_uart_gpio_demo",
+                      "source":  "tb/program/soc_io/tb_program_uart_gpio_demo.v",
+                      "category":  "mmio",
+                      "tags":  [
+                                   "mmio",
+                                   "uart",
+                                   "smoke"
+                               ],
+                      "contract":  "CPU program polls UART TX ready through MMIO, emits RV32IM CPU OK newline through the synthesizable UART TX serializer, writes GPIO output pattern 0xa5, reads GPIO back in software, and exposes a public debug_status pass/fail signature.",
+                      "boundary":  "Board-facing SoC I/O simulation evidence only; not a full SoC, production UART subsystem, timing/baud tolerance proof, or physical board validation.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_showcase_demo",
+                      "source":  "tb/program/showcase/tb_program_showcase_demo.v",
+                      "category":  "ai_hardware",
+                      "tags":  [
+                                   "ai_hardware",
+                                   "mmio",
+                                   "uart",
+                                   "accelerator",
+                                   "performance_counter",
+                                   "smoke"
+                               ],
+                      "contract":  "CPU program emits the showcase UART transcript, drives GPIO phase markers, runs the MATVEC Scratchpad case, stores MATVEC results and counter snapshots, and exposes a public pass/fail signature.",
+                      "boundary":  "Bootable showcase simulation evidence only; counter snapshots are observability checks, not timing or performance claims.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_interactive_showcase_demo",
+                      "source":  "tb/program/showcase/tb_program_interactive_showcase_demo.v",
+                      "category":  "ai_hardware",
+                      "tags":  [
+                                   "ai_hardware",
+                                   "mmio",
+                                   "uart",
+                                   "accelerator",
+                                   "performance_counter",
+                                   "smoke"
+                               ],
+                      "contract":  "CPU program emits the interactive UART transcript, waits for runtime UART RX command M through the MMIO RX buffer, drives GPIO phases, runs the MATVEC Scratchpad case, stores MATVEC/counter snapshots, and exposes a public pass/fail signature.",
+                      "boundary":  "Interactive showcase simulation evidence only; counter snapshots are observability checks, not timing, CPI, speedup, or physical board evidence.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_hardware_validation_suite",
+                      "source":  "tb/program/showcase/tb_program_hardware_validation_suite.v",
+                      "category":  "ai_hardware",
+                      "tags":  [
+                                   "ai_hardware",
+                                   "alu",
+                                   "csr_trap",
+                                   "mmio",
+                                   "uart",
+                                   "accelerator",
+                                   "external_memory"
+                               ],
+                      "contract":  "Runs one CPU firmware image that self-checks all eight RV32M operations with selected edge cases, takes and returns from a machine timer interrupt, drives the DMEM-backed MATVEC DMA-lite engine, checks exact output/PERF values, emits an exact UART transcript, and exposes GPIO/public pass markers.",
+                      "boundary":  "Combined directed simulation evidence only; not official compliance, exhaustive ISA/privileged proof, physical-board evidence, production DMA, or benchmark evidence.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_compliance_basic",
+                      "source":  "tb/program/isa/tb_program_compliance_basic.v",
+                      "category":  "alu",
+                      "tags":  [
+                                   "alu",
+                                   "memory",
+                                   "control_flow"
+                               ],
+                      "contract":  "Checks a selected RV32I compliance-style instruction smoke program covering arithmetic, logical, shift, branch, and word load/store behavior.",
+                      "boundary":  "Selected local compliance-style smoke only; not an official compliance suite.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_rv32i_alu_compliance",
+                      "source":  "tb/program/isa/tb_program_rv32i_alu_compliance.v",
+                      "category":  "alu",
+                      "tags":  [
+                                   "alu",
+                                   "x0_invariant"
+                               ],
+                      "contract":  "Checks selected local RV32I compliance-style ALU behavior for register and immediate arithmetic, logic, comparisons, shifts, sign-bit/zero/-1 cases, shift 0/31, and x0 write suppression using a public debug_status pass/fail signature.",
+                      "boundary":  "Selected directed ALU evidence only; not an official compliance suite or exhaustive ISA proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_rv32i_control_compliance",
+                      "source":  "tb/program/isa/tb_program_rv32i_control_compliance.v",
+                      "category":  "control_flow",
+                      "tags":  [
+                                   "control_flow",
+                                   "branch",
+                                   "jump",
+                                   "side_effect_flush"
+                               ],
+                      "contract":  "Checks selected local RV32I compliance-style control-flow behavior for taken and not-taken branches, signed/unsigned branch boundaries, JAL link, JALR bit-0 clearing, return flow, and wrong-path suppression using a public debug_status pass/fail signature.",
+                      "boundary":  "Selected directed control-flow evidence only; not an official compliance suite, complete predictor proof, or full flush proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_rv32i_memory_compliance",
+                      "source":  "tb/program/isa/tb_program_rv32i_memory_compliance.v",
+                      "category":  "memory",
+                      "tags":  [
+                                   "memory",
+                                   "load_store"
+                               ],
+                      "contract":  "Checks selected local RV32I compliance-style load/store behavior for lb/lbu/lh/lhu/lw/sb/sh/sw, little-endian byte lanes, sign/zero extension, and overlapping subword stores using a public debug_status pass/fail signature.",
+                      "boundary":  "Selected directed memory evidence only; not an official compliance suite, memory-system proof, or cache-coherence claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_rv32m_compliance",
+                      "source":  "tb/program/isa/tb_program_rv32m_compliance.v",
+                      "category":  "alu",
+                      "tags":  [
+                                   "alu"
+                               ],
+                      "contract":  "Checks selected local RV32M compliance-style multiply/divide/remainder behavior for mul/mulh/mulhsu/mulhu/div/divu/rem/remu, division by zero, INT_MIN/-1, and signed/unsigned edge cases using a public debug_status pass/fail signature.",
+                      "boundary":  "Selected directed RV32M evidence only; not an official compliance suite, exhaustive arithmetic proof, or timing/performance claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "program_board_smoke",
+                      "source":  "tb/program/showcase/tb_program_board_smoke.v",
+                      "category":  "smoke",
+                      "tags":  [
+                                   "smoke"
+                               ],
+                      "contract":  "Checks board-smoke program writes the pass value to the status address.",
+                      "boundary":  "Simulation status smoke only; not board-proven.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_board_smoke",
+                      "source":  "tb/integration/fpga/tb_fpga_top_board_smoke.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks FPGA top exposes board-smoke status on LED outputs.",
+                      "boundary":  "Wrapper simulation only; no synthesis or board result.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "basys3_board_smoke_top",
+                      "source":  "tb/integration/fpga/tb_basys3_board_smoke_top.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks the separate straight-line Basys3 board-smoke top synchronizes stable switch inputs, runs board_smoke from internal memory, and exposes pass, done, debug PC nibble, and status low byte on public LED pins.",
+                      "boundary":  "Wrapper simulation only; Vivado timing closure and bitstream status are tracked by the Basys3 Vivado flow, and this test is not physical board validation.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "basys3_full_lowfreq_top",
+                      "source":  "tb/integration/fpga/tb_basys3_full_lowfreq_top.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper",
+                                   "boot",
+                                   "uart",
+                                   "reset"
+                               ],
+                      "contract":  "Checks the full-feature Basys3 low-frequency wrapper models a divide-by-16 locked clock, serially packet-boots the checked-in board-smoke image, reaches public pass/done LEDs, toggles heartbeat, and returns to boot waiting after reset.",
+                      "boundary":  "Portable wrapper simulation only; it does not prove Vivado MMCM implementation, generated-clock timing closure, UART baud tolerance, or physical-board behavior.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_program_override",
+                      "source":  "tb/integration/fpga/tb_fpga_top_program_override.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks FPGA top program parameters select an alternate smoke image.",
+                      "boundary":  "Parameter simulation only; no board image flow claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_reset_sync",
+                      "source":  "tb/integration/fpga/tb_fpga_top_reset_sync.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks FPGA top reset synchronizer releases the CPU cleanly.",
+                      "boundary":  "Simulation reset check only; no timing closure claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_reset_active_low",
+                      "source":  "tb/integration/fpga/tb_fpga_top_reset_active_low.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks active-low reset handling in the FPGA top.",
+                      "boundary":  "Wrapper polarity check only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_leds_active_low",
+                      "source":  "tb/integration/fpga/tb_fpga_top_leds_active_low.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks active-low LED output inversion in the FPGA top.",
+                      "boundary":  "LED polarity simulation only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_done",
+                      "source":  "tb/integration/fpga/tb_fpga_top_done.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks FPGA top asserts done at the board-smoke final loop.",
+                      "boundary":  "Done flag simulation only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_smoke_pass",
+                      "source":  "tb/integration/fpga/tb_fpga_top_smoke_pass.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks FPGA top smoke_pass assertion for matching status values.",
+                      "boundary":  "Status comparator simulation only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_smoke_fail",
+                      "source":  "tb/integration/fpga/tb_fpga_top_smoke_fail.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks FPGA top smoke_fail assertion for mismatched status values.",
+                      "boundary":  "Failure flag simulation only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_debug_flags",
+                      "source":  "tb/integration/fpga/tb_fpga_top_debug_flags.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks FPGA top debug flags summarize reset, done, pass, and fail state.",
+                      "boundary":  "Debug flag mapping only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_leds_debug_flags",
+                      "source":  "tb/integration/fpga/tb_fpga_top_leds_debug_flags.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks FPGA top maps debug flags onto LED outputs.",
+                      "boundary":  "Wrapper LED debug mapping only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_memory_size",
+                      "source":  "tb/integration/fpga/tb_fpga_top_memory_size.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks FPGA top runs board smoke with parameterized 128-word memories.",
+                      "boundary":  "Small parameter smoke only; not memory sizing signoff.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_heartbeat",
+                      "source":  "tb/integration/fpga/tb_fpga_top_heartbeat.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks heartbeat toggles after synchronized reset release.",
+                      "boundary":  "Simulation heartbeat only; no board clock claim.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_config_error",
+                      "source":  "tb/integration/fpga/tb_fpga_top_config_error.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks FPGA and UART-boot wrapper memory/program/heartbeat/UART-divisor guards, one-word core address bounds, core/external-DMEM initialization bounds, external-memory/cache compatibility, complete-line capacity, safe invalid-config outputs, and integrated SoC reset hold.",
+                      "boundary":  "Parameter validation only.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_top_uart_tx",
+                      "source":  "tb/integration/fpga/tb_fpga_top_uart_tx.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks FPGA top internal UART TX serializes MMIO data.",
+                      "boundary":  "Wrapper-level UART TX simulation only; no board serial proof.",
+                      "evidence_level":  "directed",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_uart_boot_top",
+                      "source":  "tb/integration/fpga/tb_fpga_uart_boot_top.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper",
+                                   "boot",
+                                   "uart",
+                                   "mmio"
+                               ],
+                      "contract":  "Checks the packetized UART boot FPGA top accepts a serial boot packet for uart_gpio_demo, releases CPU execution from external IMEM, reconstructs UART TX output, observes GPIO 0xa5, and sees the public pass signature.",
+                      "boundary":  "Simulation-tested serial boot packet flow and board-facing top-level ports only; not physically board-validated, not timing evidence, and not a deploy-ready boot ROM.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_uart_boot_showcase",
+                      "source":  "tb/integration/fpga/tb_fpga_uart_boot_showcase.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper",
+                                   "boot",
+                                   "uart",
+                                   "mmio",
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "performance_counter"
+                               ],
+                      "contract":  "Checks packetized UART boot loads showcase_demo through the FPGA-facing top, releases CPU execution, captures the full UART transcript, observes GPIO phases/final value, checks MATVEC/counter snapshots, and sees the public pass signature.",
+                      "boundary":  "Simulation-tested packet UART boot to CPU execution only; not physical board evidence, timing evidence, or benchmark evidence.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_uart_boot_bram_soc_showcase",
+                      "source":  "tb/integration/fpga/tb_fpga_uart_boot_bram_soc_showcase.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper",
+                                   "boot",
+                                   "uart",
+                                   "external_memory",
+                                   "mmio",
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "performance_counter"
+                               ],
+                      "contract":  "Checks packetized UART boot loads showcase_demo through RISCVCPU_uart_boot_bram_soc_top, releases CPU execution with external IMEM and external DMem enabled, captures the full UART transcript, observes GPIO phases/final value, checks external DMem MATVEC/counter snapshots, sees external DMem read/write traffic, and sees the public pass signature.",
+                      "boundary":  "Simulation-tested external instruction boot plus external data-memory path only; not physical board evidence, timing evidence, or benchmark evidence.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_uart_boot_runtime_rx_showcase",
+                      "source":  "tb/integration/fpga/tb_fpga_uart_boot_runtime_rx_showcase.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper",
+                                   "boot",
+                                   "uart",
+                                   "external_memory",
+                                   "mmio",
+                                   "accelerator",
+                                   "ai_hardware",
+                                   "performance_counter"
+                               ],
+                      "contract":  "Checks packetized UART boot loads interactive_showcase_demo through RISCVCPU_uart_boot_runtime_soc_top, releases CPU execution with external IMEM and external DMem enabled, waits for READY, sends runtime command M on the same UART RX pin, captures the transcript, observes GPIO phases/final value, checks external DMem MATVEC/counter snapshots and read/write traffic, sees the public pass signature, and verifies synchronous board-reset propagation with external-BRAM retention.",
+                      "boundary":  "Simulation-tested boot-to-runtime UART RX handoff only; not physical board evidence, production firmware, timing evidence, or benchmark evidence.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_uart_boot_hardware_validation_suite",
+                      "source":  "tb/integration/fpga/tb_fpga_uart_boot_hardware_validation_suite.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper",
+                                   "boot",
+                                   "uart",
+                                   "external_memory",
+                                   "alu",
+                                   "csr_trap",
+                                   "mmio",
+                                   "accelerator",
+                                   "ai_hardware"
+                               ],
+                      "contract":  "Serial packet-boots hardware_validation_suite through RISCVCPU_uart_boot_runtime_soc_top, captures the exact UART transcript, checks GPIO/public status, and verifies timer snapshots plus MATVEC DMA-lite outputs/PERF in external DMem while rejecting internal DMemory as the observation point.",
+                      "boundary":  "Full wrapper simulation evidence only; not physical-board validation, exhaustive ISA/interrupt proof, production DMA, timing evidence, or benchmark evidence.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "fpga_debug_led_top",
+                      "source":  "tb/integration/fpga/tb_fpga_debug_led_top.v",
+                      "category":  "fpga_wrapper",
+                      "tags":  [
+                                   "fpga_wrapper"
+                               ],
+                      "contract":  "Checks debug LED top displays board-smoke debug flags.",
+                      "boundary":  "Debug wrapper simulation only; no board-specific constraint proof.",
+                      "evidence_level":  "smoke",
+                      "uses_hierarchical_access":  true,
+                      "included_in_full_regression":  true
+                  },
+                  {
+                      "name":  "claim_audit",
+                      "source":  "scripts/claim-audit.ps1",
+                      "category":  "smoke",
+                      "tags":  [
+                                   "smoke"
+                               ],
+                      "contract":  "Checks README, docs, release metadata, and workflow text for unsafe public wording, stale counts, and claim-boundary drift.",
+                      "boundary":  "Release wording audit only; it does not replace executable RTL, software, FPGA, or arch-test evidence.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "docs_link_audit",
+                      "source":  "scripts/docs-link-audit.ps1",
+                      "category":  "smoke",
+                      "tags":  [
+                                   "smoke"
+                               ],
+                      "contract":  "Checks local Markdown links and repo-root inline path references across README, docs, and release Markdown.",
+                      "boundary":  "Documentation consistency audit only; it does not prove linked hardware behavior.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  },
+                  {
+                      "name":  "final_audit",
+                      "source":  "scripts/final-audit.ps1",
+                      "category":  "smoke",
+                      "tags":  [
+                                   "smoke"
+                               ],
+                      "contract":  "Checks the current two-accelerator architecture inventory, public docs, exact full-regression test set, lint/synthesis/formal gates, source-matched Basys3 timing and bitstream metadata, scoped physical-evidence integrity, clone-safe evidence packages, and clean diff formatting.",
+                      "boundary":  "Final consistency gate only; it accepts physical claims only from the exact durable evidence suite and never infers them from implementation or bitstream generation.",
+                      "evidence_level":  "script_check",
+                      "uses_hierarchical_access":  false,
+                      "included_in_full_regression":  false
+                  }
+              ]
+}

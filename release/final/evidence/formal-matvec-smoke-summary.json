@@ -1,0 +1,12 @@
+{
+    "generated_at_utc":  "2026-07-30T04:31:12.6580709Z",
+    "status":  "pass",
+    "harnesses":  [
+                      "matvec_scratchpad_formal"
+                  ],
+    "claim_boundary":  "Bounded MATVEC Scratchpad control smoke only; not unbounded liveness or complete accelerator correctness.",
+    "source_commit":  "d7f1afe8ef1a28205e5448a9c9507bb97005b2f9",
+    "verification_input_fingerprint":  "74864f9e590c5ff6b7ee22adfe1728aacd18352c1244d960f7039f678621d683",
+    "verification_input_count":  437,
+    "verification_working_tree_dirty":  false
+}

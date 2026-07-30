@@ -1,0 +1,13 @@
+#ifndef RV32IM_SOC_RVTEST_CONFIG_H
+#define RV32IM_SOC_RVTEST_CONFIG_H
+
+#define UDB_MXLEN 32
+#define I_SUPPORTED
+#define M_SUPPORTED
+#define ZICSR_SUPPORTED
+#define ZIFENCEI_SUPPORTED
+
+#define TEST_FLEN 32
+#define UDB_VLEN 0
+
+#endif

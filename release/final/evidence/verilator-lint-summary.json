@@ -1,0 +1,21 @@
+{
+    "generated_at_utc":  "2026-07-30T04:13:57.8646293Z",
+    "status":  "pass",
+    "checked_tops":  [
+                         "RISCVCPU",
+                         "RISCVCPU_fpga_top",
+                         "RISCVCPU_uart_boot_fpga_top",
+                         "RISCVCPU_uart_boot_bram_soc_top",
+                         "RISCVCPU_uart_boot_runtime_soc_top",
+                         "RISCVCPU_fpga_debug_led_top",
+                         "RISCVCPU_basys3_top",
+                         "RISCVCPU_basys3_board_smoke_top",
+                         "RISCVCPU_basys3_full_lowfreq_top"
+                     ],
+    "source_count":  37,
+    "claim_boundary":  "Verilator lint only; not simulation, synthesis, timing closure, or physical validation.",
+    "source_commit":  "d7f1afe8ef1a28205e5448a9c9507bb97005b2f9",
+    "verification_input_fingerprint":  "74864f9e590c5ff6b7ee22adfe1728aacd18352c1244d960f7039f678621d683",
+    "verification_input_count":  437,
+    "verification_working_tree_dirty":  false
+}

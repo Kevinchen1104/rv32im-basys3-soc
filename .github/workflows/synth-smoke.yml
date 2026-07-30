@@ -1,0 +1,25 @@
+name: Optional Yosys Synthesis Smoke
+
+on:
+  workflow_dispatch:
+
+jobs:
+  yosys-synth-smoke:
+    name: Yosys synthesis smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Yosys
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yosys
+
+      - name: Verify Yosys
+        run: yosys -V
+
+      - name: Run optional Yosys synthesis smoke
+        shell: pwsh
+        run: pwsh -ExecutionPolicy Bypass -File scripts/synth-smoke.ps1

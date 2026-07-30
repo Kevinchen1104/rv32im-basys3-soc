@@ -1,0 +1,403 @@
+{
+    "generated_at_utc":  "2026-07-30T05:58:25.0296899Z",
+    "status":  "pass",
+    "mode":  "bitstream",
+    "exit_code":  0,
+    "vivado":  {
+                   "name":  "Vivado",
+                   "command":  "vivado",
+                   "path":  "<vivado-install>",
+                   "version":  "vivado v2026.1 (64-bit)\nTool Version Limit: 2026.06\nSW Build 6511674 on Tue Jun 16 11:02:23 MDT 2026\nIP Build 6504888 on Tue Jun 09 09:05:25 MDT 2026\nSharedData Build 6501428 on Mon Jun 08 17:34:18 MDT 2026\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\nCopyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved."
+               },
+    "part":  "xc7a35tcpg236-1",
+    "top":  "RISCVCPU_basys3_top",
+    "source_commit":  "d7f1afe8ef1a28205e5448a9c9507bb97005b2f9",
+    "working_tree_dirty":  false,
+    "source_fingerprint":  "ac14c293a9e0cae8d27876321955f2cf950f93c333a602184f522fdb0833c724",
+    "verification_input_fingerprint":  "74864f9e590c5ff6b7ee22adfe1728aacd18352c1244d960f7039f678621d683",
+    "verification_input_count":  437,
+    "verification_working_tree_dirty":  false,
+    "source_inputs":  [
+                          {
+                              "path":  "fpga/boards/basys3/basys3.xdc",
+                              "sha256":  "abc10933e6829519150e9d46379e6e9b05b4ef67e736c919e1c942fb88ca0a29"
+                          },
+                          {
+                              "path":  "fpga/fpga_sources.f",
+                              "sha256":  "c86bc176c33364a534346e20a800b10307dddaaf5d3a18dd0f4b1364fc163619"
+                          },
+                          {
+                              "path":  "fpga/vivado/basys3_build.tcl",
+                              "sha256":  "f7b4b88c0aa476bff552db7707536a893f6f76ed747437115309f0dbccd077be"
+                          },
+                          {
+                              "path":  "rtl/accelerators/matvec/int8_matvec_dma_lite.v",
+                              "sha256":  "88f9dcf8cc9fa0c402337e3321b23e78460fe8f5b7788a259aacf890ce5720ca"
+                          },
+                          {
+                              "path":  "rtl/accelerators/matvec/int8_matvec_scratchpad_accelerator.v",
+                              "sha256":  "704924efce87393a454740ef942829f23c8a15e00717472ecc52b1eeb4d33c4a"
+                          },
+                          {
+                              "path":  "rtl/boot/uart/boot_reset_controller.v",
+                              "sha256":  "ebe79111994a55b904da017a17aa007ce46fafe622b7edea3e00c7a7e85e97a6"
+                          },
+                          {
+                              "path":  "rtl/boot/uart/uart_packet_boot_imem.v",
+                              "sha256":  "aaa4f93608fd28314a9ec59da23b72a34fb411ea23c0e962689fc50857b371a8"
+                          },
+                          {
+                              "path":  "rtl/boot/uart/uart_serial_packet_boot_imem.v",
+                              "sha256":  "d1e5e461cbb8596f0cbb552829c6f945449fcff53b1b68893858fb79c9a1f386"
+                          },
+                          {
+                              "path":  "rtl/core/csr/csr_unit.v",
+                              "sha256":  "89d311f18ff493bc1598b6d534cfc2361d9ae199cbf7a7dda95b35a3544a4ea5"
+                          },
+                          {
+                              "path":  "rtl/core/csr/exception_decode_unit.v",
+                              "sha256":  "1fd70d824ededf838d3b92a23303a7212c1149264489b7744a4cdd9866609e2d"
+                          },
+                          {
+                              "path":  "rtl/core/csr/trap_redirect_control_unit.v",
+                              "sha256":  "bc69aa2bafd1dc1cb23b9fe01e6a2b52cbe10561d86df2467e66cb9b7cdc9fb4"
+                          },
+                          {
+                              "path":  "rtl/core/execute/branch_jump_unit.v",
+                              "sha256":  "a3f4b032268c087afc258656a3cb6835bb922c5f9a86473ee5c9d894a5666137"
+                          },
+                          {
+                              "path":  "rtl/core/execute/riscv_alu.v",
+                              "sha256":  "f84835df50d7ec23f7d62434a1814647e1673778127a7a359273810f69a3ab7f"
+                          },
+                          {
+                              "path":  "rtl/core/execute/rv32m_multicycle_unit.v",
+                              "sha256":  "c2727338a391ff4f4735183aadeb6d78fe1c56dc2c5767445ef73000b8469a92"
+                          },
+                          {
+                              "path":  "rtl/core/frontend/branch_predictor.v",
+                              "sha256":  "fa1beb06949f5c8c6f76a18abd25698722c0c90e6a3854dcf554edff7002245a"
+                          },
+                          {
+                              "path":  "rtl/core/frontend/ras_unit.v",
+                              "sha256":  "d52c77c8c53ea3e68abcd2604db2ee95e3536b28af2b1644c9740121aa1e0a7b"
+                          },
+                          {
+                              "path":  "rtl/core/pipeline/forwarding_unit.v",
+                              "sha256":  "65af61c7979c224453809c2fb7bc44c364b1e630c3145f20c30f459712d87362"
+                          },
+                          {
+                              "path":  "rtl/core/pipeline/hazard_unit.v",
+                              "sha256":  "546f98c41b7b21e4e9a105d4649f0a7481eb2422acba514dbf6a72f93f5ec8b4"
+                          },
+                          {
+                              "path":  "rtl/core/pipeline/pipeline_control_unit.v",
+                              "sha256":  "be0928ae8f3cadcf88e5861e8533869b19a7de9b53ff683630b77c89ebf29481"
+                          },
+                          {
+                              "path":  "rtl/core/riscv_cpu_core.v",
+                              "sha256":  "94b434f3caf3088f630a0254e92b8fb2d8ae17144e10c59d4888be240487db32"
+                          },
+                          {
+                              "path":  "rtl/memory/bram/external_dmem_bram.v",
+                              "sha256":  "a170244a7dce1f30fefb51257df95a07531299e160b03afc40c7cdec49554dbb"
+                          },
+                          {
+                              "path":  "rtl/memory/cache/dcache_unit.v",
+                              "sha256":  "0f0a0489bae1ada7acf22ccf663285100df5dec15a5934492387e3829cf71873"
+                          },
+                          {
+                              "path":  "rtl/memory/cache/icache_unit.v",
+                              "sha256":  "3520c30c8bb4f35ca34dad87bae65d25433ba23ae3aac33f40b42278ead24231"
+                          },
+                          {
+                              "path":  "rtl/memory/load_store_format_unit.v",
+                              "sha256":  "58c7e7ff17a47b4e5d20157531c2abcbcea631cd4ad328f5acbcad2721871c01"
+                          },
+                          {
+                              "path":  "rtl/peripherals/timer/machine_timer.v",
+                              "sha256":  "61b7b67fd240f4e9559b7e07af81a889edb90032c5ab26a0066fdddccc15c4d1"
+                          },
+                          {
+                              "path":  "rtl/peripherals/uart/uart_rx.v",
+                              "sha256":  "b2907c7445863b247c3c813b8befd1b082f0e6ef4504954d5f36fd33dc801b08"
+                          },
+                          {
+                              "path":  "rtl/peripherals/uart/uart_rx_mmio_buffer.v",
+                              "sha256":  "66a911f4f13ee39fed0c572274ce8457040f98e8468517a271000bef14ddd4ad"
+                          },
+                          {
+                              "path":  "rtl/peripherals/uart/uart_tx.v",
+                              "sha256":  "73d3b813c43d2bc5117741ae35432dce524004fb43a490197e171a9ce77de9a2"
+                          },
+                          {
+                              "path":  "rtl/soc/mmio/mmio_decode.v",
+                              "sha256":  "ddcf03d0ec255b662f4333e454da23c14d73e0bf33f96e8ffe2326bfc13815d5"
+                          },
+                          {
+                              "path":  "rtl/soc/mmio/mmio_read_mux.v",
+                              "sha256":  "94e4cd860422e34de976864c8970dd5eb3cb8235731ef76c420057e48c42e424"
+                          },
+                          {
+                              "path":  "rtl/soc/perf/performance_counter_unit.v",
+                              "sha256":  "60fadcfce1844892027eccdf2b740abc1c8154977f374d2fda5e27b922d5d7b9"
+                          },
+                          {
+                              "path":  "rtl/top/boards/basys3/basys3_lowfreq_clock_gen.v",
+                              "sha256":  "748cde385747dbdd79ab76ac6738530b5604db8ba5445486447272a980b11c62"
+                          },
+                          {
+                              "path":  "rtl/top/boards/basys3/riscv_cpu_basys3_board_smoke_top.v",
+                              "sha256":  "21aa81d515c69aad6c79212554bdb4c904ce7885e48a6436ca995565d4c01757"
+                          },
+                          {
+                              "path":  "rtl/top/boards/basys3/riscv_cpu_basys3_full_lowfreq_top.v",
+                              "sha256":  "0d920fe5593eed3f1f38f9cee462acba0b6d9b291814a66f9784ed1bc9b9b2e5"
+                          },
+                          {
+                              "path":  "rtl/top/boards/basys3/riscv_cpu_basys3_top.v",
+                              "sha256":  "e2e378546771bc34a1559c34bdd6b650b79621c4be93b71667715deb651dba7f"
+                          },
+                          {
+                              "path":  "rtl/top/generic/riscv_cpu_fpga_debug_led_top.v",
+                              "sha256":  "2b69230aa3a1e21d73235a6be3830f8599bcb8e4586bbe1f8982f0f370f3af88"
+                          },
+                          {
+                              "path":  "rtl/top/generic/riscv_cpu_fpga_top.v",
+                              "sha256":  "9172cd6959da2a4bc2faf2be9957c8dfef4e6fa76eb0f53158345a5ccdd4b0bb"
+                          },
+                          {
+                              "path":  "rtl/top/soc/riscv_cpu_uart_boot_bram_soc_top.v",
+                              "sha256":  "6609afe9eac3b4071a1d4fe85415012d8db346139d551fa01da73f2257e719d1"
+                          },
+                          {
+                              "path":  "rtl/top/soc/riscv_cpu_uart_boot_fpga_top.v",
+                              "sha256":  "2b4032724c4eb0e6771c29d4dfa6d62e4a7bd1ba01a2e864cce5cc3fbb508fc5"
+                          },
+                          {
+                              "path":  "rtl/top/soc/riscv_cpu_uart_boot_runtime_soc_top.v",
+                              "sha256":  "803320e0c74875f2043e57d687af16b64cc9ea4b720be097d3851c7ff3df23c2"
+                          }
+                      ],
+    "tcl":  "<repo>\\fpga\\vivado\\basys3_build.tcl",
+    "out_dir":  "build\\vivado\\basys3_full_100mhz_canonical",
+    "log":  "wave\\vivado-basys3-build.log",
+    "vivado_log":  "<repo>\\wave\\vivado-basys3-vivado.log",
+    "vivado_journal":  "<repo>\\wave\\vivado-basys3-vivado.jou",
+    "vivado_temp_dir":  "<repo>\\build\\vivado\\basys3_full_100mhz_canonical\\tmp",
+    "command":  "vivado -mode batch -log <repo>/wave/vivado-basys3-vivado.log -journal <repo>/wave/vivado-basys3-vivado.jou -tempDir <repo>/build/vivado/basys3_full_100mhz_canonical/tmp -source <repo>/fpga/vivado/basys3_build.tcl -tclargs -repo_root <repo> -out_dir <repo>/build/vivado/basys3_full_100mhz_canonical -top RISCVCPU_basys3_top -run_synth_only 0 -run_impl 1 -generate_bitstream 1 -opt_directive ExploreWithRemap -place_directive Explore -phys_opt_directive Explore -route_directive NoTimingRelaxation",
+    "peak_memory_mb":  2661.773,
+    "synth_status":  "pass",
+    "implementation_status":  "pass",
+    "timing_status":  "pass",
+    "timing_closure_status":  "met",
+    "timing_constraint_status":  "pass",
+    "implementation_strategy":  {
+                                    "opt_directive":  "ExploreWithRemap",
+                                    "place_directive":  "Explore",
+                                    "phys_opt_directive":  "Explore",
+                                    "route_directive":  "NoTimingRelaxation"
+                                },
+    "drc_status":  "pass",
+    "bitstream_status":  "pass",
+    "reports":  {
+                    "post_synth_utilization":  {
+                                                   "path":  "<repo>\\build\\vivado\\basys3_full_100mhz_canonical\\reports\\post_synth_utilization.rpt",
+                                                   "present":  true,
+                                                   "lut":  {
+                                                               "used":  12766,
+                                                               "available":  20800,
+                                                               "percent":  61.38
+                                                           },
+                                                   "ff":  {
+                                                              "used":  7148,
+                                                              "available":  41600,
+                                                              "percent":  17.18
+                                                          },
+                                                   "bram":  {
+                                                                "used":  2,
+                                                                "available":  50,
+                                                                "percent":  4
+                                                            },
+                                                   "dsp":  {
+                                                               "used":  0,
+                                                               "available":  90,
+                                                               "percent":  0
+                                                           },
+                                                   "io":  {
+                                                              "used":  36,
+                                                              "available":  106,
+                                                              "percent":  33.96
+                                                          }
+                                               },
+                    "post_synth_timing":  {
+                                              "path":  "<repo>\\build\\vivado\\basys3_full_100mhz_canonical\\reports\\post_synth_timing_summary.rpt",
+                                              "present":  true,
+                                              "wns_ns":  0.087,
+                                              "tns_ns":  0,
+                                              "whs_ns":  0.045,
+                                              "ths_ns":  0,
+                                              "no_clock_count":  0,
+                                              "unconstrained_internal_endpoint_count":  0,
+                                              "no_input_delay_count":  0,
+                                              "no_output_delay_count":  0
+                                          },
+                    "post_synth_critical_path":  {
+                                                     "path":  "<repo>\\build\\vivado\\basys3_full_100mhz_canonical\\reports\\post_synth_critical_paths.rpt",
+                                                     "present":  true,
+                                                     "slack_ns":  0.087,
+                                                     "source":  "soc/cpu/EXMEMForwardRd_reg[3]/C",
+                                                     "destination":  "soc/cpu/ControlRedirectPending_reg/D",
+                                                     "path_group":  "sys_clk_pin",
+                                                     "logic_levels":  13,
+                                                     "cell_types":  "(CARRY4=3 LUT2=1 LUT3=2 LUT4=1 LUT5=2 LUT6=4)"
+                                                 },
+                    "post_synth_clocks":  [
+                                              {
+                                                  "name":  "board_async_input_ref",
+                                                  "period_ns":  10,
+                                                  "frequency_mhz":  100,
+                                                  "generated":  "0",
+                                                  "source_pin":  "none"
+                                              },
+                                              {
+                                                  "name":  "board_output_budget",
+                                                  "period_ns":  20,
+                                                  "frequency_mhz":  50,
+                                                  "generated":  "0",
+                                                  "source_pin":  "none"
+                                              },
+                                              {
+                                                  "name":  "sys_clk_pin",
+                                                  "period_ns":  10,
+                                                  "frequency_mhz":  100,
+                                                  "generated":  "0",
+                                                  "source_pin":  "clk"
+                                              }
+                                          ],
+                    "post_synth_drc":  {
+                                           "path":  "<repo>\\build\\vivado\\basys3_full_100mhz_canonical\\reports\\post_synth_drc.rpt",
+                                           "present":  true,
+                                           "checks_found":  0,
+                                           "parsed_check_count":  0,
+                                           "report_parse_complete":  true,
+                                           "error_count":  0,
+                                           "critical_warning_count":  0,
+                                           "warning_count":  0,
+                                           "advisory_count":  0,
+                                           "unapproved_warning_count":  0,
+                                           "bram_async_control_warning_count":  0,
+                                           "release_approved":  true,
+                                           "allowed_warning_rules":  [
+
+                                                                     ],
+                                           "unapproved_rules":  [
+
+                                                                ],
+                                           "rules":  [
+
+                                                     ]
+                                       },
+                    "post_route_utilization":  {
+                                                   "path":  "<repo>\\build\\vivado\\basys3_full_100mhz_canonical\\reports\\post_route_utilization.rpt",
+                                                   "present":  true,
+                                                   "lut":  {
+                                                               "used":  12578,
+                                                               "available":  20800,
+                                                               "percent":  60.47
+                                                           },
+                                                   "ff":  {
+                                                              "used":  7148,
+                                                              "available":  41600,
+                                                              "percent":  17.18
+                                                          },
+                                                   "bram":  {
+                                                                "used":  2,
+                                                                "available":  50,
+                                                                "percent":  4
+                                                            },
+                                                   "dsp":  {
+                                                               "used":  0,
+                                                               "available":  90,
+                                                               "percent":  0
+                                                           },
+                                                   "io":  {
+                                                              "used":  36,
+                                                              "available":  106,
+                                                              "percent":  33.96
+                                                          }
+                                               },
+                    "post_route_timing":  {
+                                              "path":  "<repo>\\build\\vivado\\basys3_full_100mhz_canonical\\reports\\post_route_timing_summary.rpt",
+                                              "present":  true,
+                                              "wns_ns":  0.318,
+                                              "tns_ns":  0,
+                                              "whs_ns":  0.027,
+                                              "ths_ns":  0,
+                                              "no_clock_count":  0,
+                                              "unconstrained_internal_endpoint_count":  0,
+                                              "no_input_delay_count":  0,
+                                              "no_output_delay_count":  0
+                                          },
+                    "post_route_critical_path":  {
+                                                     "path":  "<repo>\\build\\vivado\\basys3_full_100mhz_canonical\\reports\\post_route_critical_paths.rpt",
+                                                     "present":  true,
+                                                     "slack_ns":  0.318,
+                                                     "source":  "soc/cpu/EXMEMALUOut_reg[6]/C",
+                                                     "destination":  "soc/cpu/MEMWBValue_reg[3]/D",
+                                                     "path_group":  "sys_clk_pin",
+                                                     "logic_levels":  10,
+                                                     "cell_types":  "(LUT3=2 LUT4=1 LUT5=1 LUT6=6)"
+                                                 },
+                    "post_route_clocks":  [
+                                              {
+                                                  "name":  "board_async_input_ref",
+                                                  "period_ns":  10,
+                                                  "frequency_mhz":  100,
+                                                  "generated":  "0",
+                                                  "source_pin":  "none"
+                                              },
+                                              {
+                                                  "name":  "board_output_budget",
+                                                  "period_ns":  20,
+                                                  "frequency_mhz":  50,
+                                                  "generated":  "0",
+                                                  "source_pin":  "none"
+                                              },
+                                              {
+                                                  "name":  "sys_clk_pin",
+                                                  "period_ns":  10,
+                                                  "frequency_mhz":  100,
+                                                  "generated":  "0",
+                                                  "source_pin":  "clk"
+                                              }
+                                          ],
+                    "post_route_drc":  {
+                                           "path":  "<repo>\\build\\vivado\\basys3_full_100mhz_canonical\\reports\\post_route_drc.rpt",
+                                           "present":  true,
+                                           "checks_found":  0,
+                                           "parsed_check_count":  0,
+                                           "report_parse_complete":  true,
+                                           "error_count":  0,
+                                           "critical_warning_count":  0,
+                                           "warning_count":  0,
+                                           "advisory_count":  0,
+                                           "unapproved_warning_count":  0,
+                                           "bram_async_control_warning_count":  0,
+                                           "release_approved":  true,
+                                           "allowed_warning_rules":  [
+
+                                                                     ],
+                                           "unapproved_rules":  [
+
+                                                                ],
+                                           "rules":  [
+
+                                                     ]
+                                       },
+                    "post_route_timing_exceptions":  "build\\vivado\\basys3_full_100mhz_canonical\\reports\\post_route_timing_exceptions.rpt"
+                },
+    "bitstream":  "build\\vivado\\basys3_full_100mhz_canonical\\RISCVCPU_basys3_top.bit",
+    "physical_validation_status":  "not_run",
+    "claim_boundary":  "Timing closure is only claimed if Vivado implementation timing report passes. Bitstream generation does not equal board validation."
+}

@@ -1,0 +1,60 @@
+name: Release consistency
+
+on:
+  push:
+    paths:
+      - ".github/workflows/**"
+      - "README.md"
+      - "docs/**"
+      - "firmware/**"
+      - "fixtures/**"
+      - "formal/**"
+      - "fpga/**"
+      - "release/**"
+      - "rtl/**"
+      - "scripts/**"
+      - "tb/**"
+      - "tools/**"
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "README.md"
+      - "docs/**"
+      - "firmware/**"
+      - "fixtures/**"
+      - "formal/**"
+      - "fpga/**"
+      - "release/**"
+      - "rtl/**"
+      - "scripts/**"
+      - "tb/**"
+      - "tools/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-consistency-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  final-audit:
+    name: Clone-safe final audit
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify release package consistency
+        shell: pwsh
+        run: |
+          if (Test-Path -LiteralPath "SOURCE_IDENTITY.json") {
+            powershell -NoProfile -ExecutionPolicy Bypass -File scripts\final-audit.ps1 -PackagedEvidence -PublishedRelease
+          } else {
+            powershell -NoProfile -ExecutionPolicy Bypass -File scripts\final-audit.ps1 -PackagedEvidence
+          }

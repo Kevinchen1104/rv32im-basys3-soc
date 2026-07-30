@@ -1,0 +1,14 @@
+[options]
+mode bmc
+depth 1
+
+[engines]
+smtbmc
+
+[script]
+read -formal riscv_alu.v alu_result_classification.sv
+prep -top alu_result_classification
+
+[files]
+rtl/core/execute/riscv_alu.v
+formal/alu_result_classification.sv

@@ -1,0 +1,18 @@
+{
+    "generated_at_utc":  "2026-07-30T04:30:38.3040862Z",
+    "status":  "pass",
+    "harnesses":  [
+                      "forwarding_alignment_equivalence",
+                      "alu_result_classification",
+                      "registered_branch_miss_event",
+                      "branch_predictor_payload_capture",
+                      "machine_timer_pending",
+                      "trap_metadata_commit",
+                      "x0_invariant"
+                  ],
+    "claim_boundary":  "Bounded formal smoke checks only; not complete CPU formal verification.",
+    "source_commit":  "d7f1afe8ef1a28205e5448a9c9507bb97005b2f9",
+    "verification_input_fingerprint":  "74864f9e590c5ff6b7ee22adfe1728aacd18352c1244d960f7039f678621d683",
+    "verification_input_count":  437,
+    "verification_working_tree_dirty":  false
+}

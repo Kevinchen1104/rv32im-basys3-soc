@@ -1,0 +1,15 @@
+[options]
+mode bmc
+depth 7
+
+[engines]
+smtbmc
+
+[script]
+read -formal -sv trap_metadata_commit.sv
+read -formal csr_unit.v
+prep -top trap_metadata_commit_formal
+
+[files]
+formal/trap_metadata_commit.sv
+rtl/core/csr/csr_unit.v

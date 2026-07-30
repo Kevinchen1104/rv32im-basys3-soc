@@ -1,0 +1,25 @@
+{
+    "generated_at_utc":  "2026-07-30T07:31:00.6363034Z",
+    "status":  "pass",
+    "scanned_files":  60,
+    "allowed_risky_language":  161,
+    "suspicious_matches":  [
+
+                           ],
+    "stale_matches":  [
+
+                      ],
+    "stale_match_count":  0,
+    "policy":  {
+                   "context_lines_before":  2,
+                   "context_lines_after":  0,
+                   "structured_non_claim_arrays":  true,
+                   "self_tests":  10
+               },
+    "boundary":  "Claim audit checks README, docs, release package metadata, and workflow text for unsafe public wording. Allowed matches require same-line or tightly wrapped negation, an explicit boundary field, a structured non_claims array, or an evidence-backed generated status line.",
+    "documentation_repository_head":  "7cd71138fd790d25751c0d4b720f18dcfc0eeba1",
+    "documentation_input_fingerprint":  "456bb369212330da62b4947df703176d1e879b4aab3a78da2a169600331c5b29",
+    "documentation_input_count":  374,
+    "documentation_source_working_tree_dirty":  false,
+    "documentation_input_scope":  "README, public docs/board metadata, audited source headers, workflows, and generated release text/metadata; generated audit copies and final artifact manifest excluded"
+}
