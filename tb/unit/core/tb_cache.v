@@ -10,7 +10,7 @@ module tb_cache;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_cache.vcd");
+        $dumpfile("results/waveforms/tb_cache.vcd");
         $dumpvars(0, tb_cache);
         reset_cpu();
 

@@ -8,7 +8,7 @@
 module tb_gpio_mmio;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
     wire [31:0] gpio_outputs;
@@ -93,8 +93,9 @@ module tb_gpio_mmio;
     integer i;
 
     initial begin
-        $dumpfile("wave/tb_gpio_mmio.vcd");
+        $dumpfile("results/waveforms/tb_gpio_mmio.vcd");
         $dumpvars(0, tb_gpio_mmio);
+        #1; // Initialize test memory after the DUT initial block.
 
         for (i = 0; i < 1024; i = i + 1) begin
             dut.IMemory[i] = 32'h0000_0013;

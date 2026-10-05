@@ -1,12 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_top_board_smoke
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: FPGA top exposes board-smoke status on LED outputs.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Wrapper simulation only; no synthesis or board result.
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_top_board_smoke;
 
@@ -35,7 +29,7 @@ module tb_fpga_top_board_smoke;
     always #5 clock = ~clock;
 
     initial begin
-        $dumpfile("wave/tb_fpga_top_board_smoke.vcd");
+        $dumpfile("results/waveforms/tb_fpga_top_board_smoke.vcd");
         $dumpvars(0, tb_fpga_top_board_smoke);
 
         reset = 1'b1;

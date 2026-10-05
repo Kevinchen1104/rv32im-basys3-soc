@@ -1,13 +1,10 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_rv32m_trap_squash
 // Purpose: Verifies that an older memory access fault squashes a younger RV32M operation.
 // Checks: Out-of-range load/store traps cannot start the adjacent MUL/DIV, leave no in-flight
 //   or ready state, and cannot feed a stale result to a different M instruction after mret.
 // Pass condition: Both fault phases trap once, suppress the younger M instruction, and retire
 //   the post-handler M instruction exactly once with its independently expected result.
-// Does not prove: Directed load/store access-fault interactions only; not exhaustive trap,
-//   RV32M arithmetic, cache, formal, timing, or physical-board evidence.
 
 module tb_assert_rv32m_trap_squash;
 
@@ -58,11 +55,17 @@ module tb_assert_rv32m_trap_squash;
 
     task observe_fault_squash;
         input [31:0] expected_cause;
+        integer wait_cycles;
         begin
+            wait_cycles = 0;
             while (!(dut.memory_access_fault_taken &&
                      dut.IDEXMExtension &&
                      (dut.IDEXPC == SQUASHED_M_PC))) begin
                 @(negedge clock);
+                wait_cycles = wait_cycles + 1;
+                if (wait_cycles >= 100) begin
+                    $fatal(1, "Phase %0d timed out waiting for the fault/RV32M overlap", phase);
+                end
             end
 
             if (dut.cache_miss !== 1'b0) begin
@@ -151,7 +154,7 @@ module tb_assert_rv32m_trap_squash;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_rv32m_trap_squash.vcd");
+        $dumpfile("results/waveforms/tb_assert_rv32m_trap_squash.vcd");
         $dumpvars(0, tb_assert_rv32m_trap_squash);
 
         run_load_fault_phase();

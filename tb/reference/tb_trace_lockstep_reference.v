@@ -1,12 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_trace_lockstep_reference
-// Purpose: Compares DUT behavior against deterministic local reference or signature fixtures.
 // Checks: Compares the CPU public retired trace stream against a local RV32IM software reference fixture for selected
 //   ALU/immediate, x0, control-flow, memory, and RV32M rows.
-// Pass condition: DUT outputs match the generated expected fixture or signature and no mismatch or timeout occurs.
-// Does not prove: Selected local differential verification only; not an official compliance suite, not exhaustive
-//   RV32IM coverage, not cycle-accurate timing proof, and not formal verification.
 
 module tb_trace_lockstep_reference;
 
@@ -14,7 +9,7 @@ module tb_trace_lockstep_reference;
     localparam TIMEOUT_CYCLES = 2500;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
     wire trace_valid;
@@ -168,8 +163,9 @@ module tb_trace_lockstep_reference;
     end
 
     initial begin
-        $dumpfile("wave/tb_trace_lockstep_reference.vcd");
+        $dumpfile("results/waveforms/tb_trace_lockstep_reference.vcd");
         $dumpvars(0, tb_trace_lockstep_reference);
+        #1; // Initialize test memory after the DUT initial block.
 
         program_hex_path = "fixtures/generated/reference/trace_lockstep_reference.hex";
         expected_trace_path = "fixtures/generated/reference/trace_lockstep_expected.hex";
@@ -183,14 +179,15 @@ module tb_trace_lockstep_reference;
         count_program_words();
         count_expected_trace_rows();
         if ($value$plusargs("trace_count=%d", plusarg_trace_count)) begin
-            expected_trace_count = plusarg_trace_count;
+            if (plusarg_trace_count != expected_trace_count)
+                $fatal(1, "trace_count does not match the complete reference trace");
         end
         if (expected_trace_count <= 0 || expected_trace_count > MAX_TRACE_COUNT) begin
             $display("FAIL: invalid expected trace count %0d", expected_trace_count);
             $fatal;
         end
 
-        if (program_word_count <= 0) begin
+        if (program_word_count <= 0 || program_word_count > 1024) begin
             $display("FAIL: invalid program word count %0d", program_word_count);
             $fatal;
         end
@@ -199,7 +196,7 @@ module tb_trace_lockstep_reference;
         $readmemh(expected_trace_path, expected_trace, 0, expected_trace_count - 1);
 
         reset = 1'b1;
-        repeat (2) @(posedge clock);
+        repeat (2) @(negedge clock);
         reset = 1'b0;
 
         repeat (TIMEOUT_CYCLES) @(posedge clock);

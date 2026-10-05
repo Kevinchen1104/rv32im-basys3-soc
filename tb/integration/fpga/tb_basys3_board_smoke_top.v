@@ -1,12 +1,9 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_basys3_board_smoke_top
 // Purpose: Exercises the separate Basys3 board-smoke target.
 // Checks: Switch synchronization plus straight-line firmware pass/done/status latching onto public LED pins.
 // Pass condition: LED pass and done bits assert, fail stays low, done-PC LEDs show 0x6, and status LEDs show the signature low byte.
-// Does not prove: Wrapper simulation only; no Vivado timing closure, bitstream signoff, or physical board validation.
 // Firmware: firmware/hex/showcase/board_smoke.hex
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_basys3_board_smoke_top;
 
@@ -29,7 +26,7 @@ module tb_basys3_board_smoke_top;
     always #5 clk = ~clk;
 
     initial begin
-        $dumpfile("wave/tb_basys3_board_smoke_top.vcd");
+        $dumpfile("results/waveforms/tb_basys3_board_smoke_top.vcd");
         $dumpvars(0, tb_basys3_board_smoke_top);
 
         btnC = 1'b1;

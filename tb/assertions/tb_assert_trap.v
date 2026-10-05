@@ -1,12 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_trap
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Ecall trap redirect state and post-trap wrong-path register write suppression.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Focused machine-mode trap slice; not a full privileged architecture test.
-// Assertion focus: Directed check for trap behavior or side-effect suppression.
 
 module tb_assert_trap;
 
@@ -31,7 +25,7 @@ module tb_assert_trap;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_trap.vcd");
+        $dumpfile("results/waveforms/tb_assert_trap.vcd");
         $dumpvars(0, tb_assert_trap);
         reset_cpu();
 

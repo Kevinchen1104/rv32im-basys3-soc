@@ -1,13 +1,9 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_random_hazard_reference
-// Purpose: Compares DUT behavior against deterministic local reference or signature fixtures.
 // Checks: Compares CPU final architectural register and DMemory state against a fixed-seed hazard-biased generated
 //   reference program covering load-use, ALU forwarding, store-data forwarding, load-to-store, branch operand
 //   forwarding, branch-after-load, not-taken fallthrough, and taken-branch wrong-path suppression.
-// Pass condition: DUT outputs match the generated expected fixture or signature and no mismatch or timeout occurs.
-// Does not prove: Fixed-seed, no-loop, final-state mixed hazard slice; not broad constrained-random verification,
-//   full pipeline proof, full RISC-V compliance, cycle-accurate pipeline modeling, or formal verification.
+// Fixed-seed program without loops; compares final architectural state.
 
 module tb_random_hazard_reference;
 
@@ -22,14 +18,14 @@ module tb_random_hazard_reference;
     localparam CHECKED_DMEM_WORD_COUNT = 32;
 
     initial begin
-        $dumpfile("wave/tb_random_hazard_reference.vcd");
+        $dumpfile("results/waveforms/tb_random_hazard_reference.vcd");
         $dumpvars(0, tb_random_hazard_reference);
 
         reset_cpu();
-        $readmemh("fixtures/generated/reference/random_hazard_reference.hex", dut.IMemory, 0, PROGRAM_WORD_COUNT - 1);
-        $readmemh("fixtures/generated/reference/random_hazard_reference_dmem_init.hex", dut.DMemory, 0, INITIAL_DMEM_WORD_COUNT - 1);
-        $readmemh("fixtures/generated/reference/random_hazard_reference_expected_regs.hex", expected_regs, 0, 31);
-        $readmemh("fixtures/generated/reference/random_hazard_reference_expected_dmem.hex", expected_dmem, 0, CHECKED_DMEM_WORD_COUNT - 1);
+        $readmemh(reference_path("random_hazard_reference.hex"), dut.IMemory, 0, reference_word_count(PROGRAM_WORD_COUNT) - 1);
+        $readmemh(reference_path("random_hazard_reference_dmem_init.hex"), dut.DMemory, 0, INITIAL_DMEM_WORD_COUNT - 1);
+        $readmemh(reference_path("random_hazard_reference_expected_regs.hex"), expected_regs, 0, 31);
+        $readmemh(reference_path("random_hazard_reference_expected_dmem.hex"), expected_dmem, 0, CHECKED_DMEM_WORD_COUNT - 1);
 
         run_cycles(900);
 

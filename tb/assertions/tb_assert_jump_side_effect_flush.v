@@ -1,12 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_jump_side_effect_flush
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Jal redirect suppresses younger wrong-path data-memory and GPIO MMIO stores while the target path executes.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Directed JAL side-effect case only; does not cover all indirect redirects.
-// Assertion focus: Directed check for jump side effect flush behavior or side-effect suppression.
 
 module tb_assert_jump_side_effect_flush;
 
@@ -25,7 +19,7 @@ module tb_assert_jump_side_effect_flush;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_jump_side_effect_flush.vcd");
+        $dumpfile("results/waveforms/tb_assert_jump_side_effect_flush.vcd");
         $dumpvars(0, tb_assert_jump_side_effect_flush);
         reset_cpu();
 

@@ -1,0 +1,6 @@
+profile,lut,ff,bram,dsp,period_ns,wns_ns,whs_ns,tns_ns,ths_ns,timing,drc,drc_warnings,dcache_lut,rv32m_lut,scratchpad_lut,dma_lut,source_commit
+iterative_cpu,6874,5447,2,0,10,0.095,0.058,0,0,pass,pass,0,1102,679,0,0,5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e
+fast_cpu,6718,5287,2,4,10,0.067,0.01,0,0,pass,pass,0,1099,510,0,0,5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e
+fast_scratchpad,7755,6505,2,4,10,0.399,0.034,0,0,pass,pass,0,1097,510,908,0,5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e
+fast_dma,8253,5809,2,4,10,0.111,0.045,0,0,pass,pass,0,1450,510,0,674,5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e
+default,9476,7179,2,0,10,0.323,0.04,0,0,pass,pass,0,1451,679,907,674,9d46f0418a7ac6296a8a116aef524cca6b58a5e3

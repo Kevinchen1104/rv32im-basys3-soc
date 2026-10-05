@@ -4,39 +4,30 @@ Purpose: Runs extra-seed smoke checks for retired-trace lockstep reference gener
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\trace-lockstep-seed-smoke.ps1
 Outputs:
-  wave\trace-lockstep-seed-smoke-summary.json and temporary generated trace fixtures.
-Scope:
-  Determinism smoke evidence only; not exhaustive trace verification.
-Audience:
-  Internal helper used by scripts\check.ps1.
+  results\trace-lockstep-seed-smoke-summary.json and temporary generated trace fixtures.
 #>
 param(
-    [string]$SummaryJson = "wave\trace-lockstep-seed-smoke-summary.json"
+    [string]$SummaryJson = "results\trace-lockstep-seed-smoke-summary.json"
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
 $seeds = @(101, 202, 303)
 $rows = @()
+$summary = [ordered]@{ status='running'; tests=@(); error_message=$null }
+Write-ResultJson $summary $SummaryJson
+$seedLock = $null
+try {
+New-Item -ItemType Directory -Force -Path 'build/reference' | Out-Null
+$seedLock = [IO.File]::Open((Join-Path $repoRoot 'build/reference/trace-seed-smoke.lock'), 'OpenOrCreate', 'ReadWrite', 'None')
 
-function Invoke-ChildPowerShell {
-    param(
-        [string]$Description,
-        [string[]]$Arguments
-    )
-
-    $output = & powershell -NoProfile -ExecutionPolicy Bypass @Arguments 2>&1
-    return [pscustomobject]@{
-        description = $Description
-        exit_code = $LASTEXITCODE
-        output = @($output | ForEach-Object { $_.ToString() })
-    }
-}
+. "$PSScriptRoot/process-runner.ps1"
 
 function Write-SmokeSummary {
     param([object[]]$Rows)
@@ -60,12 +51,12 @@ function Write-SmokeSummary {
         tests = $Rows
     }
 
-    $summary | ConvertTo-Json -Depth 6 | Set-Content -Path $summaryPath -Encoding Ascii
+    Write-ResultJson $summary $summaryPath
     Write-Host "Trace lockstep seed smoke summary written to $summaryPath"
 }
 
 foreach ($seed in $seeds) {
-    $seedDir = "wave/trace_lockstep_seed_$seed"
+    $seedDir = "build/reference/trace_lockstep_seed_$seed"
     New-Item -ItemType Directory -Force -Path $seedDir | Out-Null
 
     $programPath = "$seedDir/trace_lockstep_reference.hex"
@@ -140,3 +131,7 @@ if ($failedRows.Count -ne 0) {
 
 Write-Host "========================================"
 Write-Host "PASS: trace lockstep seed smoke passed ($($rows.Count) seed runs)"
+} catch {
+    Write-ResultJson ([ordered]@{ status='failed'; tests=@($rows); error_message=$_.Exception.Message }) $SummaryJson
+    throw
+} finally { if ($seedLock) { $seedLock.Dispose() } }

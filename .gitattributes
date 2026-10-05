@@ -1,11 +1,14 @@
 .gitattributes text eol=lf
 *.v text eol=lf
+*.sv text eol=lf
 *.vh text eol=lf
 *.S text eol=lf
 *.hex text eol=lf
 *.md text eol=lf
 *.ps1 text eol=lf
 *.json text eol=lf
+# Preserve original capture hashes, including their CRLF line endings.
+docs/fpga/board_evidence/**/captures/*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 docs/fpga/board_evidence/**/*.txt text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
@@ -18,3 +21,6 @@ docs/fpga/board_evidence/**/*.txt text eol=lf
 *.png binary
 *.jpg binary
 *.pdf binary
+release/current/** -text
+release/implementation/** -text
+release/configuration/** -text

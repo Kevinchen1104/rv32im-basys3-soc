@@ -9,7 +9,7 @@
 module tb_main;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
 
     RISCVCPU dut (
         .clock(clock),
@@ -120,7 +120,7 @@ module tb_main;
 
             reset = 1'b1;
             @(posedge clock);
-            #1;
+            @(negedge clock);
             reset = 1'b0;
         end
     endtask
@@ -159,7 +159,7 @@ module tb_main;
             dut.IMemory[2] =
                 r_type(7'b0000000, 5'd2, 5'd1, 3'b000, 5'd3, 7'b0110011);  // add x3, x2, x1
             dut.IMemory[3] =
-                r_type(7'b0100000, 5'd1, 5'd3, 3'b000, 5'd4, 7'b0110011);  // sub x4, x1, x3
+                r_type(7'b0100000, 5'd1, 5'd3, 3'b000, 5'd4, 7'b0110011);  // sub x4, x3, x1
             dut.IMemory[4] = b_type(0, 5'd0, 5'd0, 3'b000, 7'b1100011);  // beq x0, x0, 0
 
             run_cycles(90);
@@ -433,7 +433,7 @@ module tb_main;
             dut.IMemory[4] = i_type(12'd11, 5'd0, 3'b000, 5'd2, 7'b0010011);  // addi x2, x0, 11
             dut.IMemory[5] = i_type(12'd0, 5'd1, 3'b000, 5'd0, 7'b1100111);  // jalr x0, 0(x1)
             dut.IMemory[6] = i_type(12'd66, 5'd0, 3'b000, 5'd7, 7'b0010011)
-                ;  // addi x7, x0, 66 should be executed in delay slot
+                ;  // Wrong-path instruction after JALR; must be flushed.
             dut.IMemory[7] = NOP;
             dut.IMemory[8] = NOP;
             dut.IMemory[9] = NOP;
@@ -454,8 +454,9 @@ module tb_main;
     endtask
 
     initial begin
-        $dumpfile("wave/dump.vcd");
+        $dumpfile("results/waveforms/dump.vcd");
         $dumpvars(0, tb_main);
+        #1; // Initialize test memory after the DUT initial block.
 
         test_addi();
         test_forwarding();

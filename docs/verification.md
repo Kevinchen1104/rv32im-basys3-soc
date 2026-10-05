@@ -1,111 +1,154 @@
 # Verification
 
-The verification strategy combines directed simulation, generated reference
-programs, bounded formal smoke, lint, generic synthesis, and FPGA tool reports.
-Each layer has a narrower claim than full functional or physical proof.
+The portable workflow checks instruction behavior, pipeline control, memory
+and MMIO transactions, accelerator results, and the scripts that generate
+those results. Optional tool flows add lint, bounded formal checks, synthesis,
+and FPGA implementation.
+
+## Run and inspect
+
+Run `scripts/check.ps1 -Mode Quick` during editing and `-Mode Full` for the
+complete portable gate. Full includes all 169 simulations and eight FPGA top
+elaborations. See [Reproduce](reproduce.md) for commands and prerequisites.
+
+| Output | Use |
+| --- | --- |
+| `results/RESULTS.md` | Project result index with source-freshness labels and timing experiments |
+| `results/full-RESULTS.md` | Full workflow stages, status, and failure-log links |
+| `results/regression.csv` | One row per simulation |
+| `results/regression-summary.json` | Commands, timestamps, exit codes, and artifact paths |
+| `results/runs/` | Input-isolated simulation logs, summaries, and waveforms |
+| `results/logs/` | Workflow and optional-tool output |
+| `results/python-tests/` | All Python unit tests, explicit skip counts, source hashes and log |
+| `results/signal-console/viewer-validation.json` | Repeatable physical viewer comparisons against an independent FIR calculation |
+| `docs/test_catalog.json` | Each test's contract, expected observation, and coverage metadata |
+
+The executable manifest is in `scripts/run.ps1`. Catalog validation checks that
+its test names and files agree with the documented inventory.
+
+The runner records log hashes and preserves separate contexts for Full, Quick,
+single tests, and simulator arguments. Optional tool summaries are initialized
+before execution, so a failed rerun replaces the previous success. Refresh the
+project index with `scripts/results-overview.ps1` after optional tool runs.
+
+The Check CI has two independent jobs: the portable RTL gate and
+`python_tests.py --gui` for clients, plotting, comparators and helper tools.
+Python prerequisites and local commands are in [Reproduce](reproduce.md#python-tools-and-the-fir-application).
+The manually dispatched Extended Verification workflow also builds twelve
+GCC/Unicorn comparisons and simulates both FIR multiplier profiles. Physical
+UART runs require a local board and are not claimed by CI. Viewer snapshots
+marked `captured` are separate from numerical tests marked `passed`; the index
+checks capture hashes independently of source freshness.
 
 ## Directed simulation
 
-`scripts/run.ps1` is the executable test manifest. It covers CPU units,
-pipeline side-effect isolation, CSR/trap behavior, caches and adapters, exact
-MMIO decode, Scratchpad, DMA-lite, firmware programs, UART boot, showcase
-flows, and FPGA wrapper guards. `docs/test_catalog.json` records each test's
-contract, evidence level, hierarchy usage, and boundary.
+The test groups isolate different failure mechanisms:
 
-DMA-lite descriptor tests cover alignment, capacity, 32-bit address wraparound,
-and matrix/output overlap. Rejected descriptors must issue no DMEM transaction.
+| Area | Stimulus and expected behavior |
+| --- | --- |
+| Instruction execution | Arithmetic, loads/stores, branches, CSR operations, and all eight RV32M operations produce their expected results |
+| Pipeline acceptance | Hold a younger CSR or illegal instruction behind a real D-cache miss; no early side effect, and exactly one acceptance after release |
+| Trap/control transfer | Misaligned taken branch/JAL/JALR targets record cause 0 and the correct PC/target; wrong-path link, predictor, and RAS updates are suppressed |
+| RV32M squash | An older memory fault cancels a younger MUL/DIV; a subsequent M instruction receives its own result |
+| Memory and MMIO | Exact register decoding, subword aliases, request/ready delays, access faults, and ordinary-memory behavior throughout `0x0400..0x05ff` |
+| Accelerators | Signed results, busy/start rules, completion/IRQ behavior, descriptor errors, ownership, and counters |
+| UART boot / wrappers | Malformed packets, checksum failure, reset/retry, short images, and invalid wrapper parameters |
 
-External-memory tests require out-of-range or partial-line requests to return
-zero, acknowledge deterministically, ignore writes, and avoid low-address
-aliasing. Packet-loader tests cover bad headers, checksum
-failure with IMEM scrubbing, reset during an incomplete payload, shorter clean
-retry, zero-length image rejection, one-word-capacity elaboration/boot, and
-unused-tail clearing before CPU release. Wrapper guards cover boot memories too
-small to expose the public debug-status word, invalid UART divisors or heartbeat
-indices, and initialization counts larger than their storage.
+The control-transfer tests check the registered N/N+1/N+2 alignment-trap
+handoff, newly pending versus previously deferred interrupts, D-cache
+stall/release, pending-state reset, and CSR metadata drain. CSR acceptance
+tests compare the pre-write readback and `mstatus`, `mepc`, `mcause`, and
+`mtval` after the held operation completes.
 
-Control-transfer exception tests cover legal `JALR` encoding, cause-0
-instruction-address-misaligned traps for taken branch/JAL/JALR, untaken
-branch fallthrough, precise `mepc`/`mtval`, link suppression, and
-predictor/RAS side-effect isolation. They also check the registered N/N+1/N+2
-trap handoff, newly pending versus already deferred interrupt boundaries,
-D-cache stall/release behavior, pending-state reset, and CSR metadata-pending
-drain.
+DMA descriptor tests cover alignment, capacity, 32-bit address wraparound,
+and matrix/output overlap. A rejected descriptor must issue no DMEM request.
+Integration tests check the D-cache snoop path, CPU memory stalls, polling,
+and Scratchpad interrupt delivery.
 
-Execute-acceptance tests also create real multi-cycle D-cache load misses while
-a younger CSR or illegal instruction is held in ID/EX. They check that no CSR
-write or synchronous trap side effect occurs during backpressure, that release
-accepts the held instruction exactly once, and that CSR pre-write readback plus
-`mstatus`/`mepc`/`mcause`/`mtval` remain precise.
+External-memory adapter tests check deterministic acknowledgement, zero data
+for rejected reads, ignored writes, and absence of low-address aliasing.
+Packet-loader tests cover bad headers, checksum-failure scrubbing, reset during
+a partial payload, shorter retry, zero-length rejection, one-word boot memory,
+and NOP tail clearing before CPU release. Wrapper tests also cover UART
+divisors, heartbeat indices, debug-status capacity, and initialization bounds.
+The banked-IMEM test checks every word and line lane at ten capacities from
+1 to 1,025 words, including partial lines and high-address reads.
 
-RV32M squash tests place a younger MUL or DIV behind an older out-of-range
-load/store. They check that trap acceptance prevents the M operation from
-starting, leaves no in-flight or ready result, and cannot feed stale arithmetic
-to a different M instruction executed after the handler advances `mepc` and
-returns with `mret`.
+## Reference programs and formal properties
 
-The MMIO tests explicitly check that every byte alias in `0x0400..0x05ff`
-remains ordinary memory. Accelerator integration tests check accepted starts,
-done rises, busy cycles, interrupt behavior, polling behavior, DMA arbitration,
-and exact signed results. Assertions are not weakened to accommodate failures.
+The optional [GCC-compiled C checks](compiled-programs.md) add an external
+Unicorn reference for four C programs at three optimization levels. Each run
+compares the retired PC/instruction/register-write stream, cache-visible data
+RAM, and algorithm-level result words. These twelve executions are reported
+separately from the 169 portable simulations. Comparator self-tests deliberately
+corrupt trace fields and memory bytes and exercise timeout/error handling.
 
-## Reference and formal scope
+Generated-reference tests use fixed seeds and repository reference models to
+compare architectural state or retirement traces. Additional seed checks
+exercise register, memory, control-flow, hazard, and call/return cases while
+keeping failures reproducible. Extra seeds write to `build/reference/`, leaving
+checked-in fixtures untouched even after a failed simulation. Selected upstream
+architectural tests use retired PCs for pass/fail-loop detection and read
+cache-visible signature words. Harness self-tests include a fetched-but-not-retired
+pass PC, a dirty signature line, and a rejected empty signature.
 
-Random/reference scripts generate deterministic CPU fixtures from explicit
-seeds. They are CPU architectural cross-checks, not official RISC-V
-certification.
+The optional [Sail comparison](compiled-programs.md#optional-upstream-sail-comparison)
+executes all 36 selected upstream tests in the official Sail RISC-V 0.14.1
+model and compares their signatures against the RTL. The model binary, ISA
+configuration, ELF, DUT image, and signatures are hash-identified. This adds
+an independent reference for the selected RV32I/M instructions; it does not
+establish full ISA or privileged-architecture compliance.
 
-`formal/matvec_scratchpad_formal.sby` performs a bounded check of Scratchpad
-reset recurrence, accepted starts, busy-write isolation, rejected repeated
-starts, and one-row progress/completion. Other harnesses cover selected ALU,
-forwarding, branch predictor, timer, trap metadata, and x0 invariants. These are
-focused bounded properties; they do not constitute a complete accelerator or
-CPU formal proof.
+Eight bounded formal harnesses check selected ALU, forwarding, predictor,
+timer, trap metadata, x0, and Scratchpad properties. The Scratchpad harness
+checks reset recurrence, accepted starts, busy-write isolation, rejected
+repeated starts, byte-enable preservation, selected-row readback coherence,
+and one-row progress/completion. Harness assumptions and
+depths are listed in [formal/README.md](../formal/README.md).
 
-## Static and physical checks
+## Tools and hardware measurements
 
-Verilator lint checks compile-time consistency. Yosys synthesis smoke checks
-selected tops and modules without FPGA timing. Vivado implementation is the
-only basis for Basys3 timing claims, and timing is accepted only when post-route
-`WNS >= 0` and `TNS = 0`. Canonical promotion also requires generated
-post-synthesis and post-route DRC reports, no DRC errors or critical warnings,
-and no warnings or advisories unless a rule is explicitly reviewed and added
-to the release allowlist. The parser reconciles the sum of parsed rule counts
-with `Checks found`; incomplete or changed report formats fail closed.
-`REQP-1839` BRAM asynchronous-control warnings are always rejected. A
-generated bitstream is not physical validation.
-The GitHub Check workflow runs the portable `scripts/check.ps1` gate only; its
-badge does not imply that lint, synthesis, formal, Vivado, physical, or final
-release gates ran for the same commit.
+| Layer | What is checked | Main evidence |
+| --- | --- | --- |
+| Icarus | Directed and reference simulations | Per-test logs, VCDs, regression summary |
+| Verilator | Nine top-level modules and all ten supported D-cache size/victim combinations | Lint summary and per-configuration logs |
+| Yosys | Elaboration and generic synthesis | Selected-top synthesis reports |
+| SymbiYosys | Bounded properties | Harness results; counterexamples for falsified properties |
+| Vivado | Basys3 implementation, routed timing, and constraints | Timing, utilization, and DRC reports |
+| Physical Basys3 | Program loading and observed behavior | XSDB/UART transcripts and LED/reset observations |
 
-Regression, portable check, lint, Yosys, formal, and catalog summaries are
-source-bound: they record one normalized verification-input fingerprint and
-must identify the canonical Vivado source commit. Documentation coverage,
-link, and claim gates are repository-bound: they record a separate public
-documentation/package fingerprint and the evidence-generation HEAD. These
-documentation gates run after the new FPGA and final package contents exist,
-so a later physical-evidence commit does not invalidate source-bound results.
+Solver runtime can vary. For an incomplete timed-out formal run, append
+`-TimeoutSeconds 1800` to `scripts/formal-smoke.ps1` to allow 30 minutes per
+harness without changing its proof depth; `-Group Matvec` selects the accelerator.
 
-The direct-100-MHz source revision at commit `d7f1afe` has a canonical
-bitstream whose matching post-route report records WNS `+0.318 ns` and TNS
-`0`, and passed the scoped 2026-07-30 physical suite. XSDB
-programming/configured state and exact UART transcripts are machine-recorded;
-LED/reset observations are operator-reported. This scope does not establish official
-compliance, exhaustive physical coverage, random-seed robustness, or on-board
-bitstream readback, and it does not transfer to later RTL revisions.
+Timing acceptance requires matching post-route `WNS >= 0` and `TNS = 0`.
+The release flow also checks hold timing and constraints. DRC parsing
+reconciles individual rule counts with `Checks found`; errors, critical
+warnings, unreviewed warnings/advisories, and `REQP-1839` fail the gate.
 
-The current Basys3 flow can sweep five documented implementation-directive
-profiles, requires all five to meet timing and constraint checks, and reports
-the worst routed slack separately from an optional `+0.200 ns` margin target.
-Each profile must also have a release-approved DRC report. This is
-multi-strategy placement/routing evidence, not a random-seed or exhaustive
-physical-design proof. Current source receives no timing or physical claim
-from a later revision until its own sweep, canonical bitstream, and scoped
-board validation complete. The current five profiles all met timing, with worst
-WNS `+0.079 ns`; the optional `+0.200 ns` margin target was not met.
-The runtime-wrapper integration test separately checks that board reset is
-sampled by an `ASYNC_REG`-marked two-flop synchronizer and resets protocol
-state without erasing external BRAM.
+The earlier routed build at `8c7d5a6` met 100 MHz with WNS `+0.184 ns`,
+WHS `+0.046 ns`, zero TNS/THS, complete constraint coverage, and passing DRC.
+The earlier direct-100-MHz board build at `849270b` achieved WNS `+0.399 ns`, WHS
+`+0.018 ns`, and zero TNS/THS. The
+[2026-09-30 board record](./fpga/board_evidence/basys3_full_direct_100mhz_2026-09-30/README.md)
+contains machine-recorded XSDB/UART captures, two 90-case MATVEC measurements
+with 2,418 checked outputs per run, and operator-reported LED/reset observations.
+Both MATVEC runs have identical cycle counts. Earlier build and multi-strategy
+results remain in the dated historical records.
 
-Current machine-readable run outputs are generated under `wave/` and copied
-into `release/` by the release flow. See [Evidence packages](evidence/README.md).
+Each new Vivado run records hashes of its build inputs and raw reports. Inputs
+are checked again after the tool finishes, and report hashes are checked before
+export or reuse. Recorded board observations retain their original RTL revision.
+
+## Result identity and documentation review
+
+Simulation and tool summaries carry a verification-input fingerprint.
+Release packaging checks that source-bound evidence matches the committed
+inputs; documentation reports carry a separate documentation/package
+fingerprint. Generated packages and current working results are described in
+[Evidence packages](evidence/README.md).
+
+Document links remain a machine-checked integrity requirement. Comment
+coverage and claim-language scans are advisory: they identify places for a
+reader to review, but do not decide functional success from English wording.
+Use the [review checklist](documentation-review.md) when editing public docs.

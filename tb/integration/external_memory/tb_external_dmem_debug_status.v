@@ -6,7 +6,6 @@
 //   debug_status latch reports the pass marker from a committed store to byte address 0x100, and confirms internal
 //   DMemory is not the external-DMEM observation point.
 // Pass condition: Observed external-memory traffic, public status, and checked memory contents match expectations.
-//   board validation.
 // Firmware: firmware/hex/showcase/board_smoke.hex
 
 module tb_external_dmem_debug_status;
@@ -103,7 +102,7 @@ module tb_external_dmem_debug_status;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_external_dmem_debug_status.vcd");
+        $dumpfile("results/waveforms/tb_external_dmem_debug_status.vcd");
         $dumpvars(0, tb_external_dmem_debug_status);
 
         reset = 1'b1;

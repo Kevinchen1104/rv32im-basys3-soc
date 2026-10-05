@@ -3,7 +3,9 @@
   "description": "Selected official RISC-V architectural tests for the locally implemented RV32I/RV32M surface. This is an integration profile, not an official compliance claim.",
   "upstream": {
     "repo": "https://github.com/riscv-non-isa/riscv-arch-test.git",
-    "checkout": "external/riscv-arch-test"
+    "checkout": "external/riscv-arch-test",
+    "revision": "c6c69dc33414101c7ea94bf4fbea40885f9447ce",
+    "sparse_paths": ["tests/rv32i/I", "tests/rv32i/M", "tests/env"]
   },
   "target": {
     "xlen": 32,

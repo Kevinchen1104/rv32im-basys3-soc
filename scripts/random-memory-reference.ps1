@@ -5,68 +5,28 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\random-memory-reference.ps1 -Check -SkipSimulation
 Outputs:
   fixtures\generated\reference\random_memory_reference* artifacts or freshness diagnostics.
-Scope:
-  Directed random-reference evidence only; not exhaustive verification.
-Audience:
-  Internal helper used by scripts\check.ps1.
 #>
 param(
     [int]$Seed = 2027,
     [int]$GeneratedMemoryOps = 48,
     [switch]$Check,
-    [switch]$SkipSimulation
+    [switch]$SkipSimulation,
+    [string]$ArtifactDirectory = "fixtures/generated/reference"
 )
 
+. "$PSScriptRoot/reference-common.ps1"
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
+if (-not [IO.Path]::IsPathRooted($ArtifactDirectory)) { $ArtifactDirectory = Join-Path $repoRoot $ArtifactDirectory }
+New-Item -ItemType Directory -Force -Path $ArtifactDirectory | Out-Null
 
-$programPath = Join-Path $repoRoot "fixtures/generated/reference/random_memory_reference.hex"
-$dmemInitPath = Join-Path $repoRoot "fixtures/generated/reference/random_memory_reference_dmem_init.hex"
-$expectedRegsPath = Join-Path $repoRoot "fixtures/generated/reference/random_memory_reference_expected_regs.hex"
-$expectedDmemPath = Join-Path $repoRoot "fixtures/generated/reference/random_memory_reference_expected_dmem.hex"
-$expectedJsonPath = Join-Path $repoRoot "fixtures/generated/reference/random_memory_reference_expected.json"
-
-function Normalize-TextForArtifactCompare {
-    param([string]$Text)
-
-    if ($null -eq $Text) {
-        return ""
-    }
-
-    $normalized = $Text.TrimEnd()
-    $normalized = $normalized -replace "`r`n", "`n"
-    return ($normalized -replace "`r", "`n")
-}
-
-function Write-AsciiLfFile {
-    param(
-        [string]$Path,
-        [AllowEmptyCollection()][object[]]$Value
-    )
-
-    $text = (@($Value | ForEach-Object { [string]$_ }) -join "`n")
-    $text = $text -replace "`r`n", "`n"
-    $text = $text -replace "`r", "`n"
-    if (-not $text.EndsWith("`n")) {
-        $text += "`n"
-    }
-    [System.IO.File]::WriteAllText($Path, $text, [System.Text.Encoding]::ASCII)
-}
-
-function To-UInt32 {
-    param([int64]$Value)
-    return [uint32]($Value -band 0xffffffffL)
-}
-
-function To-SInt32 {
-    param([uint32]$Value)
-    if (($Value -band 0x80000000) -ne 0) {
-        return [int64]$Value - 4294967296L
-    }
-    return [int64]$Value
-}
+$programPath = Join-Path $ArtifactDirectory "random_memory_reference.hex"
+$dmemInitPath = Join-Path $ArtifactDirectory "random_memory_reference_dmem_init.hex"
+$expectedRegsPath = Join-Path $ArtifactDirectory "random_memory_reference_expected_regs.hex"
+$expectedDmemPath = Join-Path $ArtifactDirectory "random_memory_reference_expected_dmem.hex"
+$expectedJsonPath = Join-Path $ArtifactDirectory "random_memory_reference_expected.json"
 
 function Sign-Extend {
     param([uint32]$Value, [int]$Bits)
@@ -77,44 +37,6 @@ function Sign-Extend {
         return To-UInt32 ([int64]$masked - (1L -shl $Bits))
     }
     return $masked
-}
-
-function Encode-RType {
-    param([int]$Funct7, [int]$Rs2, [int]$Rs1, [int]$Funct3, [int]$Rd)
-    return [uint32](([uint64]$Funct7 -shl 25) -bor
-                    ([uint64]$Rs2 -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]0x33)
-}
-
-function Encode-IType {
-    param([int]$Immediate, [int]$Rs1, [int]$Funct3, [int]$Rd, [int]$Opcode)
-    return [uint32](([uint64]($Immediate -band 0xfff) -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]$Opcode)
-}
-
-function Encode-SType {
-    param([int]$Immediate, [int]$Rs2, [int]$Rs1, [int]$Funct3)
-    $imm = $Immediate -band 0xfff
-    return [uint32](([uint64](($imm -shr 5) -band 0x7f) -shl 25) -bor
-                    ([uint64]$Rs2 -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64]($imm -band 0x1f) -shl 7) -bor [uint64]0x23)
-}
-
-function Encode-UType {
-    param([int]$Immediate, [int]$Rd)
-    return [uint32](([uint64]($Immediate -band 0xfffff) -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]0x37)
-}
-
-function Format-HexWord {
-    param([uint32]$Value)
-    return "{0:x8}" -f $Value
 }
 
 function Get-WidthBytes {
@@ -197,13 +119,10 @@ function Add-LoadImmediate {
         [uint32]$Value
     )
 
-    $upper = [int]((([uint64]$Value + [uint64]0x800) -shr 12) -band [uint64]0xfffff)
+    $parts = Split-LoadImmediate $Value
+    $upper = $parts.Upper
     $base = To-UInt32 ([int64]$upper -shl 12)
-    $lower = [int64]$Value - [int64]$base
-    if ($lower -gt 2047) { $lower -= 4096 }
-    if ($lower -lt -2048 -or $lower -gt 2047) {
-        throw "cannot encode immediate load for $(Format-HexWord $Value)"
-    }
+    $lower = $parts.Lower
 
     $Words.Add((Encode-UType $upper $Rd))
     $Registers[$Rd] = $base
@@ -463,5 +382,5 @@ if ($Check) {
 }
 
 if (-not $SkipSimulation) {
-    & (Join-Path $PSScriptRoot "run.ps1") -Test random_memory_reference
+    & (Join-Path $PSScriptRoot "run.ps1") -Test random_memory_reference -SkipAssemble -PlusArgs "+fixture_dir=`"$ArtifactDirectory`" +program_words=$($script:words.Count)"
 }

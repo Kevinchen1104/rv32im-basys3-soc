@@ -4,7 +4,6 @@
 # Observable result: Public debug_status pass/fail signature and handler snapshots are checked by the program
 #   testbench.
 # Used by: tb_program_machine_timer_interrupt
-#   claim.
 
 # Machine timer interrupt smoke.
 # Uses the local CLINT-like timer window plus the minimal machine interrupt

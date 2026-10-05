@@ -1,11 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_program_muldiv
-// Purpose: Runs CPU firmware as selected local ISA/compliance-style directed simulation evidence.
 // Checks: RV32M multiply, divide, and remainder instruction behavior including directed edge cases.
-// Pass condition: Firmware-visible register, memory, debug_status, I/O, or transcript signatures match expected
-//   values before timeout.
-// Does not prove: ISA behavior slice only; no multi-cycle timing or performance claim.
 // Firmware: firmware/hex/examples/muldiv_ops.hex
 
 module tb_program_muldiv;
@@ -13,7 +8,7 @@ module tb_program_muldiv;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_program_muldiv.vcd");
+        $dumpfile("results/waveforms/tb_program_muldiv.vcd");
         $dumpvars(0, tb_program_muldiv);
 
         reset_cpu();

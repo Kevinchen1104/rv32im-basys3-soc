@@ -20,10 +20,8 @@ For `RISCVCPU_basys3_full_lowfreq_top`, confirm the clock report contains the
 physical status are independent of both the reduced board-smoke target and the
 direct-100-MHz default-feature SoC target.
 
-Bitstream generation does not equal board validation. The current
-direct-100-MHz source revision at commit `d7f1afe` has a source-matched,
-timing-closed bitstream, a five-profile implementation sweep, and a scoped
-2026-07-30 physical pass. Later source revisions do not inherit that status.
-The
-direct-100-MHz, low-frequency, and reduced board-smoke targets retain
-independent physical status.
+The 2026-09-30 direct-100-MHz board run uses the source-matched `849270b`
+bitstream and records UART checks, measured MATVEC outputs/cycles, and
+operator-confirmed LEDs and BTN C reset. Its summary is selected in
+`board.json`. Rebuild and record a new run after changing synthesis inputs.
+The low-frequency and reduced board-smoke targets have separate records.

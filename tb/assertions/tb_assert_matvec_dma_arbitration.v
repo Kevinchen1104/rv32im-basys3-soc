@@ -1,18 +1,12 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_matvec_dma_arbitration
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: The local DMA-lite ownership policy: while MATVEC DMA owns the single DMEM port, a CPU ordinary memory
 //   store is stalled through read and compute-only stages, D-cache request_valid is blocked, D-cache external/internal
 //   writeback requests do not overlap DMA requests, and every output row is written exactly once.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Focused arbitration/ownership monitor for the local DMA-lite slice only; not a multi-master
-//   interconnect proof, cache-coherent protocol, or production DMA verification suite.
-// Assertion focus: Directed check for matvec dma arbitration behavior or side-effect suppression.
 
 module tb_assert_matvec_dma_arbitration;
 
+`define CORE_DCACHE_VICTIM_LINES 4
 `include "tb_common.vh"
 
     reg checking_enabled = 1'b0;
@@ -30,7 +24,7 @@ module tb_assert_matvec_dma_arbitration;
 
     always @(posedge clock) begin
         if (checking_enabled) begin
-            if (dut.gen_accelerators.accel_matvec_dma.busy) begin
+            if (dut.gen_dma_accelerator.accel_matvec_dma.busy) begin
                 saw_dma_busy <= 1'b1;
             end
             if (dut.matvec_dma_cpu_memory_stall) begin
@@ -52,8 +46,8 @@ module tb_assert_matvec_dma_arbitration;
                 end
             end
 
-            if ((dut.gen_accelerators.accel_matvec_dma.state == STATE_MULTIPLY) ||
-                (dut.gen_accelerators.accel_matvec_dma.state == STATE_REDUCE)) begin
+            if ((dut.gen_dma_accelerator.accel_matvec_dma.state == STATE_MULTIPLY) ||
+                (dut.gen_dma_accelerator.accel_matvec_dma.state == STATE_REDUCE)) begin
                 saw_compute_gap <= 1'b1;
                 if (dut.matvec_dma_dmem_request) begin
                     $display("FAIL: MATVEC DMA issued a DMEM request during compute-only state");
@@ -64,7 +58,7 @@ module tb_assert_matvec_dma_arbitration;
                 end
             end
 
-            if (dut.gen_accelerators.accel_matvec_dma.busy &&
+            if (dut.gen_dma_accelerator.accel_matvec_dma.busy &&
                 dut.gen_dcache.dcache.request_valid &&
                 dut.EXMEMMemAccess &&
                 !dut.EXMEMMmioAccess) begin
@@ -86,7 +80,7 @@ module tb_assert_matvec_dma_arbitration;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_matvec_dma_arbitration.vcd");
+        $dumpfile("results/waveforms/tb_assert_matvec_dma_arbitration.vcd");
         $dumpvars(0, tb_assert_matvec_dma_arbitration);
 
         reset_cpu();
@@ -132,8 +126,8 @@ module tb_assert_matvec_dma_arbitration;
             $fatal;
         end
 
-        if (dut.gen_accelerators.accel_matvec_dma.done !== 1'b1 ||
-            dut.gen_accelerators.accel_matvec_dma.error !== 1'b0) begin
+        if (dut.gen_dma_accelerator.accel_matvec_dma.done !== 1'b1 ||
+            dut.gen_dma_accelerator.accel_matvec_dma.error !== 1'b0) begin
             $display("FAIL: DMA did not complete cleanly status=%h error=%h",
                      dut.matvec_dma_status_read_data,
                      dut.matvec_dma_error_read_data);

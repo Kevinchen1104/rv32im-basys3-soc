@@ -1,0 +1,32 @@
+[
+  {
+    "session": "initial",
+    "case_sequence": 14,
+    "samples": 32,
+    "taps": 8,
+    "old_round_trip_ms": 1147.932,
+    "new_round_trip_ms": 61.587,
+    "round_trip_speedup": 18.639193336256028,
+    "old_compute_cycles": 10980,
+    "new_compute_cycles": 10054,
+    "stress_batches": 200,
+    "stress_min_ms": 56.03,
+    "stress_median_ms": 63.7625,
+    "stress_max_ms": 77.004
+  },
+  {
+    "session": "after-reset",
+    "case_sequence": 14,
+    "samples": 32,
+    "taps": 8,
+    "old_round_trip_ms": 1148.721,
+    "new_round_trip_ms": 61.807,
+    "round_trip_speedup": 18.585613280049184,
+    "old_compute_cycles": 10980,
+    "new_compute_cycles": 10054,
+    "stress_batches": 200,
+    "stress_min_ms": 60.6,
+    "stress_median_ms": 63.836,
+    "stress_max_ms": 78.97
+  }
+]

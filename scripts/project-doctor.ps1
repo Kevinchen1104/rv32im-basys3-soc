@@ -5,17 +5,16 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\project-doctor.ps1
 Outputs:
   Console project-doctor report.
-Scope:
-  Environment and layout check only; not hardware evidence.
-Audience:
-  Public maintenance helper.
 #>
+. "$PSScriptRoot/script-common.ps1"
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
+. "$PSScriptRoot/process-runner.ps1"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
 $requiredIssues = [System.Collections.Generic.List[string]]::new()
 $optionalIssues = [System.Collections.Generic.List[string]]::new()
@@ -114,26 +113,15 @@ function Invoke-DoctorScript {
         }
     }
 
-    $output = & powershell -NoProfile -ExecutionPolicy Bypass -File $scriptPath @Arguments 2>&1
-    $exitCode = $LASTEXITCODE
-    $output | Set-Content -Path $LogPath -Encoding Ascii
+    $result = Invoke-LoggedProcess -FilePath 'powershell' -Arguments (@('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $scriptPath) + $Arguments) -LogPath $LogPath -WorkingDirectory $repoRoot -TimeoutSeconds 180 -Quiet
 
     return [ordered]@{
-        status = if ($exitCode -eq 0) { "available" } else { "blocked" }
+        status = if ($result.status -eq 'passed') { "available" } else { "blocked" }
         command = "powershell -ExecutionPolicy Bypass -File $Script $($Arguments -join ' ')".Trim()
-        exit_code = $exitCode
+        exit_code = $result.exit_code
+        error_message = $result.error_message
         log = $LogPath
     }
-}
-
-function Read-JsonIfPresent {
-    param([string] $Path)
-
-    if (-not (Test-Path -LiteralPath $Path)) {
-        return $null
-    }
-
-    return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
 }
 
 $msysFallbackDirs = @(
@@ -174,11 +162,11 @@ $checks.msys2_path_sanity = [ordered]@{
     path_entries = $msysPathHits
 }
 
-$archDetectPath = "wave\project-doctor-arch-test-detect.json"
+$archDetectPath = "results\project-doctor-arch-test-detect.json"
 $archDetect = Invoke-DoctorScript `
     -Script "scripts\arch-test-detect.ps1" `
     -Arguments @("-OutputPath", $archDetectPath) `
-    -LogPath "wave\project-doctor-arch-test-detect.log"
+    -LogPath "results\project-doctor-arch-test-detect.log"
 $archDetectJson = Read-JsonIfPresent $archDetectPath
 $riscvToolStatus = "optional_missing"
 if ($null -ne $archDetectJson -and $archDetectJson.status -eq "ready") {
@@ -239,8 +227,8 @@ $checks.arch_test_upstream_availability = [ordered]@{
     checkout = $checkoutPath
 }
 
-$fpgaDetect = Invoke-DoctorScript -Script "scripts\fpga-tool-detect.ps1" -LogPath "wave\project-doctor-fpga-tool-detect.log"
-$fpgaDetectJson = Read-JsonIfPresent "wave\fpga-tool-detect.json"
+$fpgaDetect = Invoke-DoctorScript -Script "scripts\fpga-tool-detect.ps1" -LogPath "results\project-doctor-fpga-tool-detect.log"
+$fpgaDetectJson = Read-JsonIfPresent "results\fpga-tool-detect.json"
 if ($fpgaDetect.status -ne "available") {
     $optionalIssues.Add("FPGA tool detection") | Out-Null
 }
@@ -249,13 +237,13 @@ $checks.fpga_tools = [ordered]@{
     required = $false
     status = $fpgaDetect.status
     detect_script = $fpgaDetect
-    summary = "wave\fpga-tool-detect.json"
+    summary = "results\fpga-tool-detect.json"
     tools = if ($null -eq $fpgaDetectJson) { $null } else { $fpgaDetectJson.tools }
     timing_readiness = if ($null -eq $fpgaDetectJson) { $null } else { $fpgaDetectJson.timing_readiness }
 }
 
-$vivadoDetect = Invoke-DoctorScript -Script "scripts\vivado-detect.ps1" -LogPath "wave\project-doctor-vivado-detect.log"
-$vivadoDetectJson = Read-JsonIfPresent "wave\vivado-detect-summary.json"
+$vivadoDetect = Invoke-DoctorScript -Script "scripts\vivado-detect.ps1" -LogPath "results\project-doctor-vivado-detect.log"
+$vivadoDetectJson = Read-JsonIfPresent "results\vivado-detect-summary.json"
 $vivadoTargetStatus = if ($null -ne $vivadoDetectJson -and $vivadoDetectJson.status -eq "available") {
     "available"
 } elseif ($vivadoDetect.status -eq "missing") {
@@ -271,7 +259,7 @@ $checks.vivado_basys3_target = [ordered]@{
     required = $false
     status = $vivadoTargetStatus
     detect_script = $vivadoDetect
-    summary = "wave\vivado-detect-summary.json"
+    summary = "results\vivado-detect-summary.json"
     tool = if ($null -eq $vivadoDetectJson) { $null } else { $vivadoDetectJson.tool }
     basys3_target = if ($null -eq $vivadoDetectJson) { $null } else { $vivadoDetectJson.basys3_target }
 }
@@ -320,14 +308,13 @@ $summary = [ordered]@{
     claim_boundary = "Project doctor reports local bring-up readiness only. Optional tool gaps do not invalidate the portable simulation gate, and this report is not timing, board-validation, speedup, or official compliance evidence."
 }
 
-$summary | ConvertTo-Json -Depth 10 | Set-Content -Path "wave\project-doctor-summary.json" -Encoding Ascii
-
+Write-ResultJson $summary "results\project-doctor-summary.json"
 Write-Host "========================================"
 Write-Host "Project doctor"
 Write-Host ("Status: {0}" -f $summary.status)
 Write-Host ("Required issues: {0}" -f ($(if ($requiredIssues.Count -eq 0) { "none" } else { $requiredIssues -join ", " })))
 Write-Host ("Optional issues: {0}" -f ($(if ($optionalIssues.Count -eq 0) { "none" } else { $optionalIssues -join ", " })))
-Write-Host "Summary written to wave\project-doctor-summary.json"
+Write-Host "Summary written to results\project-doctor-summary.json"
 
 if ($requiredIssues.Count -ne 0) {
     throw "Project doctor blocked by required missing items: $($requiredIssues -join '; ')"

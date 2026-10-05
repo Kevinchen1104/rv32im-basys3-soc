@@ -1,14 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_branch_mispredict_dcache_stall
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: A taken branch mispredict overlapping a D-cache miss/stall is captured once, is not applied until
 //   backpressure clears, redirects to the correct path, and suppresses wrong-path side effects.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Directed branch-mispredict plus D-cache-miss interaction only; does not cover all predictor states,
-//   dirty write-back patterns, or external-memory timing.
-// Assertion focus: Directed check for branch mispredict dcache stall behavior or side-effect suppression.
 
 module tb_assert_branch_mispredict_dcache_stall;
 
@@ -66,7 +59,7 @@ module tb_assert_branch_mispredict_dcache_stall;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_branch_mispredict_dcache_stall.vcd");
+        $dumpfile("results/waveforms/tb_assert_branch_mispredict_dcache_stall.vcd");
         $dumpvars(0, tb_assert_branch_mispredict_dcache_stall);
         reset_cpu();
 

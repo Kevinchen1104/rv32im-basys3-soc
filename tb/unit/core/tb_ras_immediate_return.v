@@ -29,7 +29,7 @@ module tb_ras_immediate_return;
     end
 
     initial begin
-        $dumpfile("wave/tb_ras_immediate_return.vcd");
+        $dumpfile("results/waveforms/tb_ras_immediate_return.vcd");
         $dumpvars(0, tb_ras_immediate_return);
         return_resolves = 0;
         return_mispredicts = 0;

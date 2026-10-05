@@ -1,13 +1,11 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_registered_trap_metadata_commit
-// Purpose: Proves the integrated core's exact trap capture/commit cycle contract.
+// Purpose: Checks the integrated core's trap metadata capture/commit timing.
 // Checks: Accepted exceptions and interrupts redirect and clear mstatus.MIE immediately, register one metadata
 //   event, commit aligned mepc/mcause/full mtval one edge later, expose committed values to the first handler CSR
 //   reads, preserve mret behavior, suppress wrong-path CSR writes, and accept a stalled interrupt exactly once.
 // Pass condition: All directed exception, interrupt, priority, handler-read, mret, and reset phases pass.
-// Does not prove: Full privileged architecture, arbitrary nested traps, delegation, or physical timing closure.
-//   Back-to-back capture/commit throughput is checked exhaustively at the standalone CSR-unit boundary.
+// Standalone CSR tests check back-to-back metadata capture and commit.
 
 module tb_assert_registered_trap_metadata_commit;
 
@@ -311,7 +309,7 @@ module tb_assert_registered_trap_metadata_commit;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_registered_trap_metadata_commit.vcd");
+        $dumpfile("results/waveforms/tb_assert_registered_trap_metadata_commit.vcd");
         $dumpvars(0, tb_assert_registered_trap_metadata_commit);
 
         run_illegal_handler_read_mret();

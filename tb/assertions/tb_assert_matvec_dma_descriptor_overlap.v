@@ -1,11 +1,9 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_matvec_dma_descriptor_overlap
 // Purpose: Checks CPU-visible rejection of an overlapping MATVEC DMA-lite descriptor.
 // Checks: A matrix/output overlap reports error bit 9 through MMIO, completes without becoming busy,
 //   issues no DMA memory transaction, and leaves all DMA performance counters unchanged.
 // Pass condition: The CPU reads the overlap error and every no-side-effect condition remains true.
-// Does not prove: General DMA correctness, cache coherence, timing closure, or physical-board behavior.
 
 module tb_assert_matvec_dma_descriptor_overlap;
 
@@ -20,7 +18,7 @@ module tb_assert_matvec_dma_descriptor_overlap;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_matvec_dma_descriptor_overlap.vcd");
+        $dumpfile("results/waveforms/tb_assert_matvec_dma_descriptor_overlap.vcd");
         $dumpvars(0, tb_assert_matvec_dma_descriptor_overlap);
 
         reset_cpu();
@@ -46,9 +44,9 @@ module tb_assert_matvec_dma_descriptor_overlap;
         run_cycles(100);
 
         check_reg(3, 32'h0000_0200);
-        if (dut.gen_accelerators.accel_matvec_dma.busy !== 1'b0 ||
-            dut.gen_accelerators.accel_matvec_dma.done !== 1'b1 ||
-            dut.gen_accelerators.accel_matvec_dma.error !== 1'b1 ||
+        if (dut.gen_dma_accelerator.accel_matvec_dma.busy !== 1'b0 ||
+            dut.gen_dma_accelerator.accel_matvec_dma.done !== 1'b1 ||
+            dut.gen_dma_accelerator.accel_matvec_dma.error !== 1'b1 ||
             dut.matvec_dma_error_read_data !== 32'h0000_0200 ||
             dut.matvec_dma_perf_read_data !== 32'h0000_0000 ||
             dma_request_count != 0) begin

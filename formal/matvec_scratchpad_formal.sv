@@ -12,6 +12,7 @@ module matvec_scratchpad_formal;
     (* anyseq *) reg result_index_write;
     (* anyseq *) reg clear_done;
     (* anyseq *) reg [31:0] write_data;
+    (* anyseq *) reg [3:0] write_byte_enable;
 
     wire [31:0] status_read_data;
     wire [31:0] config_read_data;
@@ -34,6 +35,7 @@ module matvec_scratchpad_formal;
         .result_index_write(result_index_write),
         .clear_done(clear_done),
         .write_data(write_data),
+        .write_byte_enable(write_byte_enable),
         .status_read_data(status_read_data),
         .config_read_data(config_read_data),
         .vector_read_data(vector_read_data),
@@ -47,7 +49,7 @@ module matvec_scratchpad_formal;
 
     wire busy = status_read_data[0];
     wire done = status_read_data[1];
-    wire start_request = ctrl_write && write_data[0];
+    wire start_request = ctrl_write && write_byte_enable[0] && write_data[0];
     wire accepted_start = start_request && !busy;
     wire accepted_one_row = accepted_start && (config_read_data[3:0] == 4'h0);
     wire operand_write_request =
@@ -56,6 +58,7 @@ module matvec_scratchpad_formal;
 
     reg past_valid = 1'b0;
     reg [2:0] one_row_age = 3'd0;
+    integer lane;
 
     always @(posedge clock) begin
         past_valid <= 1'b1;
@@ -88,6 +91,18 @@ module matvec_scratchpad_formal;
         end
 
         if (past_valid && !$past(reset)) begin
+            if ($past(!busy)) begin
+                for (lane = 0; lane < 4; lane = lane + 1) begin
+                    if ($past(vector_write && write_byte_enable[lane]))
+                        assert(vector_read_data[lane*8 +: 8] == $past(write_data[lane*8 +: 8]));
+                    else
+                        assert(vector_read_data[lane*8 +: 8] == $past(vector_read_data[lane*8 +: 8]));
+                end
+                if ($past(row_index_write && write_byte_enable[0]))
+                    assert(row_index_read_data[3:0] == $past(write_data[3:0]));
+                else
+                    assert(row_index_read_data == $past(row_index_read_data));
+            end
             // Any idle start is accepted on the following edge.
             if ($past(accepted_start)) begin
                 assert(busy);

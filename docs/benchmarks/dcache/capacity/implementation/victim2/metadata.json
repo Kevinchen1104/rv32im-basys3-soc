@@ -1,0 +1,496 @@
+{
+  "generated_at_utc": "2026-10-03T01:27:18.6546654Z",
+  "status": "pass",
+  "execution_status": "pass",
+  "mode": "bitstream",
+  "exit_code": 0,
+  "vivado": {
+    "name": "Vivado",
+    "command": "vivado",
+    "path": "C:\\AMDDesignTools\\2026.1\\Vivado\\bin\\vivado.bat",
+    "version": "vivado v2026.1 (64-bit)\nTool Version Limit: 2026.06\nSW Build 6511674 on Tue Jun 16 11:02:23 MDT 2026\nIP Build 6504888 on Tue Jun 09 09:05:25 MDT 2026\nSharedData Build 6501428 on Mon Jun 08 17:34:18 MDT 2026\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\nCopyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved."
+  },
+  "part": "xc7a35tcpg236-1",
+  "top": "RISCVCPU_basys3_top",
+  "architecture_profile": "fast_cpu",
+  "icache_bytes": 1024,
+  "icache_parallel_lookup": 0,
+  "dcache_victim_lines": 2,
+  "dcache_bytes": 64,
+  "timing_period_ns": 10,
+  "clock_profile": "board_100mhz",
+  "source_commit": "5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e",
+  "working_tree_dirty": true,
+  "source_fingerprint": "293d6cc96a7134b3c6caeca1e80984bd5c21b79d6f7083e6b77882c8416e983a",
+  "verification_input_fingerprint": "c27607b9ff34b7ad842054db7002ed4f5dfbb1ddbceed4660b90ccd901be069d",
+  "verification_inputs_changed_during_run": false,
+  "verification_input_count": 507,
+  "verification_working_tree_dirty": false,
+  "source_inputs": [
+    {
+      "path": "fpga/boards/basys3/basys3.xdc",
+      "sha256": "abc10933e6829519150e9d46379e6e9b05b4ef67e736c919e1c942fb88ca0a29"
+    },
+    {
+      "path": "fpga/fpga_sources.f",
+      "sha256": "c86bc176c33364a534346e20a800b10307dddaaf5d3a18dd0f4b1364fc163619"
+    },
+    {
+      "path": "fpga/vivado/basys3_build.tcl",
+      "sha256": "51df53ec44446af5ddcc6d681cea420c76b00309ebcdeb889a65f3aba1be341a"
+    },
+    {
+      "path": "rtl/accelerators/matvec/int8_matvec_dma_lite.v",
+      "sha256": "88f9dcf8cc9fa0c402337e3321b23e78460fe8f5b7788a259aacf890ce5720ca"
+    },
+    {
+      "path": "rtl/accelerators/matvec/int8_matvec_scratchpad_accelerator.v",
+      "sha256": "750ca5bbd3f9b8019ff08f7889446b64bca3c7fd3e7cc2bd52f79a8ffd5bcae3"
+    },
+    {
+      "path": "rtl/boot/uart/boot_reset_controller.v",
+      "sha256": "ebe79111994a55b904da017a17aa007ce46fafe622b7edea3e00c7a7e85e97a6"
+    },
+    {
+      "path": "rtl/boot/uart/uart_packet_boot_imem.v",
+      "sha256": "a41bed1939b851e6a270a65541d73b6aaa855c8a16352175c38400369d69c9f9"
+    },
+    {
+      "path": "rtl/boot/uart/uart_serial_packet_boot_imem.v",
+      "sha256": "829d2aee3b78e69a465213a473080ed8bacabc9e4aef134ef50d6ffd82e894bc"
+    },
+    {
+      "path": "rtl/core/csr/csr_unit.v",
+      "sha256": "04c568da1afc36c8e7a97e768173ab2e2f4087b050f666cfb6f8cc96ebce17cd"
+    },
+    {
+      "path": "rtl/core/csr/exception_decode_unit.v",
+      "sha256": "1fd70d824ededf838d3b92a23303a7212c1149264489b7744a4cdd9866609e2d"
+    },
+    {
+      "path": "rtl/core/csr/trap_redirect_control_unit.v",
+      "sha256": "17169f8f67f5fa21aeefaeeec9e34310b0d3ca4d4c07469331d3e9960df51801"
+    },
+    {
+      "path": "rtl/core/execute/branch_jump_unit.v",
+      "sha256": "a3f4b032268c087afc258656a3cb6835bb922c5f9a86473ee5c9d894a5666137"
+    },
+    {
+      "path": "rtl/core/execute/riscv_alu.v",
+      "sha256": "cacfa207c9836327cc4ec3901d8c64193557e2622db047a2a3433a915e9f0e08"
+    },
+    {
+      "path": "rtl/core/execute/rv32m_multicycle_unit.v",
+      "sha256": "1d6af289b84109f2a662d48ee85942f8df6fc2a3bb2817da3f90eae8a3d5a7d1"
+    },
+    {
+      "path": "rtl/core/frontend/branch_predictor.v",
+      "sha256": "fa1beb06949f5c8c6f76a18abd25698722c0c90e6a3854dcf554edff7002245a"
+    },
+    {
+      "path": "rtl/core/frontend/ras_unit.v",
+      "sha256": "142731b13e0c4c32452346511ec79909e431d9ebb252b318726945dd9b957a43"
+    },
+    {
+      "path": "rtl/core/pipeline/forwarding_unit.v",
+      "sha256": "65af61c7979c224453809c2fb7bc44c364b1e630c3145f20c30f459712d87362"
+    },
+    {
+      "path": "rtl/core/pipeline/hazard_unit.v",
+      "sha256": "546f98c41b7b21e4e9a105d4649f0a7481eb2422acba514dbf6a72f93f5ec8b4"
+    },
+    {
+      "path": "rtl/core/pipeline/pipeline_control_unit.v",
+      "sha256": "be0928ae8f3cadcf88e5861e8533869b19a7de9b53ff683630b77c89ebf29481"
+    },
+    {
+      "path": "rtl/core/riscv_cpu_core.v",
+      "sha256": "98e1d6e56935f423ff12e621aede60a6e7bcb1a3184d7023f195543f49d82994"
+    },
+    {
+      "path": "rtl/memory/bram/external_dmem_bram.v",
+      "sha256": "a170244a7dce1f30fefb51257df95a07531299e160b03afc40c7cdec49554dbb"
+    },
+    {
+      "path": "rtl/memory/cache/dcache_unit.v",
+      "sha256": "2fa0a650343a9f7b01812fddd37504c1965a0a32353b58169138a9f25db7724c"
+    },
+    {
+      "path": "rtl/memory/cache/icache_unit.v",
+      "sha256": "c95be8060998ade794a60d21bedda1ab6ba67cb15c0bb1c3fdb9b64606cbbdac"
+    },
+    {
+      "path": "rtl/memory/load_store_format_unit.v",
+      "sha256": "58c7e7ff17a47b4e5d20157531c2abcbcea631cd4ad328f5acbcad2721871c01"
+    },
+    {
+      "path": "rtl/peripherals/timer/machine_timer.v",
+      "sha256": "61b7b67fd240f4e9559b7e07af81a889edb90032c5ab26a0066fdddccc15c4d1"
+    },
+    {
+      "path": "rtl/peripherals/uart/uart_rx.v",
+      "sha256": "90d81ca3e31fd50366db97929498f9520d9724abdfe1092026f0eaf764b5d1e6"
+    },
+    {
+      "path": "rtl/peripherals/uart/uart_rx_mmio_buffer.v",
+      "sha256": "b2b40426553090a4b23c4a73cc185bde3f977f05bd71307b151a550b5b811e4f"
+    },
+    {
+      "path": "rtl/peripherals/uart/uart_tx.v",
+      "sha256": "73d3b813c43d2bc5117741ae35432dce524004fb43a490197e171a9ce77de9a2"
+    },
+    {
+      "path": "rtl/soc/mmio/mmio_decode.v",
+      "sha256": "ddcf03d0ec255b662f4333e454da23c14d73e0bf33f96e8ffe2326bfc13815d5"
+    },
+    {
+      "path": "rtl/soc/mmio/mmio_read_mux.v",
+      "sha256": "94e4cd860422e34de976864c8970dd5eb3cb8235731ef76c420057e48c42e424"
+    },
+    {
+      "path": "rtl/soc/perf/performance_counter_unit.v",
+      "sha256": "60fadcfce1844892027eccdf2b740abc1c8154977f374d2fda5e27b922d5d7b9"
+    },
+    {
+      "path": "rtl/top/boards/basys3/basys3_lowfreq_clock_gen.v",
+      "sha256": "748cde385747dbdd79ab76ac6738530b5604db8ba5445486447272a980b11c62"
+    },
+    {
+      "path": "rtl/top/boards/basys3/riscv_cpu_basys3_board_smoke_top.v",
+      "sha256": "21aa81d515c69aad6c79212554bdb4c904ce7885e48a6436ca995565d4c01757"
+    },
+    {
+      "path": "rtl/top/boards/basys3/riscv_cpu_basys3_full_lowfreq_top.v",
+      "sha256": "0d920fe5593eed3f1f38f9cee462acba0b6d9b291814a66f9784ed1bc9b9b2e5"
+    },
+    {
+      "path": "rtl/top/boards/basys3/riscv_cpu_basys3_top.v",
+      "sha256": "1b85f7e4fbd00bec6e937dec76e162f77b2d1d314a864519025cdad8e6098ab8"
+    },
+    {
+      "path": "rtl/top/generic/riscv_cpu_fpga_debug_led_top.v",
+      "sha256": "2b69230aa3a1e21d73235a6be3830f8599bcb8e4586bbe1f8982f0f370f3af88"
+    },
+    {
+      "path": "rtl/top/generic/riscv_cpu_fpga_top.v",
+      "sha256": "9172cd6959da2a4bc2faf2be9957c8dfef4e6fa76eb0f53158345a5ccdd4b0bb"
+    },
+    {
+      "path": "rtl/top/soc/riscv_cpu_uart_boot_bram_soc_top.v",
+      "sha256": "711e865a22d4e3c5a264964ab67a3246069c48ca62516f497bd233d08a166d35"
+    },
+    {
+      "path": "rtl/top/soc/riscv_cpu_uart_boot_fpga_top.v",
+      "sha256": "217aaadda3703b81b7d44ee7ef28ba8fe5b3b5c0d1ea6e6471f63d50a11d7544"
+    },
+    {
+      "path": "rtl/top/soc/riscv_cpu_uart_boot_runtime_soc_top.v",
+      "sha256": "5d9f3a7896cb81fb7357835b89c0aa8b2dd853979a52c30097a7797d893eff15"
+    },
+    {
+      "path": "scripts/result-format.ps1",
+      "sha256": "22ed169891756ce7aea2e2d4fd0011d9b10f35ab1424ed7faf263eb320d8e16f"
+    },
+    {
+      "path": "scripts/script-common.ps1",
+      "sha256": "18abcedd8de14b376bd9d7c657d16da18ca5209d69510cdb43bfd21075029e98"
+    },
+    {
+      "path": "scripts/verification-source-identity.ps1",
+      "sha256": "32328df69e3855248961ebe921a2bce506f341484daf6e53e3fd8350c9f2a34d"
+    },
+    {
+      "path": "scripts/vivado-basys3-build.ps1",
+      "sha256": "5984fb60fd936bbe488ef0e28b5e8ec8459ee3b0fd9e325d344983df1a27a3d8"
+    },
+    {
+      "path": "scripts/vivado-drc-report.ps1",
+      "sha256": "a8c755b6d5d4df2401beef2c5eadfd32d9cf711b6d6039a2eb11b562cb6e18fd"
+    }
+  ],
+  "tcl": ".\\fpga\\vivado\\basys3_build.tcl",
+  "out_dir": "build\\vivado\\dcache-capacity\\victim2",
+  "log": "results/timing/dcache-capacity-victim2.log",
+  "vivado_log": ".\\build\\vivado\\dcache-capacity\\victim2\\vivado.log",
+  "vivado_journal": ".\\build\\vivado\\dcache-capacity\\victim2\\vivado.jou",
+  "vivado_temp_dir": ".\\build\\vivado\\dcache-capacity\\victim2\\tmp",
+  "command": "vivado -mode batch -log ./build/vivado/dcache-capacity/victim2/vivado.log -journal ./build/vivado/dcache-capacity/victim2/vivado.jou -tempDir ./build/vivado/dcache-capacity/victim2/tmp -source ./fpga/vivado/basys3_build.tcl -tclargs -repo_root . -out_dir ./build/vivado/dcache-capacity/victim2 -top RISCVCPU_basys3_top -run_synth_only 0 -run_impl 1 -generate_bitstream 1 -opt_directive ExploreWithRemap -place_directive Explore -phys_opt_directive Explore -route_directive NoTimingRelaxation -timing_period_ns 10 -architecture_profile fast_cpu -icache_bytes 1024 -icache_parallel_lookup 0 -dcache_bytes 64 -dcache_victim_lines 2",
+  "peak_memory_mb": 2580.25,
+  "synth_status": "pass",
+  "implementation_status": "pass",
+  "timing_status": "pass",
+  "timing_closure_status": "met",
+  "timing_constraint_status": "pass",
+  "implementation_strategy": {
+    "opt_directive": "ExploreWithRemap",
+    "place_directive": "Explore",
+    "phys_opt_directive": "Explore",
+    "route_directive": "NoTimingRelaxation"
+  },
+  "drc_status": "pass",
+  "bitstream_status": "pass",
+  "reports": {
+    "post_synth_utilization": {
+      "path": ".\\build\\vivado\\dcache-capacity\\victim2\\reports\\post_synth_utilization.rpt",
+      "present": true,
+      "lut": {
+        "used": 7665,
+        "available": 20800,
+        "percent": 36.85
+      },
+      "ff": {
+        "used": 5068,
+        "available": 41600,
+        "percent": 12.18
+      },
+      "bram": {
+        "used": 2,
+        "available": 50,
+        "percent": 4
+      },
+      "dsp": {
+        "used": 4,
+        "available": 90,
+        "percent": 4.44
+      },
+      "io": {
+        "used": 36,
+        "available": 106,
+        "percent": 33.96
+      }
+    },
+    "post_synth_timing": {
+      "path": ".\\build\\vivado\\dcache-capacity\\victim2\\reports\\post_synth_timing_summary.rpt",
+      "present": true,
+      "wns_ns": -1.448,
+      "tns_ns": -207.22,
+      "whs_ns": 0.045,
+      "ths_ns": 0,
+      "no_clock_count": 0,
+      "unconstrained_internal_endpoint_count": 0,
+      "no_input_delay_count": 0,
+      "no_output_delay_count": 0
+    },
+    "post_synth_critical_path": {
+      "path": ".\\build\\vivado\\dcache-capacity\\victim2\\reports\\post_synth_critical_paths.rpt",
+      "present": true,
+      "slack_ns": -1.448,
+      "source": "soc/cpu/EXMEMALUOut_reg[12]/C",
+      "destination": "soc/cpu/csr_unit_inst/trap_tval_shadow_reg[0]/D",
+      "path_group": "sys_clk_pin",
+      "logic_levels": 14,
+      "cell_types": "(LUT2=3 LUT4=1 LUT5=1 LUT6=9)"
+    },
+    "post_synth_clocks": [
+      {
+        "name": "board_async_input_ref",
+        "period_ns": 10,
+        "frequency_mhz": 100,
+        "generated": "0",
+        "source_pin": "none"
+      },
+      {
+        "name": "board_output_budget",
+        "period_ns": 20,
+        "frequency_mhz": 50,
+        "generated": "0",
+        "source_pin": "none"
+      },
+      {
+        "name": "sys_clk_pin",
+        "period_ns": 10,
+        "frequency_mhz": 100,
+        "generated": "0",
+        "source_pin": "clk"
+      }
+    ],
+    "post_synth_drc": {
+      "path": ".\\build\\vivado\\dcache-capacity\\victim2\\reports\\post_synth_drc.rpt",
+      "present": true,
+      "checks_found": 0,
+      "parsed_check_count": 0,
+      "report_parse_complete": true,
+      "error_count": 0,
+      "critical_warning_count": 0,
+      "warning_count": 0,
+      "advisory_count": 0,
+      "unapproved_warning_count": 0,
+      "bram_async_control_warning_count": 0,
+      "release_approved": true,
+      "allowed_warning_rules": [],
+      "unapproved_rules": [],
+      "rules": []
+    },
+    "post_route_utilization": {
+      "path": ".\\build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_utilization.rpt",
+      "present": true,
+      "lut": {
+        "used": 7381,
+        "available": 20800,
+        "percent": 35.49
+      },
+      "ff": {
+        "used": 5075,
+        "available": 41600,
+        "percent": 12.2
+      },
+      "bram": {
+        "used": 2,
+        "available": 50,
+        "percent": 4
+      },
+      "dsp": {
+        "used": 4,
+        "available": 90,
+        "percent": 4.44
+      },
+      "io": {
+        "used": 36,
+        "available": 106,
+        "percent": 33.96
+      }
+    },
+    "post_route_hierarchy": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_hierarchy.rpt",
+    "post_route_timing": {
+      "path": ".\\build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_timing_summary.rpt",
+      "present": true,
+      "wns_ns": 0.017,
+      "tns_ns": 0,
+      "whs_ns": 0.035,
+      "ths_ns": 0,
+      "no_clock_count": 0,
+      "unconstrained_internal_endpoint_count": 0,
+      "no_input_delay_count": 0,
+      "no_output_delay_count": 0
+    },
+    "post_route_critical_path": {
+      "path": ".\\build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_critical_paths.rpt",
+      "present": true,
+      "slack_ns": 0.017,
+      "source": "soc/cpu/IDEXIR_reg[20]/C",
+      "destination": "soc/cpu/EXMEMALUOut_reg[5]/D",
+      "path_group": "sys_clk_pin",
+      "logic_levels": 10,
+      "cell_types": "(LUT5=3 LUT6=7)"
+    },
+    "post_route_top50_paths": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_top50_paths.rpt",
+    "post_route_clocks": [
+      {
+        "name": "board_async_input_ref",
+        "period_ns": 10,
+        "frequency_mhz": 100,
+        "generated": "0",
+        "source_pin": "none"
+      },
+      {
+        "name": "board_output_budget",
+        "period_ns": 20,
+        "frequency_mhz": 50,
+        "generated": "0",
+        "source_pin": "none"
+      },
+      {
+        "name": "sys_clk_pin",
+        "period_ns": 10,
+        "frequency_mhz": 100,
+        "generated": "0",
+        "source_pin": "clk"
+      }
+    ],
+    "post_route_drc": {
+      "path": ".\\build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_drc.rpt",
+      "present": true,
+      "checks_found": 0,
+      "parsed_check_count": 0,
+      "report_parse_complete": true,
+      "error_count": 0,
+      "critical_warning_count": 0,
+      "warning_count": 0,
+      "advisory_count": 0,
+      "unapproved_warning_count": 0,
+      "bram_async_control_warning_count": 0,
+      "release_approved": true,
+      "allowed_warning_rules": [],
+      "unapproved_rules": [],
+      "rules": []
+    },
+    "post_route_timing_exceptions": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_timing_exceptions.rpt"
+  },
+  "bitstream": "build\\vivado\\dcache-capacity\\victim2\\RISCVCPU_basys3_top.bit",
+  "bitstream_sha256": "a6e732e7d7ad15d597fb5aa0dfc7ddaef70924ec44bd9072d8cc6039906337e0",
+  "physical_validation_status": "not_run",
+  "method": "Vivado synthesis and requested implementation checks; physical runs are recorded separately",
+  "report_artifacts": [
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_clock_interaction.rpt",
+      "size_bytes": 2052,
+      "sha256": "24cd6fba59cde1b15597b2149adaa7e72e66e26f485c66f86f209b635b69f0b5"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_clocks.rpt",
+      "size_bytes": 181,
+      "sha256": "709355648a23de1b1f8bd77264a767891512bae45281fedc650dde7213589319"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_critical_paths.rpt",
+      "size_bytes": 94386,
+      "sha256": "8f95b18f3b259d83480f93a62b76d4d96657e68d44cd48693a0cebcdbaf60b8a"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_drc.rpt",
+      "size_bytes": 1402,
+      "sha256": "8dba7cfa920120b4f1f7c8d0597294a9b4050518fe457ab465564ee93b743b71"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_hierarchy.rpt",
+      "size_bytes": 6960,
+      "sha256": "5952aabff8758bda61042fb3155ddb8ed54212d554cdc8a6ce160dbe3cd3aa83"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_timing_exceptions.rpt",
+      "size_bytes": 3015,
+      "sha256": "35ffac2229c481ec26cb3425c4df5237b5e52dbbc3e4ec8ed871c948388b1de5"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_timing_summary.rpt",
+      "size_bytes": 24183,
+      "sha256": "2e6165f5f4d7e6e436126adeb1d7d745e073cca835dbef46b3fcef08d0aabd0f"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_top50_paths.rpt",
+      "size_bytes": 354329,
+      "sha256": "e65687ee6bbe5311c242bad82bc8e8a8d06c3b50e90a96fad1f7a071dfbbba2e"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_utilization.rpt",
+      "size_bytes": 11702,
+      "sha256": "ca5dc9d5f59d0e9f155d56b79a20fa94e797dcafd5c0f20ebdf0d59389f65974"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_synth_clocks.rpt",
+      "size_bytes": 181,
+      "sha256": "709355648a23de1b1f8bd77264a767891512bae45281fedc650dde7213589319"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_synth_critical_paths.rpt",
+      "size_bytes": 99628,
+      "sha256": "a820d24e802546f5ac185b258112e3a41958f58ff9c89e3c778043aa29c7c987"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_synth_drc.rpt",
+      "size_bytes": 1401,
+      "sha256": "73f20e09a092edb05404b469364e8b48b818fe19880fbf731fb3ccfad33bb79d"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_synth_timing_summary.rpt",
+      "size_bytes": 24959,
+      "sha256": "504b95a7949d3039612bbdd7b3b81f2dff28273f1290f864a0fde8cb3ea4d920"
+    },
+    {
+      "path": "build\\vivado\\dcache-capacity\\victim2\\reports\\post_synth_utilization.rpt",
+      "size_bytes": 9518,
+      "sha256": "91afd3d86e1a487be51d1d632cfef5e94ad65394978edcaf748a14c69d8a2e5a"
+    }
+  ],
+  "publication_note": "Run hashes identify originals; publication.json identifies normalized copies."
+}

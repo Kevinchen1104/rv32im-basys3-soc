@@ -117,7 +117,7 @@ module tb_branch_predictor_update_pipeline;
 
     integer i;
     initial begin
-        $dumpfile("wave/tb_branch_predictor_update_pipeline.vcd");
+        $dumpfile("results/waveforms/tb_branch_predictor_update_pipeline.vcd");
         $dumpvars(0, tb_branch_predictor_update_pipeline);
 
         clock = 1'b0;

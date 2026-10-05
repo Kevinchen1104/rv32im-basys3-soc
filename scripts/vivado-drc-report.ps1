@@ -7,8 +7,6 @@ Outputs:
   No files; exposes Read-DrcReportSummary.
 Scope:
   DRC report parsing only; no Vivado invocation or design correctness claim.
-Audience:
-  Vivado build, release, and parser self-test scripts.
 #>
 
 function Read-DrcReportSummary {

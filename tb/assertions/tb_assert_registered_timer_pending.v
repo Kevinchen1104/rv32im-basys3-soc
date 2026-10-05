@@ -1,12 +1,9 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_registered_timer_pending
 // Purpose: Checks the machine timer's registered comparison boundary cycle by cycle.
 // Checks: MTIP equals the preceding mtime>=mtimecmp sample across threshold crossing, compare writes,
 //   consecutive writes, deassertion, and reset; the pending state is sampled rather than sticky.
 // Pass condition: Every post-edge interrupt value matches the comparison sampled immediately before that edge.
-// Does not prove: Bounded directed peripheral evidence only; not a full CLINT, whole interrupt subsystem proof,
-//   privileged-architecture proof, timing closure, or physical-board evidence.
 
 module tb_assert_registered_timer_pending;
     reg clock = 1'b0;
@@ -76,7 +73,7 @@ module tb_assert_registered_timer_pending;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_registered_timer_pending.vcd");
+        $dumpfile("results/waveforms/tb_assert_registered_timer_pending.vcd");
         $dumpvars(0, tb_assert_registered_timer_pending);
 
         reset = 1'b1;

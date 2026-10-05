@@ -1,14 +1,12 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_top_uart_tx
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: FPGA top internal UART TX serializes MMIO data.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Wrapper-level UART TX simulation only; no board serial proof.
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_top_uart_tx;
+    initial begin : watchdog
+        repeat (2000000) @(posedge clock);
+        $fatal(1, "Testbench watchdog expired");
+    end
 
     reg clock = 0;
     reg reset = 0;
@@ -93,8 +91,9 @@ module tb_fpga_top_uart_tx;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_fpga_top_uart_tx.vcd");
+        $dumpfile("results/waveforms/tb_fpga_top_uart_tx.vcd");
         $dumpvars(0, tb_fpga_top_uart_tx);
+        #1; // Load after the DUT's time-zero memory initialization.
 
         dut.valid_config.cpu.IMemory[0] = i_type(12'd768, 5'd0, 3'b000, 5'd1, 7'b0010011);  // addi x1, x0, 0x300
         dut.valid_config.cpu.IMemory[1] = i_type(12'h041, 5'd0, 3'b000, 5'd2, 7'b0010011);  // addi x2, x0, 'A'

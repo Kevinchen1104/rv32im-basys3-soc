@@ -1,14 +1,9 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_matvec_scratchpad_interrupt_flush
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: A MATVEC Scratchpad external-interrupt redirect suppresses the interrupted instruction plus younger wrong-path
 //   data-memory and GPIO MMIO stores.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Directed interrupt redirect safety test using hierarchical MATVEC Scratchpad pending injection; the real
-//   completion-to-interrupt path is covered by the CPU program test.
-// Assertion focus: Directed check for matvec scratchpad interrupt flush behavior or side-effect suppression.
+// Injects MATVEC pending state hierarchically; tb_program_matvec_scratchpad_interrupt checks real completion
+// interrupts.
 
 module tb_assert_matvec_scratchpad_interrupt_flush;
 
@@ -63,7 +58,7 @@ module tb_assert_matvec_scratchpad_interrupt_flush;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_matvec_scratchpad_interrupt_flush.vcd");
+        $dumpfile("results/waveforms/tb_assert_matvec_scratchpad_interrupt_flush.vcd");
         $dumpvars(0, tb_assert_matvec_scratchpad_interrupt_flush);
         reset_cpu();
 

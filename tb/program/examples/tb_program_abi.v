@@ -20,7 +20,7 @@ module tb_program_abi;
     end
 
     initial begin
-        $dumpfile("wave/tb_program_abi.vcd");
+        $dumpfile("results/waveforms/tb_program_abi.vcd");
         $dumpvars(0, tb_program_abi);
         reset_cpu();
         max_ras_count = 0;

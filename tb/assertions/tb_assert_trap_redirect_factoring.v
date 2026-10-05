@@ -1,10 +1,8 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_trap_redirect_factoring
 // Purpose: Checks factored precise trap, interrupt-entry, and redirect control.
 // Checks: Stall-independent eligibility, accepted-entry guards, redirect application equivalence, MEIP priority, precise mtval, and single interrupt entry.
 // Pass condition: Requested versus accepted redirect semantics match their contracts and CPU-level concurrent trap cases preserve exact CSR state.
-// Does not prove: Complete privileged architecture, nested interrupts, timing closure, or physical-board behavior.
 // Assertion focus: Short-path redirect factoring must preserve accepted trap priority and one-shot CSR side effects.
 
 module tb_assert_trap_redirect_factoring;
@@ -33,6 +31,124 @@ module tb_assert_trap_redirect_factoring;
     integer exception_pulses;
     integer trap_pulses;
     reg monitor_cpu;
+    reg [12:0] frontend_inputs;
+    wire frontend_stall = frontend_inputs[4] | frontend_inputs[5];
+    wire frontend_legal = !frontend_inputs[8];
+    wire frontend_valid = frontend_inputs[0];
+    wire frontend_control = frontend_inputs[1];
+    wire frontend_busy = frontend_inputs[2];
+    wire frontend_memory_fault = frontend_inputs[3];
+    wire frontend_memory_hold = frontend_inputs[4];
+    wire frontend_alignment = frontend_inputs[6];
+    wire frontend_cancel = frontend_inputs[7];
+    wire frontend_mret = frontend_inputs[9];
+    wire frontend_interrupt = frontend_inputs[10];
+    wire frontend_fetch_hold = frontend_inputs[11];
+    wire frontend_load_use = frontend_inputs[12];
+
+    // Exercise the integrated combinational cone with independent boundary
+    // inputs. The reference below retains the pre-factoring equations.
+    task check_frontend_equivalence;
+        integer combination;
+        reg stalled;
+        reg old_exception;
+        reg old_mret;
+        reg old_eligible;
+        reg old_interrupt;
+        reg old_redirect;
+        reg [31:0] old_target;
+        reg [31:0] old_next_pc;
+        begin
+            reset_cpu();
+            @(negedge clock);
+            force clock = 1'b0;
+            force dut.IDEXValid = frontend_valid;
+            force dut.ControlRedirectPending = frontend_control;
+            force dut.rv32m_execute_stall = frontend_busy;
+            force dut.memory_access_fault_detect = frontend_memory_fault;
+            force dut.memory_access_fault_stall = frontend_memory_hold;
+            force dut.dcache_pipeline_stall = frontend_stall;
+            force dut.InstructionMisalignPending = frontend_alignment;
+            force dut.InstructionMisalignCancel = frontend_cancel;
+            force dut.is_legal_instruction = frontend_legal;
+            force dut.is_mret = frontend_mret;
+            force dut.machine_interrupt_pending = frontend_interrupt;
+            force dut.icache_pipeline_stall = frontend_fetch_hold;
+            force dut.load_use_hazard = frontend_load_use;
+            force dut.IDEXBranch = 1'b0;
+            force dut.IDEXJump = 1'b0;
+            force dut.IDEXMExtension = 1'b0;
+            force dut.instruction_access_fault = 1'b0;
+            force dut.is_ecall = 1'b0;
+            force dut.is_ebreak = 1'b0;
+            force dut.is_misaligned_access = 1'b0;
+            force dut.CSRmtvec = 32'h100;
+            force dut.CSRmepc = 32'h200;
+            force dut.ControlRedirectPC = 32'h300;
+            force dut.final_predicted_pc = 32'h400;
+            force dut.PC = 32'h500;
+            for (combination = 0; combination < 8192; combination = combination + 1) begin
+                frontend_inputs = combination;
+                #1;
+                stalled = frontend_inputs[4] || frontend_inputs[5];
+                old_exception =
+                    (frontend_inputs[3] && !frontend_inputs[4]) ||
+                    (frontend_inputs[0] && !frontend_inputs[1] && !stalled &&
+                     !frontend_inputs[2] && !frontend_inputs[3] && frontend_inputs[8]) ||
+                    (frontend_inputs[6] && !frontend_inputs[7] && !stalled);
+                old_mret = !frontend_inputs[1] && !frontend_inputs[3] &&
+                           frontend_inputs[0] && frontend_inputs[9];
+                old_eligible = frontend_inputs[0] && !frontend_inputs[1] && frontend_inputs[10];
+                old_interrupt = old_eligible && !stalled && !old_exception && !old_mret;
+                old_redirect = old_exception || old_mret || old_eligible || frontend_inputs[1];
+                old_target = old_exception ? 32'h100 :
+                             old_interrupt ? 32'h100 :
+                             old_mret ? 32'h200 : 32'h300;
+                old_next_pc = stalled ? 32'h500 : old_redirect ? old_target :
+                              (frontend_inputs[2] || frontend_inputs[11] || frontend_inputs[12]) ?
+                              32'h500 : 32'h400;
+                if (dut.exception_taken !== old_exception ||
+                    dut.interrupt_taken !== old_interrupt ||
+                    dut.if_redirect !== (!stalled && old_redirect) ||
+                    dut.pc_next_value !== old_next_pc ||
+                    dut.id_hold !== (stalled || (!old_redirect && frontend_inputs[2])) ||
+                    dut.id_bubble !== (!stalled && (old_redirect ||
+                        (!frontend_inputs[2] && (frontend_inputs[11] || frontend_inputs[12])))) ||
+                    dut.id_advance !== (!stalled && !old_redirect && !frontend_inputs[2] &&
+                        !frontend_inputs[11] && !frontend_inputs[12])) begin
+                    $display("FAIL: frontend factoring differs at input combination %h", frontend_inputs);
+                    $fatal;
+                end
+            end
+            release dut.IDEXValid;
+            release dut.ControlRedirectPending;
+            release dut.rv32m_execute_stall;
+            release dut.memory_access_fault_detect;
+            release dut.memory_access_fault_stall;
+            release dut.dcache_pipeline_stall;
+            release dut.InstructionMisalignPending;
+            release dut.InstructionMisalignCancel;
+            release dut.is_legal_instruction;
+            release dut.is_mret;
+            release dut.machine_interrupt_pending;
+            release dut.icache_pipeline_stall;
+            release dut.load_use_hazard;
+            release dut.IDEXBranch;
+            release dut.IDEXJump;
+            release dut.IDEXMExtension;
+            release dut.instruction_access_fault;
+            release dut.is_ecall;
+            release dut.is_ebreak;
+            release dut.is_misaligned_access;
+            release dut.CSRmtvec;
+            release dut.CSRmepc;
+            release dut.ControlRedirectPC;
+            release dut.final_predicted_pc;
+            release dut.PC;
+            release clock;
+            $display("PASS: 8192 frontend input combinations match the prior acceptance and PC equations");
+        end
+    endtask
 
     trap_redirect_control_unit factor_dut (
         .reset(factor_reset),
@@ -44,6 +160,7 @@ module tb_assert_trap_redirect_factoring;
         .instruction_is_m_extension(factor_is_m_extension),
         .dcache_pipeline_stall(factor_dcache_stall),
         .exception_taken(factor_exception),
+        .exception_pending(factor_exception),
         .mret_taken(factor_mret),
         .interrupt_eligible(factor_eligible),
         .interrupt_taken(factor_interrupt),
@@ -204,7 +321,12 @@ module tb_assert_trap_redirect_factoring;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_trap_redirect_factoring.vcd");
+        #100000;
+        $fatal(1, "Timed out waiting for trap/interrupt acceptance");
+    end
+
+    initial begin
+        $dumpfile("results/waveforms/tb_assert_trap_redirect_factoring.vcd");
         $dumpvars(0, tb_assert_trap_redirect_factoring);
         monitor_cpu = 1'b0;
         clear_cpu_counts();
@@ -269,6 +391,7 @@ module tb_assert_trap_redirect_factoring;
         factor_reset = 1'b1;
         check_factor("reset blocks interrupt", 0, 0, 0, 0);
 
+        check_frontend_equivalence();
         run_interrupt_priority_once();
         run_misaligned_store_beats_interrupt();
 

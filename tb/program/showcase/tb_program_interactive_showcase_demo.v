@@ -7,10 +7,13 @@
 //   public pass/fail signature.
 // Pass condition: Firmware-visible register, memory, debug_status, I/O, or transcript signatures match expected
 //   values before timeout.
-//   timing, CPI, speedup, or physical board evidence.
 // Firmware: firmware/hex/showcase/interactive_showcase_demo.hex
 
 module tb_program_interactive_showcase_demo;
+    initial begin : watchdog
+        repeat (2000000) @(posedge clock);
+        $fatal(1, "Testbench watchdog expired");
+    end
 
     localparam integer UART_CLKS_PER_BIT = 4;
     localparam integer MESSAGE_LEN = 74;
@@ -113,7 +116,7 @@ module tb_program_interactive_showcase_demo;
         .uart_tx_ready(uart_tx_ready),
         .uart_rx_data(buffered_uart_rx_data),
         .uart_rx_valid(buffered_uart_rx_valid),
-        .uart_rx_overrun(1'b0),
+        .uart_rx_overrun(buffered_uart_rx_overrun),
         .uart_rx_ready(cpu_uart_rx_ready)
     );
 
@@ -212,10 +215,9 @@ module tb_program_interactive_showcase_demo;
                          dut.DMemory[6], dut.DMemory[9]);
                 $fatal;
             end
-            if (^dut.DMemory[10] === 1'bx ||
-                ^dut.DMemory[11] === 1'bx ||
-                ^dut.DMemory[12] === 1'bx) begin
-                $display("FAIL: MATVEC counter snapshot contains unknown values");
+            if (^{dut.DMemory[5], dut.DMemory[6], dut.DMemory[7], dut.DMemory[8],
+                  dut.DMemory[9], dut.DMemory[10], dut.DMemory[11], dut.DMemory[12]} === 1'bx) begin
+                $display("FAIL: performance counter snapshot contains unknown values");
                 $fatal;
             end
         end
@@ -248,7 +250,7 @@ module tb_program_interactive_showcase_demo;
     initial begin
         expected_message = "RV32IM INTERACTIVE\nREADY\nCMD M\nMATVEC PASS\nCOUNTERS PASS\nINTERACTIVE PASS\n";
 
-        $dumpfile("wave/tb_program_interactive_showcase_demo.vcd");
+        $dumpfile("results/waveforms/tb_program_interactive_showcase_demo.vcd");
         $dumpvars(0, tb_program_interactive_showcase_demo);
 
         reset = 1'b1;

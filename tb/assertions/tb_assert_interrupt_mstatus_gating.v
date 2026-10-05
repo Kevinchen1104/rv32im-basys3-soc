@@ -1,14 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_interrupt_mstatus_gating
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Timer interrupt trap entry clears mstatus.MIE, saves old MIE in mstatus.MPIE, keeps a still-pending MTIP
 //   from retrapping while the handler executes, and restores MIE through mret.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Minimal mstatus.MIE/MPIE interrupt-gating slice only; not a nested interrupt architecture,
-//   privilege-stack proof, delegation model, full CLINT, or full privileged implementation.
-// Assertion focus: Directed check for interrupt mstatus gating behavior or side-effect suppression.
 
 module tb_assert_interrupt_mstatus_gating;
 
@@ -63,7 +56,7 @@ module tb_assert_interrupt_mstatus_gating;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_interrupt_mstatus_gating.vcd");
+        $dumpfile("results/waveforms/tb_assert_interrupt_mstatus_gating.vcd");
         $dumpvars(0, tb_assert_interrupt_mstatus_gating);
         reset_cpu();
 

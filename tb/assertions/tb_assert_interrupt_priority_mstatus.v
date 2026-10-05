@@ -1,14 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_interrupt_priority_mstatus
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Pending MTIP/MEIP do not trap while mstatus.MIE=0, and simultaneous enabled MEIP/MTIP selects machine
 //   external interrupt priority with mcause=0x8000000b and mtval=0.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Focused local interrupt gating and priority check only; not nested interrupt support, CLINT/PLIC
-//   compatibility, delegation, or full privileged architecture.
-// Assertion focus: Directed check for interrupt priority mstatus behavior or side-effect suppression.
 
 module tb_assert_interrupt_priority_mstatus;
 
@@ -131,7 +124,7 @@ module tb_assert_interrupt_priority_mstatus;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_interrupt_priority_mstatus.vcd");
+        $dumpfile("results/waveforms/tb_assert_interrupt_priority_mstatus.vcd");
         $dumpvars(0, tb_assert_interrupt_priority_mstatus);
 
         run_no_mie_phase();

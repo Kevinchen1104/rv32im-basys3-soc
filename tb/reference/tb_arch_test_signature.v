@@ -1,12 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_arch_test_signature
-// Purpose: Compares DUT behavior against deterministic local reference or signature fixtures.
 // Checks: Local arch-test-style signature comparison, tohost status detection, and optional DUT signature export
 //   plumbing.
-// Pass condition: DUT outputs match the generated expected fixture or signature and no mismatch or timeout occurs.
-// Does not prove: Local signature harness only; not an official compliance suite, exhaustive ISA proof, timing
-//   evidence, or physical board validation.
 
 module tb_arch_test_signature;
 
@@ -20,9 +15,11 @@ module tb_arch_test_signature;
     localparam TOHOST_FAIL_STATUS = 32'h00000003;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
+    wire trace_valid;
+    wire [31:0] trace_pc;
 
     reg [31:0] expected_signature [0:MAX_SIGNATURE_WORDS-1];
     reg [1023:0] program_hex_path;
@@ -49,13 +46,26 @@ module tb_arch_test_signature;
     reg tohost_pc_pass_seen;
     reg tohost_pc_fail_seen;
 
+    // Read architectural memory, including a newer resident cache line.
+    function [31:0] read_memory_word;
+        input integer word_index;
+        integer cache_index;
+        begin
+            cache_index = (word_index >> 2) & 3;
+            read_memory_word = dut.DMemory[word_index];
+            if (dut.gen_dcache.dcache.cache_valid[cache_index] &&
+                dut.gen_dcache.dcache.cache_tag_store[cache_index] == (word_index >> 4))
+                read_memory_word = dut.gen_dcache.dcache.cache_data[cache_index][word_index & 3];
+        end
+    endfunction
+
     function has_arch_test_tohost_status;
         begin
             has_arch_test_tohost_status =
                 (tohost_word_index >= 0) &&
                 (tohost_word_index < MAX_MEMORY_WORDS) &&
-                ((dut.DMemory[tohost_word_index] === TOHOST_PASS_STATUS) ||
-                 (dut.DMemory[tohost_word_index] === TOHOST_FAIL_STATUS));
+                ((read_memory_word(tohost_word_index) === TOHOST_PASS_STATUS) ||
+                 (read_memory_word(tohost_word_index) === TOHOST_FAIL_STATUS));
         end
     endfunction
 
@@ -63,11 +73,7 @@ module tb_arch_test_signature;
         input integer base_pc;
         begin
             pc_matches_halt_loop =
-                (base_pc >= 0) &&
-                ((debug_pc === base_pc) ||
-                 (debug_pc === (base_pc + 4)) ||
-                 (debug_pc === (base_pc + 8)) ||
-                 (debug_pc === (base_pc + 12)));
+                (base_pc >= 0) && trace_valid && (trace_pc === base_pc);
         end
     endfunction
 
@@ -106,8 +112,8 @@ module tb_arch_test_signature;
         .uart_rx_ready(),
         .debug_status(debug_status),
         .debug_pc(debug_pc),
-        .trace_valid(),
-        .trace_pc(),
+        .trace_valid(trace_valid),
+        .trace_pc(trace_pc),
         .trace_instruction(),
         .trace_rd(),
         .trace_reg_write(),
@@ -155,7 +161,7 @@ module tb_arch_test_signature;
                 end
 
                 for (i = 0; i < signature_word_count; i = i + 1) begin
-                    $fwrite(signature_file, "%08x\n", dut.DMemory[signature_start_word + i]);
+                    $fwrite(signature_file, "%08x\n", read_memory_word(signature_start_word + i));
                 end
                 $fclose(signature_file);
                 $display("INFO: wrote DUT signature %0s words=%0d start_word=%0d",
@@ -173,9 +179,10 @@ module tb_arch_test_signature;
                 mismatch_count = 0;
 
                 for (i = 0; i < signature_word_count; i = i + 1) begin
-                    if (dut.DMemory[signature_start_word + i] !== expected_signature[i]) begin
+                    if (^expected_signature[i] === 1'bx ||
+                        read_memory_word(signature_start_word + i) !== expected_signature[i]) begin
                         $display("FAIL: signature[%0d] expected %08x got %08x",
-                                 i, expected_signature[i], dut.DMemory[signature_start_word + i]);
+                                 i, expected_signature[i], read_memory_word(signature_start_word + i));
                         mismatch_count = mismatch_count + 1;
                     end
                 end
@@ -191,7 +198,7 @@ module tb_arch_test_signature;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_arch_test_signature.vcd");
+        $dumpfile("results/waveforms/tb_arch_test_signature.vcd");
         $dumpvars(0, tb_arch_test_signature);
 
         test_name = "arch-test";
@@ -206,6 +213,12 @@ module tb_arch_test_signature;
 
         has_expected_signature = $value$plusargs("expected_signature=%s", expected_signature_path);
         has_dut_signature_path = $value$plusargs("dut_signature=%s", dut_signature_path);
+        // A rejected request must not leave an earlier signature as current output.
+        if (has_dut_signature_path) begin
+            signature_file = $fopen(dut_signature_path, "w");
+            if (!signature_file) $fatal(1, "cannot clear DUT signature output");
+            $fclose(signature_file);
+        end
 
         if (!$value$plusargs("signature_start=%d", signature_start_word)) begin
             signature_start_word = 0;
@@ -232,9 +245,9 @@ module tb_arch_test_signature;
             $fatal;
         end
 
-        if (signature_word_count < 0 || signature_word_count > MAX_SIGNATURE_WORDS ||
+        if (signature_word_count <= 0 || signature_word_count > MAX_SIGNATURE_WORDS ||
             signature_start_word < 0 ||
-            signature_start_word + signature_word_count > MAX_MEMORY_WORDS) begin
+            signature_start_word > MAX_MEMORY_WORDS - signature_word_count) begin
             $display("FAIL: invalid signature range start=%0d words=%0d",
                      signature_start_word, signature_word_count);
             $fatal;
@@ -245,12 +258,13 @@ module tb_arch_test_signature;
             $fatal;
         end
 
+        #1;
         clear_memories();
         $readmemh(program_hex_path, dut.IMemory, 0, program_word_count - 1);
         $readmemh(program_hex_path, dut.DMemory, 0, program_word_count - 1);
 
         reset = 1'b1;
-        repeat (2) @(posedge clock);
+        repeat (2) @(negedge clock);
         reset = 1'b0;
 
         cycles_elapsed = 0;
@@ -259,11 +273,10 @@ module tb_arch_test_signature;
                !has_arch_test_tohost_status() &&
                !has_arch_test_tohost_pc_status()) begin
             @(posedge clock);
+            #1;
             cycles_elapsed = cycles_elapsed + 1;
         end
-        #1;
-
-        tohost_status_value = (tohost_word_index >= 0) ? dut.DMemory[tohost_word_index] : 32'h0;
+        tohost_status_value = (tohost_word_index >= 0) ? read_memory_word(tohost_word_index) : 32'h0;
         tohost_pc_pass_seen = pc_matches_halt_loop(tohost_pass_pc);
         tohost_pc_fail_seen = pc_matches_halt_loop(tohost_fail_pc);
 
@@ -290,8 +303,8 @@ module tb_arch_test_signature;
                      test_name, tohost_word_index);
         end
         if (tohost_pc_pass_seen) begin
-            $display("INFO: arch-test tohost pass loop observed for %0s at pc %08x",
-                     test_name, debug_pc);
+            $display("INFO: arch-test tohost pass loop retired for %0s at pc %08x",
+                     test_name, trace_pc);
         end
 
         write_dut_signature();

@@ -7,7 +7,6 @@
 //   DMA counters, clears done, and exposes a public debug_status pass/fail signature.
 // Pass condition: Firmware-visible register, memory, debug_status, I/O, or transcript signatures match expected
 //   values before timeout.
-//   engine, production AI accelerator, timing result, or benchmark speedup claim.
 // Firmware: firmware/hex/accelerator/matvec_dma_demo.hex
 
 module tb_program_matvec_dma_demo;
@@ -86,7 +85,7 @@ module tb_program_matvec_dma_demo;
     integer cycle;
 
     initial begin
-        $dumpfile("wave/tb_program_matvec_dma_demo.vcd");
+        $dumpfile("results/waveforms/tb_program_matvec_dma_demo.vcd");
         $dumpvars(0, tb_program_matvec_dma_demo);
 
         reset = 1'b1;

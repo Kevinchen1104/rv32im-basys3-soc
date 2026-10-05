@@ -43,7 +43,7 @@ module tb_branch_prediction;
     end
 
     initial begin
-        $dumpfile("wave/tb_branch_prediction.vcd");
+        $dumpfile("results/waveforms/tb_branch_prediction.vcd");
         $dumpvars(0, tb_branch_prediction);
         correct_taken_predictions = 0;
         branch_miss_at_first_correct_prediction = 32'h0;

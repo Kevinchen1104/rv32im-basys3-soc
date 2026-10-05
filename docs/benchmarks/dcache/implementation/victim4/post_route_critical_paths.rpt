@@ -1,0 +1,1180 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Fri Oct  2 05:54:23 2026
+| Command      : report_timing -delay_type max -max_paths 10 -sort_by group -file ./build/vivado/dcache-victim4/reports/post_route_critical_paths.rpt
+| Design       : RISCVCPU_basys3_top
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.050ns  (required time - arrival time)
+  Source:                 soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            soc/cpu/MEMWBValue_reg[11]/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (sys_clk_pin rise@10.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        9.882ns  (logic 3.011ns (30.469%)  route 6.871ns (69.531%))
+  Logic Levels:           12  (CARRY4=3 LUT3=1 LUT4=1 LUT5=1 LUT6=6)
+  Clock Path Skew:        -0.109ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.777ns = ( 14.777 - 10.000 ) 
+    Source Clock Delay      (SCD):    5.073ns
+    Clock Pessimism Removal (CPR):    0.187ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  <hidden>
+    W5                                                0.000     0.000 r  clk
+                         net (fo=0)                   0.000     0.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.967     3.425    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.521 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.552     5.073    soc/cpu/gen_dcache.dcache/clock
+    SLICE_X34Y96         FDRE                                         r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X34Y96         FDRE (Prop_fdre_C_Q)         0.478     5.551 r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/Q
+                         net (fo=9, routed)           0.879     6.430    soc/cpu/gen_dcache.dcache/p_0_in2_in[3]
+    SLICE_X34Y97         LUT6 (Prop_lut6_I1_O)        0.298     6.728 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45/O
+                         net (fo=1, routed)           0.000     6.728    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45_n_0
+    SLICE_X34Y97         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.533     7.261 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24/CO[3]
+                         net (fo=1, routed)           0.000     7.261    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24_n_0
+    SLICE_X34Y98         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     7.378 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10/CO[3]
+                         net (fo=1, routed)           0.000     7.378    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10_n_0
+    SLICE_X34Y99         CARRY4 (Prop_carry4_CI_CO[1])
+                                                      0.157     7.535 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_4/CO[1]
+                         net (fo=6, routed)           0.829     8.364    soc/cpu/gen_dcache.dcache/victim_found23_out
+    SLICE_X37Y99         LUT6 (Prop_lut6_I1_O)        0.332     8.696 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2/O
+                         net (fo=1, routed)           0.481     9.177    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2_n_0
+    SLICE_X43Y95         LUT6 (Prop_lut6_I3_O)        0.124     9.301 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_1/O
+                         net (fo=141, routed)         1.408    10.709    soc/cpu/gen_dcache.dcache/victim_complete
+    SLICE_X36Y107        LUT3 (Prop_lut3_I1_O)        0.150    10.859 r  soc/cpu/gen_dcache.dcache/load_word_data[11]_INST_0_i_3/O
+                         net (fo=5, routed)           1.031    11.890    soc/cpu/gen_dcache.dcache/load_word_data[11]_INST_0_i_3_n_0
+    SLICE_X33Y110        LUT6 (Prop_lut6_I0_O)        0.326    12.216 r  soc/cpu/gen_dcache.dcache/load_word_data[11]_INST_0_i_1/O
+                         net (fo=2, routed)           0.633    12.849    soc/cpu/gen_dcache.dcache/refill_selected_word[11]
+    SLICE_X33Y106        LUT5 (Prop_lut5_I0_O)        0.124    12.973 r  soc/cpu/gen_dcache.dcache/load_word_data[11]_INST_0/O
+                         net (fo=2, routed)           0.308    13.281    soc/cpu/dcache_load_format/word_data[11]
+    SLICE_X35Y106        LUT4 (Prop_lut4_I3_O)        0.124    13.405 r  soc/cpu/dcache_load_format/load_value[11]_INST_0_i_1/O
+                         net (fo=1, routed)           0.700    14.105    soc/cpu/lopt_172
+    SLICE_X38Y100        LUT6 (Prop_lut6_I0_O)        0.124    14.229 r  soc/cpu/i_1_LOPT_REMAP_25/O
+                         net (fo=1, routed)           0.602    14.831    soc/cpu/i_1/O_n_25
+    SLICE_X38Y97         LUT6 (Prop_lut6_I3_O)        0.124    14.955 r  soc/cpu/i_0_LOPT_REMAP_25/O
+                         net (fo=1, routed)           0.000    14.955    soc/cpu/MEMWBValue[11]_i_1_n_0
+    SLICE_X38Y97         FDRE                                         r  soc/cpu/MEMWBValue_reg[11]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     10.000    10.000 r  <hidden>
+    W5                                                0.000    10.000 r  clk
+                         net (fo=0)                   0.000    10.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    11.388 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.862    13.250    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    13.341 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.436    14.777    soc/cpu/clock
+    SLICE_X38Y97         FDRE                                         r  soc/cpu/MEMWBValue_reg[11]/C
+                         clock pessimism              0.187    14.964    <hidden>
+                         clock uncertainty           -0.035    14.928    <hidden>
+    SLICE_X38Y97         FDRE (Setup_fdre_C_D)        0.077    15.005    soc/cpu/MEMWBValue_reg[11]
+  -------------------------------------------------------------------
+                         required time                         15.005    <hidden>
+                         arrival time                         -14.955    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.050    <hidden>
+
+Slack (MET) :             0.052ns  (required time - arrival time)
+  Source:                 soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            soc/cpu/csr_unit_inst/trap_tval_shadow_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (sys_clk_pin rise@10.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        9.836ns  (logic 3.155ns (32.077%)  route 6.681ns (67.923%))
+  Logic Levels:           15  (CARRY4=3 LUT2=1 LUT4=1 LUT5=2 LUT6=8)
+  Clock Path Skew:        -0.109ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.777ns = ( 14.777 - 10.000 ) 
+    Source Clock Delay      (SCD):    5.073ns
+    Clock Pessimism Removal (CPR):    0.187ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  <hidden>
+    W5                                                0.000     0.000 r  clk
+                         net (fo=0)                   0.000     0.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.967     3.425    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.521 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.552     5.073    soc/cpu/gen_dcache.dcache/clock
+    SLICE_X34Y96         FDRE                                         r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X34Y96         FDRE (Prop_fdre_C_Q)         0.478     5.551 r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/Q
+                         net (fo=9, routed)           0.879     6.430    soc/cpu/gen_dcache.dcache/p_0_in2_in[3]
+    SLICE_X34Y97         LUT6 (Prop_lut6_I1_O)        0.298     6.728 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45/O
+                         net (fo=1, routed)           0.000     6.728    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45_n_0
+    SLICE_X34Y97         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.533     7.261 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24/CO[3]
+                         net (fo=1, routed)           0.000     7.261    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24_n_0
+    SLICE_X34Y98         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     7.378 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10/CO[3]
+                         net (fo=1, routed)           0.000     7.378    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10_n_0
+    SLICE_X34Y99         CARRY4 (Prop_carry4_CI_CO[1])
+                                                      0.157     7.535 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_4/CO[1]
+                         net (fo=6, routed)           0.829     8.364    soc/cpu/gen_dcache.dcache/victim_found23_out
+    SLICE_X37Y99         LUT6 (Prop_lut6_I1_O)        0.332     8.696 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2/O
+                         net (fo=1, routed)           0.481     9.177    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2_n_0
+    SLICE_X43Y95         LUT6 (Prop_lut6_I3_O)        0.124     9.301 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_1/O
+                         net (fo=141, routed)         0.439     9.741    soc/cpu/gen_dcache.dcache/victim_complete
+    SLICE_X42Y95         LUT5 (Prop_lut5_I0_O)        0.124     9.865 f  soc/cpu/gen_dcache.dcache/busy_INST_0/O
+                         net (fo=6, routed)           0.669    10.534    soc/cpu/cache_busy
+    SLICE_X45Y88         LUT2 (Prop_lut2_I1_O)        0.124    10.658 f  soc/cpu/trap_redirect_control_i_11/O
+                         net (fo=1, routed)           0.151    10.809    soc/cpu/trap_redirect_control_i_11_n_0
+    SLICE_X45Y88         LUT6 (Prop_lut6_I0_O)        0.124    10.933 r  soc/cpu/trap_redirect_control_i_4/O
+                         net (fo=164, routed)         0.681    11.614    soc/cpu/execute_instruction_accept2
+    SLICE_X47Y88         LUT4 (Prop_lut4_I3_O)        0.124    11.738 r  soc/cpu/gen_performance_counters.performance_counter_inst_i_5/O
+                         net (fo=107, routed)         0.426    12.164    soc/cpu/IDEXPredTaken_i_1_n_0
+    SLICE_X46Y86         LUT6 (Prop_lut6_I3_O)        0.124    12.288 r  soc/cpu/trap_redirect_control_i_5/O
+                         net (fo=5, routed)           0.198    12.486    soc/cpu/trap_redirect_control/exception_taken
+    SLICE_X46Y86         LUT6 (Prop_lut6_I5_O)        0.124    12.610 f  soc/cpu/trap_redirect_control/interrupt_taken_INST_0/O
+                         net (fo=23, routed)          0.626    13.236    soc/cpu/interrupt_taken
+    SLICE_X48Y86         LUT6 (Prop_lut6_I4_O)        0.124    13.360 r  soc/cpu/csr_unit_inst_i_114/O
+                         net (fo=32, routed)          0.888    14.249    soc/cpu/csr_unit_inst_i_114_n_0
+    SLICE_X52Y85         LUT6 (Prop_lut6_I0_O)        0.124    14.373 r  soc/cpu/csr_unit_inst_i_111/O
+                         net (fo=1, routed)           0.412    14.785    soc/cpu/csr_unit_inst_i_111_n_0
+    SLICE_X53Y84         LUT5 (Prop_lut5_I0_O)        0.124    14.909 r  soc/cpu/csr_unit_inst_i_69/O
+                         net (fo=1, routed)           0.000    14.909    soc/cpu/csr_unit_inst/trap_tval[1]
+    SLICE_X53Y84         FDRE                                         r  soc/cpu/csr_unit_inst/trap_tval_shadow_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     10.000    10.000 r  <hidden>
+    W5                                                0.000    10.000 r  clk
+                         net (fo=0)                   0.000    10.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    11.388 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.862    13.250    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    13.341 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.436    14.777    soc/cpu/csr_unit_inst/clock
+    SLICE_X53Y84         FDRE                                         r  soc/cpu/csr_unit_inst/trap_tval_shadow_reg[1]/C
+                         clock pessimism              0.187    14.964    <hidden>
+                         clock uncertainty           -0.035    14.928    <hidden>
+    SLICE_X53Y84         FDRE (Setup_fdre_C_D)        0.032    14.960    soc/cpu/csr_unit_inst/trap_tval_shadow_reg[1]
+  -------------------------------------------------------------------
+                         required time                         14.960    <hidden>
+                         arrival time                         -14.909    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.052    <hidden>
+
+Slack (MET) :             0.059ns  (required time - arrival time)
+  Source:                 soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            soc/cpu/csr_unit_inst/trap_tval_shadow_reg[21]/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (sys_clk_pin rise@10.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        9.830ns  (logic 3.155ns (32.097%)  route 6.675ns (67.903%))
+  Logic Levels:           15  (CARRY4=3 LUT2=1 LUT4=1 LUT5=2 LUT6=8)
+  Clock Path Skew:        -0.107ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.779ns = ( 14.779 - 10.000 ) 
+    Source Clock Delay      (SCD):    5.073ns
+    Clock Pessimism Removal (CPR):    0.187ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  <hidden>
+    W5                                                0.000     0.000 r  clk
+                         net (fo=0)                   0.000     0.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.967     3.425    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.521 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.552     5.073    soc/cpu/gen_dcache.dcache/clock
+    SLICE_X34Y96         FDRE                                         r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X34Y96         FDRE (Prop_fdre_C_Q)         0.478     5.551 r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/Q
+                         net (fo=9, routed)           0.879     6.430    soc/cpu/gen_dcache.dcache/p_0_in2_in[3]
+    SLICE_X34Y97         LUT6 (Prop_lut6_I1_O)        0.298     6.728 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45/O
+                         net (fo=1, routed)           0.000     6.728    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45_n_0
+    SLICE_X34Y97         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.533     7.261 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24/CO[3]
+                         net (fo=1, routed)           0.000     7.261    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24_n_0
+    SLICE_X34Y98         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     7.378 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10/CO[3]
+                         net (fo=1, routed)           0.000     7.378    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10_n_0
+    SLICE_X34Y99         CARRY4 (Prop_carry4_CI_CO[1])
+                                                      0.157     7.535 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_4/CO[1]
+                         net (fo=6, routed)           0.829     8.364    soc/cpu/gen_dcache.dcache/victim_found23_out
+    SLICE_X37Y99         LUT6 (Prop_lut6_I1_O)        0.332     8.696 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2/O
+                         net (fo=1, routed)           0.481     9.177    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2_n_0
+    SLICE_X43Y95         LUT6 (Prop_lut6_I3_O)        0.124     9.301 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_1/O
+                         net (fo=141, routed)         0.439     9.741    soc/cpu/gen_dcache.dcache/victim_complete
+    SLICE_X42Y95         LUT5 (Prop_lut5_I0_O)        0.124     9.865 f  soc/cpu/gen_dcache.dcache/busy_INST_0/O
+                         net (fo=6, routed)           0.669    10.534    soc/cpu/cache_busy
+    SLICE_X45Y88         LUT2 (Prop_lut2_I1_O)        0.124    10.658 f  soc/cpu/trap_redirect_control_i_11/O
+                         net (fo=1, routed)           0.151    10.809    soc/cpu/trap_redirect_control_i_11_n_0
+    SLICE_X45Y88         LUT6 (Prop_lut6_I0_O)        0.124    10.933 r  soc/cpu/trap_redirect_control_i_4/O
+                         net (fo=164, routed)         0.681    11.614    soc/cpu/execute_instruction_accept2
+    SLICE_X47Y88         LUT4 (Prop_lut4_I3_O)        0.124    11.738 r  soc/cpu/gen_performance_counters.performance_counter_inst_i_5/O
+                         net (fo=107, routed)         0.426    12.164    soc/cpu/IDEXPredTaken_i_1_n_0
+    SLICE_X46Y86         LUT6 (Prop_lut6_I3_O)        0.124    12.288 r  soc/cpu/trap_redirect_control_i_5/O
+                         net (fo=5, routed)           0.198    12.486    soc/cpu/trap_redirect_control/exception_taken
+    SLICE_X46Y86         LUT6 (Prop_lut6_I5_O)        0.124    12.610 f  soc/cpu/trap_redirect_control/interrupt_taken_INST_0/O
+                         net (fo=23, routed)          0.626    13.236    soc/cpu/interrupt_taken
+    SLICE_X48Y86         LUT6 (Prop_lut6_I4_O)        0.124    13.360 r  soc/cpu/csr_unit_inst_i_114/O
+                         net (fo=32, routed)          0.954    14.314    soc/cpu/csr_unit_inst_i_114_n_0
+    SLICE_X50Y87         LUT6 (Prop_lut6_I0_O)        0.124    14.438 r  soc/cpu/csr_unit_inst_i_91/O
+                         net (fo=1, routed)           0.340    14.778    soc/cpu/csr_unit_inst_i_91_n_0
+    SLICE_X51Y87         LUT5 (Prop_lut5_I0_O)        0.124    14.902 r  soc/cpu/csr_unit_inst_i_49/O
+                         net (fo=1, routed)           0.000    14.902    soc/cpu/csr_unit_inst/trap_tval[21]
+    SLICE_X51Y87         FDRE                                         r  soc/cpu/csr_unit_inst/trap_tval_shadow_reg[21]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     10.000    10.000 r  <hidden>
+    W5                                                0.000    10.000 r  clk
+                         net (fo=0)                   0.000    10.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    11.388 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.862    13.250    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    13.341 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.438    14.779    soc/cpu/csr_unit_inst/clock
+    SLICE_X51Y87         FDRE                                         r  soc/cpu/csr_unit_inst/trap_tval_shadow_reg[21]/C
+                         clock pessimism              0.187    14.966    <hidden>
+                         clock uncertainty           -0.035    14.930    <hidden>
+    SLICE_X51Y87         FDRE (Setup_fdre_C_D)        0.031    14.961    soc/cpu/csr_unit_inst/trap_tval_shadow_reg[21]
+  -------------------------------------------------------------------
+                         required time                         14.961    <hidden>
+                         arrival time                         -14.902    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.059    <hidden>
+
+Slack (MET) :             0.103ns  (required time - arrival time)
+  Source:                 soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            soc/cpu/csr_unit_inst/trap_tval_shadow_reg[23]/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (sys_clk_pin rise@10.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        9.781ns  (logic 3.155ns (32.255%)  route 6.626ns (67.745%))
+  Logic Levels:           15  (CARRY4=3 LUT2=1 LUT4=1 LUT5=2 LUT6=8)
+  Clock Path Skew:        -0.109ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.777ns = ( 14.777 - 10.000 ) 
+    Source Clock Delay      (SCD):    5.073ns
+    Clock Pessimism Removal (CPR):    0.187ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  <hidden>
+    W5                                                0.000     0.000 r  clk
+                         net (fo=0)                   0.000     0.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.967     3.425    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.521 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.552     5.073    soc/cpu/gen_dcache.dcache/clock
+    SLICE_X34Y96         FDRE                                         r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X34Y96         FDRE (Prop_fdre_C_Q)         0.478     5.551 r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/Q
+                         net (fo=9, routed)           0.879     6.430    soc/cpu/gen_dcache.dcache/p_0_in2_in[3]
+    SLICE_X34Y97         LUT6 (Prop_lut6_I1_O)        0.298     6.728 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45/O
+                         net (fo=1, routed)           0.000     6.728    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45_n_0
+    SLICE_X34Y97         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.533     7.261 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24/CO[3]
+                         net (fo=1, routed)           0.000     7.261    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24_n_0
+    SLICE_X34Y98         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     7.378 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10/CO[3]
+                         net (fo=1, routed)           0.000     7.378    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10_n_0
+    SLICE_X34Y99         CARRY4 (Prop_carry4_CI_CO[1])
+                                                      0.157     7.535 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_4/CO[1]
+                         net (fo=6, routed)           0.829     8.364    soc/cpu/gen_dcache.dcache/victim_found23_out
+    SLICE_X37Y99         LUT6 (Prop_lut6_I1_O)        0.332     8.696 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2/O
+                         net (fo=1, routed)           0.481     9.177    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2_n_0
+    SLICE_X43Y95         LUT6 (Prop_lut6_I3_O)        0.124     9.301 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_1/O
+                         net (fo=141, routed)         0.439     9.741    soc/cpu/gen_dcache.dcache/victim_complete
+    SLICE_X42Y95         LUT5 (Prop_lut5_I0_O)        0.124     9.865 f  soc/cpu/gen_dcache.dcache/busy_INST_0/O
+                         net (fo=6, routed)           0.669    10.534    soc/cpu/cache_busy
+    SLICE_X45Y88         LUT2 (Prop_lut2_I1_O)        0.124    10.658 f  soc/cpu/trap_redirect_control_i_11/O
+                         net (fo=1, routed)           0.151    10.809    soc/cpu/trap_redirect_control_i_11_n_0
+    SLICE_X45Y88         LUT6 (Prop_lut6_I0_O)        0.124    10.933 r  soc/cpu/trap_redirect_control_i_4/O
+                         net (fo=164, routed)         0.681    11.614    soc/cpu/execute_instruction_accept2
+    SLICE_X47Y88         LUT4 (Prop_lut4_I3_O)        0.124    11.738 r  soc/cpu/gen_performance_counters.performance_counter_inst_i_5/O
+                         net (fo=107, routed)         0.426    12.164    soc/cpu/IDEXPredTaken_i_1_n_0
+    SLICE_X46Y86         LUT6 (Prop_lut6_I3_O)        0.124    12.288 r  soc/cpu/trap_redirect_control_i_5/O
+                         net (fo=5, routed)           0.198    12.486    soc/cpu/trap_redirect_control/exception_taken
+    SLICE_X46Y86         LUT6 (Prop_lut6_I5_O)        0.124    12.610 f  soc/cpu/trap_redirect_control/interrupt_taken_INST_0/O
+                         net (fo=23, routed)          0.623    13.233    soc/cpu/interrupt_taken
+    SLICE_X48Y86         LUT6 (Prop_lut6_I1_O)        0.124    13.357 r  soc/cpu/csr_unit_inst_i_115/O
+                         net (fo=32, routed)          0.756    14.114    soc/cpu/csr_unit_inst_i_115_n_0
+    SLICE_X48Y85         LUT6 (Prop_lut6_I2_O)        0.124    14.238 r  soc/cpu/csr_unit_inst_i_89/O
+                         net (fo=1, routed)           0.493    14.730    soc/cpu/csr_unit_inst_i_89_n_0
+    SLICE_X48Y85         LUT5 (Prop_lut5_I0_O)        0.124    14.854 r  soc/cpu/csr_unit_inst_i_47/O
+                         net (fo=1, routed)           0.000    14.854    soc/cpu/csr_unit_inst/trap_tval[23]
+    SLICE_X48Y85         FDRE                                         r  soc/cpu/csr_unit_inst/trap_tval_shadow_reg[23]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     10.000    10.000 r  <hidden>
+    W5                                                0.000    10.000 r  clk
+                         net (fo=0)                   0.000    10.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    11.388 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.862    13.250    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    13.341 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.436    14.777    soc/cpu/csr_unit_inst/clock
+    SLICE_X48Y85         FDRE                                         r  soc/cpu/csr_unit_inst/trap_tval_shadow_reg[23]/C
+                         clock pessimism              0.187    14.964    <hidden>
+                         clock uncertainty           -0.035    14.928    <hidden>
+    SLICE_X48Y85         FDRE (Setup_fdre_C_D)        0.029    14.957    soc/cpu/csr_unit_inst/trap_tval_shadow_reg[23]
+  -------------------------------------------------------------------
+                         required time                         14.957    <hidden>
+                         arrival time                         -14.854    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.103    <hidden>
+
+Slack (MET) :             0.131ns  (required time - arrival time)
+  Source:                 soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            soc/cpu/MEMWBValue_reg[3]/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (sys_clk_pin rise@10.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        9.752ns  (logic 3.011ns (30.876%)  route 6.741ns (69.124%))
+  Logic Levels:           12  (CARRY4=3 LUT3=1 LUT5=1 LUT6=7)
+  Clock Path Skew:        -0.110ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.776ns = ( 14.776 - 10.000 ) 
+    Source Clock Delay      (SCD):    5.073ns
+    Clock Pessimism Removal (CPR):    0.187ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  <hidden>
+    W5                                                0.000     0.000 r  clk
+                         net (fo=0)                   0.000     0.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.967     3.425    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.521 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.552     5.073    soc/cpu/gen_dcache.dcache/clock
+    SLICE_X34Y96         FDRE                                         r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X34Y96         FDRE (Prop_fdre_C_Q)         0.478     5.551 r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/Q
+                         net (fo=9, routed)           0.879     6.430    soc/cpu/gen_dcache.dcache/p_0_in2_in[3]
+    SLICE_X34Y97         LUT6 (Prop_lut6_I1_O)        0.298     6.728 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45/O
+                         net (fo=1, routed)           0.000     6.728    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45_n_0
+    SLICE_X34Y97         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.533     7.261 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24/CO[3]
+                         net (fo=1, routed)           0.000     7.261    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24_n_0
+    SLICE_X34Y98         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     7.378 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10/CO[3]
+                         net (fo=1, routed)           0.000     7.378    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10_n_0
+    SLICE_X34Y99         CARRY4 (Prop_carry4_CI_CO[1])
+                                                      0.157     7.535 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_4/CO[1]
+                         net (fo=6, routed)           0.829     8.364    soc/cpu/gen_dcache.dcache/victim_found23_out
+    SLICE_X37Y99         LUT6 (Prop_lut6_I1_O)        0.332     8.696 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2/O
+                         net (fo=1, routed)           0.481     9.177    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2_n_0
+    SLICE_X43Y95         LUT6 (Prop_lut6_I3_O)        0.124     9.301 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_1/O
+                         net (fo=141, routed)         1.408    10.709    soc/cpu/gen_dcache.dcache/victim_complete
+    SLICE_X36Y107        LUT3 (Prop_lut3_I1_O)        0.150    10.859 r  soc/cpu/gen_dcache.dcache/load_word_data[11]_INST_0_i_3/O
+                         net (fo=5, routed)           1.031    11.890    soc/cpu/gen_dcache.dcache/load_word_data[11]_INST_0_i_3_n_0
+    SLICE_X33Y110        LUT6 (Prop_lut6_I0_O)        0.326    12.216 r  soc/cpu/gen_dcache.dcache/load_word_data[11]_INST_0_i_1/O
+                         net (fo=2, routed)           0.633    12.849    soc/cpu/gen_dcache.dcache/refill_selected_word[11]
+    SLICE_X33Y106        LUT5 (Prop_lut5_I0_O)        0.124    12.973 r  soc/cpu/gen_dcache.dcache/load_word_data[11]_INST_0/O
+                         net (fo=2, routed)           0.755    13.728    soc/cpu/dcache_load_word[11]
+    SLICE_X37Y100        LUT6 (Prop_lut6_I0_O)        0.124    13.852 r  soc/cpu/i_4_LOPT_REMAP_35/O
+                         net (fo=1, routed)           0.154    14.006    soc/cpu/i_4/O_n_35
+    SLICE_X37Y100        LUT6 (Prop_lut6_I1_O)        0.124    14.130 r  soc/cpu/i_3_LOPT_REMAP_35/O
+                         net (fo=1, routed)           0.570    14.701    soc/cpu/i_3/O_n_35
+    SLICE_X39Y96         LUT6 (Prop_lut6_I4_O)        0.124    14.825 r  soc/cpu/i_0_LOPT_REMAP_35/O
+                         net (fo=1, routed)           0.000    14.825    soc/cpu/MEMWBValue[3]_i_1_n_0
+    SLICE_X39Y96         FDRE                                         r  soc/cpu/MEMWBValue_reg[3]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     10.000    10.000 r  <hidden>
+    W5                                                0.000    10.000 r  clk
+                         net (fo=0)                   0.000    10.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    11.388 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.862    13.250    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    13.341 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.435    14.776    soc/cpu/clock
+    SLICE_X39Y96         FDRE                                         r  soc/cpu/MEMWBValue_reg[3]/C
+                         clock pessimism              0.187    14.963    <hidden>
+                         clock uncertainty           -0.035    14.927    <hidden>
+    SLICE_X39Y96         FDRE (Setup_fdre_C_D)        0.029    14.956    soc/cpu/MEMWBValue_reg[3]
+  -------------------------------------------------------------------
+                         required time                         14.956    <hidden>
+                         arrival time                         -14.825    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.131    <hidden>
+
+Slack (MET) :             0.133ns  (required time - arrival time)
+  Source:                 soc/cpu/EXMEMALUOut_reg[23]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][11]/CE
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (sys_clk_pin rise@10.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        9.505ns  (logic 2.006ns (21.104%)  route 7.499ns (78.896%))
+  Logic Levels:           12  (LUT2=1 LUT3=1 LUT4=2 LUT5=2 LUT6=6)
+  Clock Path Skew:        -0.121ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.770ns = ( 14.770 - 10.000 ) 
+    Source Clock Delay      (SCD):    5.078ns
+    Clock Pessimism Removal (CPR):    0.187ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  <hidden>
+    W5                                                0.000     0.000 r  clk
+                         net (fo=0)                   0.000     0.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.967     3.425    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.521 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.557     5.078    soc/cpu/clock
+    SLICE_X50Y89         FDRE                                         r  soc/cpu/EXMEMALUOut_reg[23]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X50Y89         FDRE (Prop_fdre_C_Q)         0.518     5.596 f  soc/cpu/EXMEMALUOut_reg[23]/Q
+                         net (fo=13, routed)          0.705     6.301    soc/cpu/exmem_mmio_decode/addr[23]
+    SLICE_X51Y89         LUT4 (Prop_lut4_I0_O)        0.124     6.425 r  soc/cpu/exmem_mmio_decode/gpio_output_sel_INST_0_i_8/O
+                         net (fo=2, routed)           1.257     7.682    soc/cpu/exmem_mmio_decode/gpio_output_sel_INST_0_i_8_n_0
+    SLICE_X45Y92         LUT5 (Prop_lut5_I0_O)        0.124     7.806 r  soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0_i_2/O
+                         net (fo=1, routed)           0.535     8.342    soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0_i_2_n_0
+    SLICE_X47Y90         LUT6 (Prop_lut6_I3_O)        0.124     8.466 r  soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0/O
+                         net (fo=38, routed)          0.337     8.803    soc/cpu/EXMEMAnyMmioSelect
+    SLICE_X45Y91         LUT5 (Prop_lut5_I1_O)        0.124     8.927 f  soc/cpu/gen_dcache.dcache_i_6/O
+                         net (fo=6, routed)           0.312     9.239    soc/cpu/memory_access_fault_detect
+    SLICE_X47Y92         LUT3 (Prop_lut3_I2_O)        0.124     9.363 r  soc/cpu/gen_dcache.dcache_i_1/O
+                         net (fo=3, routed)           0.421     9.784    soc/cpu/gen_dcache.dcache/request_valid
+    SLICE_X44Y92         LUT6 (Prop_lut6_I1_O)        0.124     9.908 r  soc/cpu/gen_dcache.dcache/miss_INST_0/O
+                         net (fo=36, routed)          0.571    10.480    soc/cpu/cache_miss
+    SLICE_X45Y88         LUT2 (Prop_lut2_I0_O)        0.124    10.604 r  soc/cpu/trap_redirect_control_i_11/O
+                         net (fo=1, routed)           0.151    10.755    soc/cpu/trap_redirect_control_i_11_n_0
+    SLICE_X45Y88         LUT6 (Prop_lut6_I0_O)        0.124    10.879 f  soc/cpu/trap_redirect_control_i_4/O
+                         net (fo=164, routed)         0.681    11.560    soc/cpu/execute_instruction_accept2
+    SLICE_X47Y88         LUT4 (Prop_lut4_I3_O)        0.124    11.684 f  soc/cpu/gen_performance_counters.performance_counter_inst_i_5/O
+                         net (fo=107, routed)         0.426    12.110    soc/cpu/IDEXPredTaken_i_1_n_0
+    SLICE_X46Y86         LUT6 (Prop_lut6_I3_O)        0.124    12.234 f  soc/cpu/trap_redirect_control_i_5/O
+                         net (fo=5, routed)           0.482    12.717    soc/cpu/p_19_in
+    SLICE_X40Y86         LUT6 (Prop_lut6_I4_O)        0.124    12.841 r  soc/cpu/gen_return_address_stack.return_address_stack_i_1/O
+                         net (fo=9, routed)           0.726    13.566    soc/cpu/gen_return_address_stack.return_address_stack/update_valid
+    SLICE_X40Y86         LUT6 (Prop_lut6_I1_O)        0.124    13.690 r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack[4][31]_i_1/O
+                         net (fo=32, routed)          0.892    14.583    soc/cpu/gen_return_address_stack.return_address_stack/ras_stack[4][31]_i_1_n_0
+    SLICE_X29Y82         FDRE                                         r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][11]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     10.000    10.000 r  <hidden>
+    W5                                                0.000    10.000 r  clk
+                         net (fo=0)                   0.000    10.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    11.388 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.862    13.250    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    13.341 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.429    14.770    soc/cpu/gen_return_address_stack.return_address_stack/clock
+    SLICE_X29Y82         FDRE                                         r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][11]/C
+                         clock pessimism              0.187    14.957    <hidden>
+                         clock uncertainty           -0.035    14.921    <hidden>
+    SLICE_X29Y82         FDRE (Setup_fdre_C_CE)      -0.205    14.716    soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][11]
+  -------------------------------------------------------------------
+                         required time                         14.716    <hidden>
+                         arrival time                         -14.583    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.133    <hidden>
+
+Slack (MET) :             0.133ns  (required time - arrival time)
+  Source:                 soc/cpu/EXMEMALUOut_reg[23]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][6]/CE
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (sys_clk_pin rise@10.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        9.505ns  (logic 2.006ns (21.104%)  route 7.499ns (78.896%))
+  Logic Levels:           12  (LUT2=1 LUT3=1 LUT4=2 LUT5=2 LUT6=6)
+  Clock Path Skew:        -0.121ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.770ns = ( 14.770 - 10.000 ) 
+    Source Clock Delay      (SCD):    5.078ns
+    Clock Pessimism Removal (CPR):    0.187ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  <hidden>
+    W5                                                0.000     0.000 r  clk
+                         net (fo=0)                   0.000     0.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.967     3.425    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.521 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.557     5.078    soc/cpu/clock
+    SLICE_X50Y89         FDRE                                         r  soc/cpu/EXMEMALUOut_reg[23]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X50Y89         FDRE (Prop_fdre_C_Q)         0.518     5.596 f  soc/cpu/EXMEMALUOut_reg[23]/Q
+                         net (fo=13, routed)          0.705     6.301    soc/cpu/exmem_mmio_decode/addr[23]
+    SLICE_X51Y89         LUT4 (Prop_lut4_I0_O)        0.124     6.425 r  soc/cpu/exmem_mmio_decode/gpio_output_sel_INST_0_i_8/O
+                         net (fo=2, routed)           1.257     7.682    soc/cpu/exmem_mmio_decode/gpio_output_sel_INST_0_i_8_n_0
+    SLICE_X45Y92         LUT5 (Prop_lut5_I0_O)        0.124     7.806 r  soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0_i_2/O
+                         net (fo=1, routed)           0.535     8.342    soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0_i_2_n_0
+    SLICE_X47Y90         LUT6 (Prop_lut6_I3_O)        0.124     8.466 r  soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0/O
+                         net (fo=38, routed)          0.337     8.803    soc/cpu/EXMEMAnyMmioSelect
+    SLICE_X45Y91         LUT5 (Prop_lut5_I1_O)        0.124     8.927 f  soc/cpu/gen_dcache.dcache_i_6/O
+                         net (fo=6, routed)           0.312     9.239    soc/cpu/memory_access_fault_detect
+    SLICE_X47Y92         LUT3 (Prop_lut3_I2_O)        0.124     9.363 r  soc/cpu/gen_dcache.dcache_i_1/O
+                         net (fo=3, routed)           0.421     9.784    soc/cpu/gen_dcache.dcache/request_valid
+    SLICE_X44Y92         LUT6 (Prop_lut6_I1_O)        0.124     9.908 r  soc/cpu/gen_dcache.dcache/miss_INST_0/O
+                         net (fo=36, routed)          0.571    10.480    soc/cpu/cache_miss
+    SLICE_X45Y88         LUT2 (Prop_lut2_I0_O)        0.124    10.604 r  soc/cpu/trap_redirect_control_i_11/O
+                         net (fo=1, routed)           0.151    10.755    soc/cpu/trap_redirect_control_i_11_n_0
+    SLICE_X45Y88         LUT6 (Prop_lut6_I0_O)        0.124    10.879 f  soc/cpu/trap_redirect_control_i_4/O
+                         net (fo=164, routed)         0.681    11.560    soc/cpu/execute_instruction_accept2
+    SLICE_X47Y88         LUT4 (Prop_lut4_I3_O)        0.124    11.684 f  soc/cpu/gen_performance_counters.performance_counter_inst_i_5/O
+                         net (fo=107, routed)         0.426    12.110    soc/cpu/IDEXPredTaken_i_1_n_0
+    SLICE_X46Y86         LUT6 (Prop_lut6_I3_O)        0.124    12.234 f  soc/cpu/trap_redirect_control_i_5/O
+                         net (fo=5, routed)           0.482    12.717    soc/cpu/p_19_in
+    SLICE_X40Y86         LUT6 (Prop_lut6_I4_O)        0.124    12.841 r  soc/cpu/gen_return_address_stack.return_address_stack_i_1/O
+                         net (fo=9, routed)           0.726    13.566    soc/cpu/gen_return_address_stack.return_address_stack/update_valid
+    SLICE_X40Y86         LUT6 (Prop_lut6_I1_O)        0.124    13.690 r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack[4][31]_i_1/O
+                         net (fo=32, routed)          0.892    14.583    soc/cpu/gen_return_address_stack.return_address_stack/ras_stack[4][31]_i_1_n_0
+    SLICE_X29Y82         FDRE                                         r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][6]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     10.000    10.000 r  <hidden>
+    W5                                                0.000    10.000 r  clk
+                         net (fo=0)                   0.000    10.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    11.388 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.862    13.250    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    13.341 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.429    14.770    soc/cpu/gen_return_address_stack.return_address_stack/clock
+    SLICE_X29Y82         FDRE                                         r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][6]/C
+                         clock pessimism              0.187    14.957    <hidden>
+                         clock uncertainty           -0.035    14.921    <hidden>
+    SLICE_X29Y82         FDRE (Setup_fdre_C_CE)      -0.205    14.716    soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][6]
+  -------------------------------------------------------------------
+                         required time                         14.716    <hidden>
+                         arrival time                         -14.583    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.133    <hidden>
+
+Slack (MET) :             0.133ns  (required time - arrival time)
+  Source:                 soc/cpu/EXMEMALUOut_reg[23]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][7]/CE
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (sys_clk_pin rise@10.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        9.505ns  (logic 2.006ns (21.104%)  route 7.499ns (78.896%))
+  Logic Levels:           12  (LUT2=1 LUT3=1 LUT4=2 LUT5=2 LUT6=6)
+  Clock Path Skew:        -0.121ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.770ns = ( 14.770 - 10.000 ) 
+    Source Clock Delay      (SCD):    5.078ns
+    Clock Pessimism Removal (CPR):    0.187ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  <hidden>
+    W5                                                0.000     0.000 r  clk
+                         net (fo=0)                   0.000     0.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.967     3.425    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.521 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.557     5.078    soc/cpu/clock
+    SLICE_X50Y89         FDRE                                         r  soc/cpu/EXMEMALUOut_reg[23]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X50Y89         FDRE (Prop_fdre_C_Q)         0.518     5.596 f  soc/cpu/EXMEMALUOut_reg[23]/Q
+                         net (fo=13, routed)          0.705     6.301    soc/cpu/exmem_mmio_decode/addr[23]
+    SLICE_X51Y89         LUT4 (Prop_lut4_I0_O)        0.124     6.425 r  soc/cpu/exmem_mmio_decode/gpio_output_sel_INST_0_i_8/O
+                         net (fo=2, routed)           1.257     7.682    soc/cpu/exmem_mmio_decode/gpio_output_sel_INST_0_i_8_n_0
+    SLICE_X45Y92         LUT5 (Prop_lut5_I0_O)        0.124     7.806 r  soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0_i_2/O
+                         net (fo=1, routed)           0.535     8.342    soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0_i_2_n_0
+    SLICE_X47Y90         LUT6 (Prop_lut6_I3_O)        0.124     8.466 r  soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0/O
+                         net (fo=38, routed)          0.337     8.803    soc/cpu/EXMEMAnyMmioSelect
+    SLICE_X45Y91         LUT5 (Prop_lut5_I1_O)        0.124     8.927 f  soc/cpu/gen_dcache.dcache_i_6/O
+                         net (fo=6, routed)           0.312     9.239    soc/cpu/memory_access_fault_detect
+    SLICE_X47Y92         LUT3 (Prop_lut3_I2_O)        0.124     9.363 r  soc/cpu/gen_dcache.dcache_i_1/O
+                         net (fo=3, routed)           0.421     9.784    soc/cpu/gen_dcache.dcache/request_valid
+    SLICE_X44Y92         LUT6 (Prop_lut6_I1_O)        0.124     9.908 r  soc/cpu/gen_dcache.dcache/miss_INST_0/O
+                         net (fo=36, routed)          0.571    10.480    soc/cpu/cache_miss
+    SLICE_X45Y88         LUT2 (Prop_lut2_I0_O)        0.124    10.604 r  soc/cpu/trap_redirect_control_i_11/O
+                         net (fo=1, routed)           0.151    10.755    soc/cpu/trap_redirect_control_i_11_n_0
+    SLICE_X45Y88         LUT6 (Prop_lut6_I0_O)        0.124    10.879 f  soc/cpu/trap_redirect_control_i_4/O
+                         net (fo=164, routed)         0.681    11.560    soc/cpu/execute_instruction_accept2
+    SLICE_X47Y88         LUT4 (Prop_lut4_I3_O)        0.124    11.684 f  soc/cpu/gen_performance_counters.performance_counter_inst_i_5/O
+                         net (fo=107, routed)         0.426    12.110    soc/cpu/IDEXPredTaken_i_1_n_0
+    SLICE_X46Y86         LUT6 (Prop_lut6_I3_O)        0.124    12.234 f  soc/cpu/trap_redirect_control_i_5/O
+                         net (fo=5, routed)           0.482    12.717    soc/cpu/p_19_in
+    SLICE_X40Y86         LUT6 (Prop_lut6_I4_O)        0.124    12.841 r  soc/cpu/gen_return_address_stack.return_address_stack_i_1/O
+                         net (fo=9, routed)           0.726    13.566    soc/cpu/gen_return_address_stack.return_address_stack/update_valid
+    SLICE_X40Y86         LUT6 (Prop_lut6_I1_O)        0.124    13.690 r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack[4][31]_i_1/O
+                         net (fo=32, routed)          0.892    14.583    soc/cpu/gen_return_address_stack.return_address_stack/ras_stack[4][31]_i_1_n_0
+    SLICE_X29Y82         FDRE                                         r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][7]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     10.000    10.000 r  <hidden>
+    W5                                                0.000    10.000 r  clk
+                         net (fo=0)                   0.000    10.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    11.388 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.862    13.250    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    13.341 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.429    14.770    soc/cpu/gen_return_address_stack.return_address_stack/clock
+    SLICE_X29Y82         FDRE                                         r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][7]/C
+                         clock pessimism              0.187    14.957    <hidden>
+                         clock uncertainty           -0.035    14.921    <hidden>
+    SLICE_X29Y82         FDRE (Setup_fdre_C_CE)      -0.205    14.716    soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][7]
+  -------------------------------------------------------------------
+                         required time                         14.716    <hidden>
+                         arrival time                         -14.583    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.133    <hidden>
+
+Slack (MET) :             0.133ns  (required time - arrival time)
+  Source:                 soc/cpu/EXMEMALUOut_reg[23]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][8]/CE
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (sys_clk_pin rise@10.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        9.505ns  (logic 2.006ns (21.104%)  route 7.499ns (78.896%))
+  Logic Levels:           12  (LUT2=1 LUT3=1 LUT4=2 LUT5=2 LUT6=6)
+  Clock Path Skew:        -0.121ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.770ns = ( 14.770 - 10.000 ) 
+    Source Clock Delay      (SCD):    5.078ns
+    Clock Pessimism Removal (CPR):    0.187ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  <hidden>
+    W5                                                0.000     0.000 r  clk
+                         net (fo=0)                   0.000     0.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.967     3.425    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.521 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.557     5.078    soc/cpu/clock
+    SLICE_X50Y89         FDRE                                         r  soc/cpu/EXMEMALUOut_reg[23]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X50Y89         FDRE (Prop_fdre_C_Q)         0.518     5.596 f  soc/cpu/EXMEMALUOut_reg[23]/Q
+                         net (fo=13, routed)          0.705     6.301    soc/cpu/exmem_mmio_decode/addr[23]
+    SLICE_X51Y89         LUT4 (Prop_lut4_I0_O)        0.124     6.425 r  soc/cpu/exmem_mmio_decode/gpio_output_sel_INST_0_i_8/O
+                         net (fo=2, routed)           1.257     7.682    soc/cpu/exmem_mmio_decode/gpio_output_sel_INST_0_i_8_n_0
+    SLICE_X45Y92         LUT5 (Prop_lut5_I0_O)        0.124     7.806 r  soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0_i_2/O
+                         net (fo=1, routed)           0.535     8.342    soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0_i_2_n_0
+    SLICE_X47Y90         LUT6 (Prop_lut6_I3_O)        0.124     8.466 r  soc/cpu/exmem_mmio_decode/any_mmio_sel_INST_0/O
+                         net (fo=38, routed)          0.337     8.803    soc/cpu/EXMEMAnyMmioSelect
+    SLICE_X45Y91         LUT5 (Prop_lut5_I1_O)        0.124     8.927 f  soc/cpu/gen_dcache.dcache_i_6/O
+                         net (fo=6, routed)           0.312     9.239    soc/cpu/memory_access_fault_detect
+    SLICE_X47Y92         LUT3 (Prop_lut3_I2_O)        0.124     9.363 r  soc/cpu/gen_dcache.dcache_i_1/O
+                         net (fo=3, routed)           0.421     9.784    soc/cpu/gen_dcache.dcache/request_valid
+    SLICE_X44Y92         LUT6 (Prop_lut6_I1_O)        0.124     9.908 r  soc/cpu/gen_dcache.dcache/miss_INST_0/O
+                         net (fo=36, routed)          0.571    10.480    soc/cpu/cache_miss
+    SLICE_X45Y88         LUT2 (Prop_lut2_I0_O)        0.124    10.604 r  soc/cpu/trap_redirect_control_i_11/O
+                         net (fo=1, routed)           0.151    10.755    soc/cpu/trap_redirect_control_i_11_n_0
+    SLICE_X45Y88         LUT6 (Prop_lut6_I0_O)        0.124    10.879 f  soc/cpu/trap_redirect_control_i_4/O
+                         net (fo=164, routed)         0.681    11.560    soc/cpu/execute_instruction_accept2
+    SLICE_X47Y88         LUT4 (Prop_lut4_I3_O)        0.124    11.684 f  soc/cpu/gen_performance_counters.performance_counter_inst_i_5/O
+                         net (fo=107, routed)         0.426    12.110    soc/cpu/IDEXPredTaken_i_1_n_0
+    SLICE_X46Y86         LUT6 (Prop_lut6_I3_O)        0.124    12.234 f  soc/cpu/trap_redirect_control_i_5/O
+                         net (fo=5, routed)           0.482    12.717    soc/cpu/p_19_in
+    SLICE_X40Y86         LUT6 (Prop_lut6_I4_O)        0.124    12.841 r  soc/cpu/gen_return_address_stack.return_address_stack_i_1/O
+                         net (fo=9, routed)           0.726    13.566    soc/cpu/gen_return_address_stack.return_address_stack/update_valid
+    SLICE_X40Y86         LUT6 (Prop_lut6_I1_O)        0.124    13.690 r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack[4][31]_i_1/O
+                         net (fo=32, routed)          0.892    14.583    soc/cpu/gen_return_address_stack.return_address_stack/ras_stack[4][31]_i_1_n_0
+    SLICE_X29Y82         FDRE                                         r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][8]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     10.000    10.000 r  <hidden>
+    W5                                                0.000    10.000 r  clk
+                         net (fo=0)                   0.000    10.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    11.388 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.862    13.250    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    13.341 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.429    14.770    soc/cpu/gen_return_address_stack.return_address_stack/clock
+    SLICE_X29Y82         FDRE                                         r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][8]/C
+                         clock pessimism              0.187    14.957    <hidden>
+                         clock uncertainty           -0.035    14.921    <hidden>
+    SLICE_X29Y82         FDRE (Setup_fdre_C_CE)      -0.205    14.716    soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[4][8]
+  -------------------------------------------------------------------
+                         required time                         14.716    <hidden>
+                         arrival time                         -14.583    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.133    <hidden>
+
+Slack (MET) :             0.147ns  (required time - arrival time)
+  Source:                 soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[5][17]/CE
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (sys_clk_pin rise@10.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        9.503ns  (logic 2.907ns (30.589%)  route 6.596ns (69.411%))
+  Logic Levels:           13  (CARRY4=3 LUT2=1 LUT4=1 LUT5=1 LUT6=7)
+  Clock Path Skew:        -0.109ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.777ns = ( 14.777 - 10.000 ) 
+    Source Clock Delay      (SCD):    5.073ns
+    Clock Pessimism Removal (CPR):    0.187ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  <hidden>
+    W5                                                0.000     0.000 r  clk
+                         net (fo=0)                   0.000     0.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.967     3.425    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.521 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.552     5.073    soc/cpu/gen_dcache.dcache/clock
+    SLICE_X34Y96         FDRE                                         r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X34Y96         FDRE (Prop_fdre_C_Q)         0.478     5.551 r  soc/cpu/gen_dcache.dcache/pending_line_addr_reg[7]/Q
+                         net (fo=9, routed)           0.879     6.430    soc/cpu/gen_dcache.dcache/p_0_in2_in[3]
+    SLICE_X34Y97         LUT6 (Prop_lut6_I1_O)        0.298     6.728 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45/O
+                         net (fo=1, routed)           0.000     6.728    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_45_n_0
+    SLICE_X34Y97         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.533     7.261 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24/CO[3]
+                         net (fo=1, routed)           0.000     7.261    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_24_n_0
+    SLICE_X34Y98         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     7.378 r  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10/CO[3]
+                         net (fo=1, routed)           0.000     7.378    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_10_n_0
+    SLICE_X34Y99         CARRY4 (Prop_carry4_CI_CO[1])
+                                                      0.157     7.535 f  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_4/CO[1]
+                         net (fo=6, routed)           0.829     8.364    soc/cpu/gen_dcache.dcache/victim_found23_out
+    SLICE_X37Y99         LUT6 (Prop_lut6_I1_O)        0.332     8.696 f  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2/O
+                         net (fo=1, routed)           0.481     9.177    soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_2_n_0
+    SLICE_X43Y95         LUT6 (Prop_lut6_I3_O)        0.124     9.301 f  soc/cpu/gen_dcache.dcache/request_complete_INST_0_i_1/O
+                         net (fo=141, routed)         0.439     9.741    soc/cpu/gen_dcache.dcache/victim_complete
+    SLICE_X42Y95         LUT5 (Prop_lut5_I0_O)        0.124     9.865 r  soc/cpu/gen_dcache.dcache/busy_INST_0/O
+                         net (fo=6, routed)           0.669    10.534    soc/cpu/cache_busy
+    SLICE_X45Y88         LUT2 (Prop_lut2_I1_O)        0.124    10.658 r  soc/cpu/trap_redirect_control_i_11/O
+                         net (fo=1, routed)           0.151    10.809    soc/cpu/trap_redirect_control_i_11_n_0
+    SLICE_X45Y88         LUT6 (Prop_lut6_I0_O)        0.124    10.933 f  soc/cpu/trap_redirect_control_i_4/O
+                         net (fo=164, routed)         0.681    11.614    soc/cpu/execute_instruction_accept2
+    SLICE_X47Y88         LUT4 (Prop_lut4_I3_O)        0.124    11.738 f  soc/cpu/gen_performance_counters.performance_counter_inst_i_5/O
+                         net (fo=107, routed)         0.426    12.164    soc/cpu/IDEXPredTaken_i_1_n_0
+    SLICE_X46Y86         LUT6 (Prop_lut6_I3_O)        0.124    12.288 f  soc/cpu/trap_redirect_control_i_5/O
+                         net (fo=5, routed)           0.482    12.771    soc/cpu/p_19_in
+    SLICE_X40Y86         LUT6 (Prop_lut6_I4_O)        0.124    12.895 r  soc/cpu/gen_return_address_stack.return_address_stack_i_1/O
+                         net (fo=9, routed)           0.521    13.415    soc/cpu/gen_return_address_stack.return_address_stack/update_valid
+    SLICE_X41Y87         LUT6 (Prop_lut6_I1_O)        0.124    13.539 r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack[5][31]_i_1/O
+                         net (fo=32, routed)          1.037    14.576    soc/cpu/gen_return_address_stack.return_address_stack/ras_stack[5][31]_i_1_n_0
+    SLICE_X41Y91         FDRE                                         r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[5][17]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     10.000    10.000 r  <hidden>
+    W5                                                0.000    10.000 r  clk
+                         net (fo=0)                   0.000    10.000    clk
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    11.388 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.862    13.250    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    13.341 r  clk_IBUF_BUFG_inst/O
+                         net (fo=6596, routed)        1.436    14.777    soc/cpu/gen_return_address_stack.return_address_stack/clock
+    SLICE_X41Y91         FDRE                                         r  soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[5][17]/C
+                         clock pessimism              0.187    14.964    <hidden>
+                         clock uncertainty           -0.035    14.928    <hidden>
+    SLICE_X41Y91         FDRE (Setup_fdre_C_CE)      -0.205    14.723    soc/cpu/gen_return_address_stack.return_address_stack/ras_stack_reg[5][17]
+  -------------------------------------------------------------------
+                         required time                         14.723    <hidden>
+                         arrival time                         -14.576    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.147    <hidden>
+
+Slack (MET) :             6.246ns  (required time - arrival time)
+  Source:                 soc/cpu/DebugStatus_reg[25]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            led[2]
+                            (output port clocked by board_output_budget  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             board_output_budget
+  Path Type:              Max at Slow Process Corner
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        13.754ns  (logic 4.741ns (34.469%)  route 9.013ns (65.531%))
+  Logic Levels:           5  (LUT3=2 LUT6=2 OBUF=1)
+  Output Delay:           0.000ns
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X14Y107                                     0.000     0.000 r  soc/cpu/DebugStatus_reg[25]/C
+    SLICE_X14Y107        FDRE (Prop_fdre_C_Q)         0.518     0.518 f  soc/cpu/DebugStatus_reg[25]/Q
+                         net (fo=4, routed)           1.529     2.047    soc/cpu_n_218
+    SLICE_X13Y102        LUT6 (Prop_lut6_I3_O)        0.124     2.171 r  soc/leds[1]_INST_0_i_2/O
+                         net (fo=2, routed)           0.875     3.046    soc/leds[1]_INST_0_i_2_n_0
+    SLICE_X12Y102        LUT3 (Prop_lut3_I1_O)        0.146     3.192 r  soc/done_INST_0_i_3/O
+                         net (fo=1, routed)           0.843     4.035    soc/done_INST_0_i_3_n_0
+    SLICE_X12Y102        LUT3 (Prop_lut3_I1_O)        0.328     4.363 r  soc/i_5_LOPT_REMAP/O
+                         net (fo=1, routed)           0.670     5.033    soc/i_5/O_n
+    SLICE_X12Y102        LUT6 (Prop_lut6_I0_O)        0.124     5.157 r  soc/i_0_LOPT_REMAP/O
+                         net (fo=1, routed)           5.097    10.253    led_OBUF[2]
+    U19                  OBUF (Prop_obuf_I_O)         3.501    13.754 r  led_OBUF[2]_inst/O
+                         net (fo=0)                   0.000    13.754    led[2]
+    U19                                                               r  led[2]
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    <hidden>
+                         output delay                -0.000    20.000    <hidden>
+  -------------------------------------------------------------------
+                         required time                         20.000    <hidden>
+                         arrival time                         -13.754    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  6.246    <hidden>
+
+Slack (MET) :             7.482ns  (required time - arrival time)
+  Source:                 soc/boot_imem/done_reg_reg/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            led[4]
+                            (output port clocked by board_output_budget  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             board_output_budget
+  Path Type:              Max at Slow Process Corner
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        12.518ns  (logic 4.213ns (33.651%)  route 8.306ns (66.349%))
+  Logic Levels:           3  (LUT6=2 OBUF=1)
+  Output Delay:           0.000ns
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X37Y55                                      0.000     0.000 r  soc/boot_imem/done_reg_reg/C
+    SLICE_X37Y55         FDRE (Prop_fdre_C_Q)         0.456     0.456 r  soc/boot_imem/done_reg_reg/Q
+                         net (fo=10, routed)          2.732     3.188    soc/leds[2]
+    SLICE_X13Y102        LUT6 (Prop_lut6_I4_O)        0.124     3.312 r  soc/leds[0]_INST_0_i_3/O
+                         net (fo=1, routed)           0.833     4.145    soc/leds[0]_INST_0_i_3_n_0
+    SLICE_X11Y102        LUT6 (Prop_lut6_I3_O)        0.124     4.269 r  soc/leds[0]_INST_0/O
+                         net (fo=2, routed)           4.741     9.010    led_OBUF[1]
+    W18                  OBUF (Prop_obuf_I_O)         3.509    12.518 r  led_OBUF[4]_inst/O
+                         net (fo=0)                   0.000    12.518    led[4]
+    W18                                                               r  led[4]
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    <hidden>
+                         output delay                -0.000    20.000    <hidden>
+  -------------------------------------------------------------------
+                         required time                         20.000    <hidden>
+                         arrival time                         -12.518    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  7.482    <hidden>
+
+Slack (MET) :             8.153ns  (required time - arrival time)
+  Source:                 soc/boot_imem/done_reg_reg/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            led[1]
+                            (output port clocked by board_output_budget  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             board_output_budget
+  Path Type:              Max at Slow Process Corner
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        11.847ns  (logic 4.234ns (35.738%)  route 7.613ns (64.262%))
+  Logic Levels:           3  (LUT6=2 OBUF=1)
+  Output Delay:           0.000ns
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X37Y55                                      0.000     0.000 r  soc/boot_imem/done_reg_reg/C
+    SLICE_X37Y55         FDRE (Prop_fdre_C_Q)         0.456     0.456 r  soc/boot_imem/done_reg_reg/Q
+                         net (fo=10, routed)          2.732     3.188    soc/leds[2]
+    SLICE_X13Y102        LUT6 (Prop_lut6_I4_O)        0.124     3.312 r  soc/leds[0]_INST_0_i_3/O
+                         net (fo=1, routed)           0.833     4.145    soc/leds[0]_INST_0_i_3_n_0
+    SLICE_X11Y102        LUT6 (Prop_lut6_I3_O)        0.124     4.269 r  soc/leds[0]_INST_0/O
+                         net (fo=2, routed)           4.048     8.317    led_OBUF[1]
+    E19                  OBUF (Prop_obuf_I_O)         3.530    11.847 r  led_OBUF[1]_inst/O
+                         net (fo=0)                   0.000    11.847    led[1]
+    E19                                                               r  led[1]
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    <hidden>
+                         output delay                -0.000    20.000    <hidden>
+  -------------------------------------------------------------------
+                         required time                         20.000    <hidden>
+                         arrival time                         -11.847    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  8.153    <hidden>
+
+Slack (MET) :             8.166ns  (required time - arrival time)
+  Source:                 soc/boot_imem/done_reg_reg/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            led[0]
+                            (output port clocked by board_output_budget  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             board_output_budget
+  Path Type:              Max at Slow Process Corner
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        11.834ns  (logic 4.209ns (35.565%)  route 7.625ns (64.435%))
+  Logic Levels:           3  (LUT5=1 LUT6=1 OBUF=1)
+  Output Delay:           0.000ns
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X37Y55                                      0.000     0.000 r  soc/boot_imem/done_reg_reg/C
+    SLICE_X37Y55         FDRE (Prop_fdre_C_Q)         0.456     0.456 r  soc/boot_imem/done_reg_reg/Q
+                         net (fo=10, routed)          2.986     3.442    soc/leds[2]
+    SLICE_X12Y102        LUT6 (Prop_lut6_I4_O)        0.124     3.566 r  soc/leds[1]_INST_0_i_5/O
+                         net (fo=2, routed)           0.494     4.060    soc/leds[1]_INST_0_i_5_n_0
+    SLICE_X12Y102        LUT5 (Prop_lut5_I4_O)        0.124     4.184 r  soc/leds[1]_INST_0/O
+                         net (fo=2, routed)           4.145     8.329    led_OBUF[0]
+    U16                  OBUF (Prop_obuf_I_O)         3.505    11.834 r  led_OBUF[0]_inst/O
+                         net (fo=0)                   0.000    11.834    led[0]
+    U16                                                               r  led[0]
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    <hidden>
+                         output delay                -0.000    20.000    <hidden>
+  -------------------------------------------------------------------
+                         required time                         20.000    <hidden>
+                         arrival time                         -11.834    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  8.166    <hidden>
+
+Slack (MET) :             8.297ns  (required time - arrival time)
+  Source:                 soc/boot_imem/done_reg_reg/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            led[5]
+                            (output port clocked by board_output_budget  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             board_output_budget
+  Path Type:              Max at Slow Process Corner
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        11.703ns  (logic 4.218ns (36.046%)  route 7.485ns (63.954%))
+  Logic Levels:           3  (LUT5=1 LUT6=1 OBUF=1)
+  Output Delay:           0.000ns
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X37Y55                                      0.000     0.000 r  soc/boot_imem/done_reg_reg/C
+    SLICE_X37Y55         FDRE (Prop_fdre_C_Q)         0.456     0.456 r  soc/boot_imem/done_reg_reg/Q
+                         net (fo=10, routed)          2.986     3.442    soc/leds[2]
+    SLICE_X12Y102        LUT6 (Prop_lut6_I4_O)        0.124     3.566 r  soc/leds[1]_INST_0_i_5/O
+                         net (fo=2, routed)           0.494     4.060    soc/leds[1]_INST_0_i_5_n_0
+    SLICE_X12Y102        LUT5 (Prop_lut5_I4_O)        0.124     4.184 r  soc/leds[1]_INST_0/O
+                         net (fo=2, routed)           4.005     8.189    led_OBUF[0]
+    U15                  OBUF (Prop_obuf_I_O)         3.514    11.703 r  led_OBUF[5]_inst/O
+                         net (fo=0)                   0.000    11.703    led[5]
+    U15                                                               r  led[5]
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    <hidden>
+                         output delay                -0.000    20.000    <hidden>
+  -------------------------------------------------------------------
+                         required time                         20.000    <hidden>
+                         arrival time                         -11.703    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  8.297    <hidden>
+
+Slack (MET) :             11.721ns  (required time - arrival time)
+  Source:                 soc/cpu/GPIOOutput_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            led[9]
+                            (output port clocked by board_output_budget  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             board_output_budget
+  Path Type:              Max at Slow Process Corner
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        8.279ns  (logic 4.026ns (48.630%)  route 4.253ns (51.370%))
+  Logic Levels:           1  (OBUF=1)
+  Output Delay:           0.000ns
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X38Y90                                      0.000     0.000 r  soc/cpu/GPIOOutput_reg[1]/C
+    SLICE_X38Y90         FDRE (Prop_fdre_C_Q)         0.518     0.518 r  soc/cpu/GPIOOutput_reg[1]/Q
+                         net (fo=4, routed)           4.253     4.771    led_OBUF[9]
+    V3                   OBUF (Prop_obuf_I_O)         3.508     8.279 r  led_OBUF[9]_inst/O
+                         net (fo=0)                   0.000     8.279    led[9]
+    V3                                                                r  led[9]
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    <hidden>
+                         output delay                -0.000    20.000    <hidden>
+  -------------------------------------------------------------------
+                         required time                         20.000    <hidden>
+                         arrival time                          -8.279    <hidden>
+  -------------------------------------------------------------------
+                         slack                                 11.721    <hidden>
+
+Slack (MET) :             11.740ns  (required time - arrival time)
+  Source:                 soc/cpu/GPIOOutput_reg[3]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            led[11]
+                            (output port clocked by board_output_budget  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             board_output_budget
+  Path Type:              Max at Slow Process Corner
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        8.260ns  (logic 3.960ns (47.941%)  route 4.300ns (52.059%))
+  Logic Levels:           1  (OBUF=1)
+  Output Delay:           0.000ns
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X39Y88                                      0.000     0.000 r  soc/cpu/GPIOOutput_reg[3]/C
+    SLICE_X39Y88         FDRE (Prop_fdre_C_Q)         0.456     0.456 r  soc/cpu/GPIOOutput_reg[3]/Q
+                         net (fo=4, routed)           4.300     4.756    led_OBUF[11]
+    U3                   OBUF (Prop_obuf_I_O)         3.504     8.260 r  led_OBUF[11]_inst/O
+                         net (fo=0)                   0.000     8.260    led[11]
+    U3                                                                r  led[11]
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    <hidden>
+                         output delay                -0.000    20.000    <hidden>
+  -------------------------------------------------------------------
+                         required time                         20.000    <hidden>
+                         arrival time                          -8.260    <hidden>
+  -------------------------------------------------------------------
+                         slack                                 11.740    <hidden>
+
+Slack (MET) :             11.745ns  (required time - arrival time)
+  Source:                 soc/boot_imem/done_reg_reg/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            led[7]
+                            (output port clocked by board_output_budget  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             board_output_budget
+  Path Type:              Max at Slow Process Corner
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        8.255ns  (logic 4.081ns (49.432%)  route 4.174ns (50.568%))
+  Logic Levels:           2  (LUT1=1 OBUF=1)
+  Output Delay:           0.000ns
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X37Y55                                      0.000     0.000 r  soc/boot_imem/done_reg_reg/C
+    SLICE_X37Y55         FDRE (Prop_fdre_C_Q)         0.456     0.456 f  soc/boot_imem/done_reg_reg/Q
+                         net (fo=10, routed)          2.646     3.102    soc/boot_imem/reset_controller/loader_done
+    SLICE_X0Y1           LUT1 (Prop_lut1_I0_O)        0.124     3.226 r  soc/boot_imem/reset_controller/boot_waiting_INST_0/O
+                         net (fo=1, routed)           1.529     4.754    led_OBUF[7]
+    V14                  OBUF (Prop_obuf_I_O)         3.501     8.255 r  led_OBUF[7]_inst/O
+                         net (fo=0)                   0.000     8.255    led[7]
+    V14                                                               r  led[7]
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    <hidden>
+                         output delay                -0.000    20.000    <hidden>
+  -------------------------------------------------------------------
+                         required time                         20.000    <hidden>
+                         arrival time                          -8.255    <hidden>
+  -------------------------------------------------------------------
+                         slack                                 11.745    <hidden>
+
+Slack (MET) :             11.774ns  (required time - arrival time)
+  Source:                 soc/cpu/GPIOOutput_reg[2]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            led[10]
+                            (output port clocked by board_output_budget  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             board_output_budget
+  Path Type:              Max at Slow Process Corner
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        8.226ns  (logic 3.981ns (48.399%)  route 4.245ns (51.601%))
+  Logic Levels:           1  (OBUF=1)
+  Output Delay:           0.000ns
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X39Y88                                      0.000     0.000 r  soc/cpu/GPIOOutput_reg[2]/C
+    SLICE_X39Y88         FDRE (Prop_fdre_C_Q)         0.456     0.456 r  soc/cpu/GPIOOutput_reg[2]/Q
+                         net (fo=4, routed)           4.245     4.701    led_OBUF[10]
+    W3                   OBUF (Prop_obuf_I_O)         3.525     8.226 r  led_OBUF[10]_inst/O
+                         net (fo=0)                   0.000     8.226    led[10]
+    W3                                                                r  led[10]
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    <hidden>
+                         output delay                -0.000    20.000    <hidden>
+  -------------------------------------------------------------------
+                         required time                         20.000    <hidden>
+                         arrival time                          -8.226    <hidden>
+  -------------------------------------------------------------------
+                         slack                                 11.774    <hidden>
+
+Slack (MET) :             11.866ns  (required time - arrival time)
+  Source:                 soc/boot_imem/done_reg_reg/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            led[6]
+                            (output port clocked by board_output_budget  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             board_output_budget
+  Path Type:              Max at Slow Process Corner
+  Requirement:            20.000ns  (MaxDelay Path 20.000ns)
+  Data Path Delay:        8.134ns  (logic 3.962ns (48.713%)  route 4.171ns (51.287%))
+  Logic Levels:           1  (OBUF=1)
+  Output Delay:           0.000ns
+  Timing Exception:       MaxDelay Path 20.000ns -datapath_only
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+    SLICE_X37Y55                                      0.000     0.000 r  soc/boot_imem/done_reg_reg/C
+    SLICE_X37Y55         FDRE (Prop_fdre_C_Q)         0.456     0.456 r  soc/boot_imem/done_reg_reg/Q
+                         net (fo=10, routed)          4.171     4.627    led_OBUF[6]
+    U14                  OBUF (Prop_obuf_I_O)         3.506     8.134 r  led_OBUF[6]_inst/O
+                         net (fo=0)                   0.000     8.134    led[6]
+    U14                                                               r  led[6]
+  -------------------------------------------------------------------    -------------------
+
+                         max delay                   20.000    20.000    <hidden>
+                         output delay                -0.000    20.000    <hidden>
+  -------------------------------------------------------------------
+                         required time                         20.000    <hidden>
+                         arrival time                          -8.134    <hidden>
+  -------------------------------------------------------------------
+                         slack                                 11.866    <hidden>
+
+
+
+

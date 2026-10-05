@@ -1,0 +1,33 @@
+{
+  "status": "passed",
+  "started_at_utc": "2026-10-03T01:04:59.362037+00:00",
+  "bitstream": "build/vivado/dcache-capacity/victim1/RISCVCPU_basys3_top.bit",
+  "bitstream_sha256": "8ed5736a2333f651871567c76fbc39480d1cc27d466220f8dce288f792a593bd",
+  "build_summary": "results/timing/dcache-capacity-victim1.json",
+  "build_summary_sha256": "24b35e7978709c9f130626ce33aadeffc76914b08d844baa7bdd23749418be85",
+  "inputs": {
+    "build/vivado/dcache-capacity/victim1/RISCVCPU_basys3_top.bit": "8ed5736a2333f651871567c76fbc39480d1cc27d466220f8dce288f792a593bd",
+    "results/timing/dcache-capacity-victim1.json": "24b35e7978709c9f130626ce33aadeffc76914b08d844baa7bdd23749418be85",
+    "scripts/signal_start.py": "2c80ce31d5a67a815906af7a4a5d71102fd159699f0b0f3cba67d6860237230c",
+    "fpga/xsdb/basys3_program.tcl": "7ef0b5770debce06b4034b14bb832d818613b615048367e19a436913540900c5"
+  },
+  "programming": {
+    "generated_at_utc": "2026-10-03T01:05:06Z",
+    "status": "pass",
+    "hardware_connected": true,
+    "inventory_count": 1,
+    "target_count": 1,
+    "selected_target": "target_id=1 name=xc7a35t jtag_device_name=xc7a35t jtag_device_id=2",
+    "device_programmed": true,
+    "configuration_verified": true,
+    "configuration_state": "FPGA is configured",
+    "retry_count": 0,
+    "cleanup_error": "",
+    "error": ""
+  },
+  "finished_at_utc": "2026-10-03T01:05:17.276963+00:00",
+  "files": {
+    "capacity-victim1-programming.log": "a40bed80e20f4e602d79f98a5dedd12c819dca9384d3a9e39a8a76139cddd794"
+  },
+  "publication_note": "Run hashes identify originals; publication.json identifies normalized copies."
+}

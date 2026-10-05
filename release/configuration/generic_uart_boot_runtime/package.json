@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "kind": "configuration",
+  "status": "pass",
+  "generated_at_utc": "2026-10-02T19:27:54.3770092Z",
+  "source_commit": "214a8926e7927590b53fc21c5df8adf45e3faf67",
+  "source_fingerprint": "eaed579c1e9f2c23499538bfa96fc09b4d4c3a6851a6c1b1f7ad82241732dc88",
+  "input_count": 2,
+  "board_profile": "generic_uart_boot_runtime",
+  "physical_validation_status": "not_run"
+}

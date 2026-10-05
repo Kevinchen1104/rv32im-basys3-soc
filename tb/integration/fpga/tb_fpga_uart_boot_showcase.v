@@ -1,18 +1,15 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_uart_boot_showcase
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: Packetized UART boot loads showcase_demo through the FPGA-facing top, releases CPU execution, captures the
 //   full UART transcript, observes GPIO phases/final value, checks MATVEC/counter snapshots, and sees the public pass
 //   signature.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Simulation-tested packet UART boot to CPU execution only; not physical board evidence, timing
-//   evidence, or benchmark evidence.
 // Firmware: firmware/hex/showcase/showcase_demo.hex
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_uart_boot_showcase;
+    initial begin : watchdog
+        repeat (2000000) @(posedge clock);
+        $fatal(1, "Testbench watchdog expired");
+    end
 
     localparam integer UART_CLKS_PER_BIT = 4;
     localparam integer PROGRAM_WORD_COUNT = 269;
@@ -187,10 +184,9 @@ module tb_fpga_uart_boot_showcase;
                          dut.cpu.DMemory[6], dut.cpu.DMemory[9]);
                 $fatal;
             end
-            if (^dut.cpu.DMemory[10] === 1'bx ||
-                ^dut.cpu.DMemory[11] === 1'bx ||
-                ^dut.cpu.DMemory[12] === 1'bx) begin
-                $display("FAIL: MATVEC counter snapshot contains unknown values");
+            if (^{dut.cpu.DMemory[5], dut.cpu.DMemory[6], dut.cpu.DMemory[7], dut.cpu.DMemory[8],
+                  dut.cpu.DMemory[9], dut.cpu.DMemory[10], dut.cpu.DMemory[11], dut.cpu.DMemory[12]} === 1'bx) begin
+                $display("FAIL: performance counter snapshot contains unknown values");
                 $fatal;
             end
         end
@@ -219,7 +215,7 @@ module tb_fpga_uart_boot_showcase;
     initial begin
         expected_message = "RV32IM SHOWCASE\nUART OK\nMATVEC PASS\nCOUNTERS PASS\nSHOWCASE PASS\n";
 
-        $dumpfile("wave/tb_fpga_uart_boot_showcase.vcd");
+        $dumpfile("results/waveforms/tb_fpga_uart_boot_showcase.vcd");
         $dumpvars(0, tb_fpga_uart_boot_showcase);
         $readmemh("firmware/hex/showcase/showcase_demo.hex", program_words, 0, PROGRAM_WORD_COUNT - 1);
 

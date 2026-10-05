@@ -1,12 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_flush
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Taken-branch redirect suppresses younger wrong-path register writeback.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Branch writeback suppression only; side effects are covered by separate tests.
-// Assertion focus: Directed check for flush behavior or side-effect suppression.
+// Memory and MMIO side effects are checked by the store/MMIO flush tests.
 
 module tb_assert_flush;
 
@@ -29,7 +24,7 @@ module tb_assert_flush;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_flush.vcd");
+        $dumpfile("results/waveforms/tb_assert_flush.vcd");
         $dumpvars(0, tb_assert_flush);
         reset_cpu();
 

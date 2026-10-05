@@ -5,16 +5,13 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\trace-trap-reference.ps1 -Check -SkipSimulation
 Outputs:
   fixtures\generated\reference\trace_trap_reference* artifacts or freshness diagnostics.
-Scope:
-  Trace-reference regression evidence only; not complete trap proof or official compliance.
-Audience:
-  Internal helper used by scripts\check.ps1.
 #>
 param(
     [switch]$Check,
     [switch]$SkipSimulation
 )
 
+. "$PSScriptRoot/reference-common.ps1"
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
@@ -25,56 +22,12 @@ $expectedPath = Join-Path $repoRoot "fixtures/generated/reference/trace_trap_ref
 $wrongPathPath = Join-Path $repoRoot "fixtures/generated/reference/trace_trap_reference_wrong_path.hex"
 $jsonPath = Join-Path $repoRoot "fixtures/generated/reference/trace_trap_reference_expected.json"
 
-function Normalize-TextForArtifactCompare {
-    param([string]$Text)
-
-    if ($null -eq $Text) {
-        return ""
-    }
-
-    $normalized = $Text.TrimEnd()
-    $normalized = $normalized -replace "`r`n", "`n"
-    return ($normalized -replace "`r", "`n")
-}
-
-function To-UInt32 {
-    param([int64]$Value)
-    return [uint32]($Value -band 0xffffffffL)
-}
-
-function Encode-IType {
-    param([int]$Immediate, [int]$Rs1, [int]$Funct3, [int]$Rd, [int]$Opcode)
-    return [uint32](([uint64]($Immediate -band 0xfff) -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]$Opcode)
-}
-
 function Encode-Csr {
     param([int]$Csr, [int]$Rs1, [int]$Funct3, [int]$Rd)
     return [uint32](([uint64]($Csr -band 0xfff) -shl 20) -bor
                     ([uint64]$Rs1 -shl 15) -bor
                     ([uint64]$Funct3 -shl 12) -bor
                     ([uint64]$Rd -shl 7) -bor [uint64]0x73)
-}
-
-function Format-HexWord {
-    param([uint32]$Value)
-    return "{0:x8}" -f $Value
-}
-
-function Format-TraceRow {
-    param([uint32]$Pc, [uint32]$Instruction, [int]$Rd, [bool]$RegWrite, [uint32]$Value)
-
-    $meta = [uint32]($Rd -band 0x1f)
-    if ($RegWrite) {
-        $meta = $meta -bor [uint32]0x20
-    }
-
-    return "{0}{1}{2}{3}" -f (Format-HexWord $Pc),
-                              (Format-HexWord $Instruction),
-                              (Format-HexWord $meta),
-                              (Format-HexWord $Value)
 }
 
 function New-TraceEntry {

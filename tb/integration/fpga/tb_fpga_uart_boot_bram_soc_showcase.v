@@ -1,19 +1,16 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_uart_boot_bram_soc_showcase
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: Packetized UART boot loads showcase_demo through RISCVCPU_uart_boot_bram_soc_top, releases CPU execution
 //   with external IMEM and external DMem enabled, captures the full UART transcript, observes GPIO phases/final
 //   value, checks external DMem MATVEC/counter snapshots, sees external DMem read/write traffic, and sees the public
 //   pass signature.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Simulation-tested external instruction boot plus external data-memory path only; not physical board
-//   evidence, timing evidence, or benchmark evidence.
 // Firmware: firmware/hex/showcase/showcase_demo.hex
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_uart_boot_bram_soc_showcase;
+    initial begin : watchdog
+        repeat (2000000) @(posedge clock);
+        $fatal(1, "Testbench watchdog expired");
+    end
 
     localparam integer UART_CLKS_PER_BIT = 4;
     localparam integer PROGRAM_WORD_COUNT = 269;
@@ -192,10 +189,9 @@ module tb_fpga_uart_boot_bram_soc_showcase;
                          dut.dmem.memory[6], dut.dmem.memory[9]);
                 $fatal;
             end
-            if (^dut.dmem.memory[10] === 1'bx ||
-                ^dut.dmem.memory[11] === 1'bx ||
-                ^dut.dmem.memory[12] === 1'bx) begin
-                $display("FAIL: MATVEC counter snapshot contains unknown values");
+            if (^{dut.dmem.memory[5], dut.dmem.memory[6], dut.dmem.memory[7], dut.dmem.memory[8],
+                  dut.dmem.memory[9], dut.dmem.memory[10], dut.dmem.memory[11], dut.dmem.memory[12]} === 1'bx) begin
+                $display("FAIL: performance counter snapshot contains unknown values");
                 $fatal;
             end
             if (dut.dmem.memory[64] !== PASS_MARKER) begin
@@ -234,7 +230,7 @@ module tb_fpga_uart_boot_bram_soc_showcase;
     initial begin
         expected_message = "RV32IM SHOWCASE\nUART OK\nMATVEC PASS\nCOUNTERS PASS\nSHOWCASE PASS\n";
 
-        $dumpfile("wave/tb_fpga_uart_boot_bram_soc_showcase.vcd");
+        $dumpfile("results/waveforms/tb_fpga_uart_boot_bram_soc_showcase.vcd");
         $dumpvars(0, tb_fpga_uart_boot_bram_soc_showcase);
         $readmemh("firmware/hex/showcase/showcase_demo.hex", program_words, 0, PROGRAM_WORD_COUNT - 1);
 
@@ -300,14 +296,13 @@ module tb_fpga_uart_boot_bram_soc_showcase;
                      seen_phase_matvec_pass, seen_phase_counter_pass, seen_phase_final);
             $fatal;
         end
+        repeat (1000) @(posedge clock);
+        #1;
         if (capture_overflow !== 0 || captured_count !== MESSAGE_LEN) begin
             $display("FAIL: expected %0d UART TX bytes, got %0d overflow=%0d",
                      MESSAGE_LEN, captured_count, capture_overflow);
             $fatal;
         end
-
-        repeat (1000) @(posedge clock);
-        #1;
 
         for (i = 0; i < MESSAGE_LEN; i = i + 1) begin
             if (captured[i] !== expected_byte(i)) begin

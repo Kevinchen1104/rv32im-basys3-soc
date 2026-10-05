@@ -4,7 +4,6 @@
 // Purpose: Checks a focused CPU core unit or core-level smoke path.
 // Checks: Standalone return-address stack predicts returns only and updates an 8-entry stack on resolved call/return events.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   update ordering, or full call/return program execution.
 
 module tb_ras_unit;
 
@@ -28,7 +27,7 @@ module tb_ras_unit;
     ras_unit dut (
         .clock(clock),
         .reset(reset),
-        .fetch_instruction(fetch_instruction),
+        .fetch_is_return((fetch_instruction & 32'hffff_8fff) == 32'h0000_8067),
         .ras_predict_taken(ras_predict_taken),
         .ras_predicted_pc(ras_predicted_pc),
         .update_valid(update_valid),

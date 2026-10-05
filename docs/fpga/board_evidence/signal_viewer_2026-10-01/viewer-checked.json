@@ -1,0 +1,80 @@
+{
+  "status": "captured",
+  "captured_at_utc": "2026-10-02T02:24:58.793840+00:00",
+  "port": "COM3",
+  "baud": 115200,
+  "settings": {
+    "preset": "average4",
+    "coefficients": [1, 1, 1, 1],
+    "scale": 2,
+    "source": "sine",
+    "noise": 300,
+    "threshold": 700,
+    "seed": 1
+  },
+  "total_samples": 512,
+  "saved_samples": 512,
+  "first_sample": 0,
+  "last_sample": 511,
+  "last_batch": {
+    "outputs": [
+      -1040,
+      -1014,
+      -901,
+      -978,
+      -987,
+      -945,
+      -989,
+      -888,
+      -859,
+      -876,
+      -815,
+      -914,
+      -954,
+      -840,
+      -785,
+      -681,
+      -637,
+      -696,
+      -743,
+      -694,
+      -646,
+      -500,
+      -510,
+      -451,
+      -362,
+      -375,
+      -245,
+      -193,
+      -205,
+      -107,
+      -147,
+      -96
+    ],
+    "compute_cycles": 6528,
+    "threshold_events": 0,
+    "gpio": 0,
+    "round_trip_ms": 63.61
+  },
+  "last_status": {
+    "coefficients": [1, 1, 1, 1],
+    "scale": 2,
+    "threshold": 700,
+    "samples_processed": 512,
+    "threshold_events": 118,
+    "gpio": 0,
+    "switches": 0,
+    "uart_overrun": false,
+    "batch_limit": 32,
+    "round_trip_ms": 31.602
+  },
+  "inputs": {
+    "scripts/signal_viewer.py": "b79ee0c9697733369e9dc108df16b6ca94c5c4883c4defdee321e705de853deb",
+    "scripts/signal_console.py": "4c8a6f176822bfe05811a120875f5bfab61d5ebf6604fef3aae424d56577aced",
+    "scripts/result_json.py": "07fce16c16a52aff82710cdf21307313ebfc7765b3ef2009cf9ae70b1a847b9d"
+  },
+  "files": {
+    "viewer-checked.csv": "9d097e117cec5a694e5d86bca862508e6dddd3a49d0055314c1532fdb3c2a720",
+    "viewer-checked.png": "00acf924dc5cd913443899bb47f3c1d1a19270818fd33e5124dab2613075339b"
+  }
+}

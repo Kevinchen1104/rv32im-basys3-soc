@@ -8,7 +8,7 @@
 module tb_uart_mmio;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
     wire [31:0] gpio_outputs;
@@ -54,7 +54,7 @@ module tb_uart_mmio;
     always #5 clock = ~clock;
 
     always @(posedge clock) begin
-        if (uart_tx_valid) begin
+        if (!reset && uart_tx_valid && uart_tx_ready) begin
             tx_seen <= tx_seen + 1;
             captured_tx_data <= uart_tx_data;
         end
@@ -111,10 +111,15 @@ module tb_uart_mmio;
     endtask
 
     integer i;
+    initial begin
+        #100000;
+        $fatal(1, "UART MMIO test timed out");
+    end
 
     initial begin
-        $dumpfile("wave/tb_uart_mmio.vcd");
+        $dumpfile("results/waveforms/tb_uart_mmio.vcd");
         $dumpvars(0, tb_uart_mmio);
+        #1;
 
         for (i = 0; i < 1024; i = i + 1) begin
             dut.IMemory[i] = 32'h0000_0013;
@@ -122,8 +127,7 @@ module tb_uart_mmio;
         end
 
         reset = 1'b1;
-        @(posedge clock);
-        #1;
+        @(negedge clock);
         reset = 1'b0;
 
         dut.IMemory[0] = i_type(12'd768, 5'd0, 3'b000, 5'd1, 7'b0010011);  // addi x1, x0, 0x300
@@ -134,7 +138,8 @@ module tb_uart_mmio;
         dut.IMemory[5] = i_type(12'd0, 5'd3, 3'b010, 5'd5, 7'b0000011);  // lw x5, 0(x3)
         dut.IMemory[6] = i_type(12'd0, 5'd2, 3'b010, 5'd6, 7'b0000011);  // lw x6, 0(x2)
         dut.IMemory[7] = i_type(12'd0, 5'd2, 3'b100, 5'd7, 7'b0000011);  // lbu x7, 0(x2)
-        dut.IMemory[8] = b_type(0, 5'd0, 5'd0, 3'b000, 7'b1100011);
+        dut.IMemory[8] = i_type(12'd0, 5'd3, 3'b010, 5'd8, 7'b0000011); // status after TX handshake
+        dut.IMemory[9] = b_type(0, 5'd0, 5'd0, 3'b000, 7'b1100011);
 
         wait (
             dut.EXMEMValid &&
@@ -169,9 +174,10 @@ module tb_uart_mmio;
             $fatal;
         end
 
-        check_reg(5, 32'h0000_0007);
+        check_reg(5, 32'h0000_0005); // TX slot occupied by the preceding store
         check_reg(6, 32'h0000_00ab);
         check_reg(7, 32'h0000_00ab);
+        check_reg(8, 32'h0000_0007); // TX slot available after ready/valid transfer
 
         if (dut.DMemory[192] !== 32'h0 || dut.DMemory[193] !== 32'h0 || dut.DMemory[194] !== 32'h0) begin
             $display("FAIL: UART MMIO access should not write backing DMemory");

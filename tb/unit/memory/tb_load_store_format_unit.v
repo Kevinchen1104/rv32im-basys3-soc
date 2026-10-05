@@ -5,7 +5,6 @@
 // Checks: Standalone load/store formatter preserves CPU little-endian LB/LH/LW/LBU/LHU extension and SB/SH/SW merge
 //   behavior.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   pipeline register updates.
 
 module tb_load_store_format_unit;
 

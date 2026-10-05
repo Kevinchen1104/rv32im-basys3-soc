@@ -1,12 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_jalr_flush
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Jalr clears target bit 0, writes the link value, and suppresses younger wrong-path writeback.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Directed JALR slice; side-effect JALR coverage is covered by assert_jalr_side_effect_flush.
-// Assertion focus: Directed check for jalr flush behavior or side-effect suppression.
+// JALR store and MMIO side effects are checked by tb_assert_jalr_side_effect_flush.
 
 module tb_assert_jalr_flush;
 
@@ -29,7 +24,7 @@ module tb_assert_jalr_flush;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_jalr_flush.vcd");
+        $dumpfile("results/waveforms/tb_assert_jalr_flush.vcd");
         $dumpvars(0, tb_assert_jalr_flush);
         reset_cpu();
 

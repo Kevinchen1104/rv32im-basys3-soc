@@ -1,0 +1,75 @@
+{
+  "status": "passed",
+  "recorded_at_utc": "2026-10-01T15:58:58.754429+00:00",
+  "source_revision": "331b5c40c49b4098d7fafe26ce27758e61ca18a6",
+  "profile": "fast_cpu",
+  "clock_mhz": 100,
+  "numerical_outputs_checked": 13216,
+  "directed_commands_checked": 84,
+  "expected_rejections_checked": 26,
+  "stress_batches_checked": 400,
+  "operator": {
+    "led15_to_led8": "10101011",
+    "led_confirmation": "operator_reported",
+    "action": "SW0 on to off, then press and release BTN C",
+    "confirmation": "\u71c8\u865f\u6b63\u78ba\uff0c\u5df2\u95dc SW0 \u4e26 reset"
+  },
+  "reset_validation": "second UART firmware upload after physical BTN C; no second JTAG programming",
+  "artifacts": [
+    {
+      "path": ".gitattributes",
+      "bytes": 86,
+      "sha256": "b0f4c59e78afe5c4b804142f77d5e61557203030ea59c700b1c64f67535a911b"
+    },
+    {
+      "path": "after-reset.json",
+      "bytes": 170490,
+      "sha256": "44437c6fb33bcb1055551f6eba57fabd8fcdad1c66cc267ef51808da6a59b7af"
+    },
+    {
+      "path": "comparison.json",
+      "bytes": 784,
+      "sha256": "da6628babac5fa178261165a30f96b3e8c02736ba45f0f7fd10ba7cb7c75a5aa"
+    },
+    {
+      "path": "identity.json",
+      "bytes": 26754,
+      "sha256": "5dec3bc95e3e7217aefcb5834faa38d2e609b01adcc0f85d07d4b24f76951b6e"
+    },
+    {
+      "path": "initial.json",
+      "bytes": 170492,
+      "sha256": "4fb017192683a47945612b31294a7427bdd14779df6e127bd8cfd1f958aa266b"
+    },
+    {
+      "path": "post_route_drc.rpt",
+      "bytes": 1393,
+      "sha256": "04683cfaf4bbd9759a841ce6a6db66363b6987a7009a0b9cb21434e247c4f799"
+    },
+    {
+      "path": "post_route_timing_summary.rpt",
+      "bytes": 24938,
+      "sha256": "33b744d8611c37c90381a60ff0648faadcbf7e208341191c26b16058b2a34bb2"
+    },
+    {
+      "path": "post_route_utilization.rpt",
+      "bytes": 11591,
+      "sha256": "254d9fe1860ad534d8bab4967b4fa376af3f5ec55a04fbcabde2c74b6d522fe2"
+    },
+    {
+      "path": "programming.json",
+      "bytes": 403,
+      "sha256": "de691a0c33c7cce2960cc318aefa5b6b4c76f4aab64465f219b515babd43d120"
+    },
+    {
+      "path": "programming.txt",
+      "bytes": 854,
+      "sha256": "3bd71c4d5a5463c71f7f39038372189aa2574057a35429f9881ca6f5015d6bec"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4669,
+      "sha256": "5b3b31e59f0d299c3c0b44a566d50ac0767d10506b45146ab385b6ecafc9bffa"
+    }
+  ]
+}

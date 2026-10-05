@@ -7,8 +7,9 @@
 # create_clock -name sys_clk -period <CLOCK_PERIOD_NS> [get_ports clock]
 
 # Reset
-# Review whether reset is asynchronous to the clock in the selected top/project.
-# set_false_path -from [get_ports reset]
+# For an asynchronous external reset, constrain only the path into the first
+# reset synchronizer stage. Do not blanket-cut paths to all reset consumers;
+# synchronized reset release still needs timing analysis in its clock domain.
 
 # UART
 # Add input/output delays only after selecting a real UART bridge and board IO.

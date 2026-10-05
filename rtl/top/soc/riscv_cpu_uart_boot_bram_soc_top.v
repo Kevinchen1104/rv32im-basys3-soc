@@ -48,7 +48,7 @@ module RISCVCPU_uart_boot_bram_soc_top #(
     localparam SAFE_HEARTBEAT_COUNTER_BIT =
         HEARTBEAT_CONFIG_VALID ? HEARTBEAT_COUNTER_BIT : 0;
     localparam UART_CONFIG_VALID =
-        (UART_RX_CLKS_PER_BIT >= 1) && (UART_TX_CLKS_PER_BIT >= 1);
+        (UART_RX_CLKS_PER_BIT >= 3) && (UART_TX_CLKS_PER_BIT >= 1);
 
     wire reset_asserted = RESET_ACTIVE_LOW ? ~reset : reset;
     wire packet_cpu_reset;

@@ -1,14 +1,15 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_basys3_full_lowfreq_top
 // Purpose: Exercises the complete Basys3 SoC through the portable 6.25 MHz clock-generator model.
 // Checks: Divide-by-16 clocking, lock-gated reset, serial packet boot, public pass/done LEDs, heartbeat, and reset restart.
 // Pass condition: The checked-in board-smoke packet reaches the public LED pass state and reset returns the top to boot waiting.
-// Does not prove: Vivado MMCM implementation, timing closure, UART baud tolerance, or physical-board behavior.
 // Firmware: fixtures/generated/boot/board_smoke.boot.bin
-// Boundary: Directed wrapper simulation only; the full low-frequency target requires separate Vivado and board evidence.
 
 module tb_basys3_full_lowfreq_top;
+    initial begin : watchdog
+        repeat (2000000) @(posedge clk);
+        $fatal(1, "Testbench watchdog expired");
+    end
 
     localparam integer UART_CLKS_PER_BIT = 54;
     localparam integer PACKET_BYTE_COUNT = 48;
@@ -85,7 +86,7 @@ module tb_basys3_full_lowfreq_top;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_basys3_full_lowfreq_top.vcd");
+        $dumpfile("results/waveforms/tb_basys3_full_lowfreq_top.vcd");
         $dumpvars(0, tb_basys3_full_lowfreq_top);
 
         packet_file = $fopen("fixtures/generated/boot/board_smoke.boot.bin", "rb");
@@ -106,6 +107,7 @@ module tb_basys3_full_lowfreq_top;
             $fatal;
         end
 
+        @(negedge clk);
         btnC = 1'b0;
         wait (dut.clock_locked === 1'b1);
         #1;
@@ -160,6 +162,7 @@ module tb_basys3_full_lowfreq_top;
             $fatal;
         end
 
+        @(negedge clk);
         btnC = 1'b1;
         repeat (4) @(posedge clk);
         if (dut.clock_locked !== 1'b0 || dut.soc_reset !== 1'b1) begin
@@ -167,6 +170,7 @@ module tb_basys3_full_lowfreq_top;
             $fatal;
         end
 
+        @(negedge clk);
         btnC = 1'b0;
         wait (dut.clock_locked === 1'b1);
         repeat (6) @(posedge dut.soc_clk);

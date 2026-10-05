@@ -1,11 +1,9 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_control_transfer_legality_alignment
 // Purpose: Verify JALR legality and IALIGN=32 control-transfer trap behavior in the integrated pipeline.
 // Checks: Taken branch/JAL/JALR target alignment, untaken-branch behavior, illegal JALR priority, precise N/N+1/N+2
 //   trap sequencing, deferred-interrupt boundaries, D-cache backpressure, pending reset, wrong-path isolation, and predictor/RAS suppression.
 // Pass condition: Every directed phase reaches its handler or fallthrough endpoint with the expected state.
-// Does not prove: Complete unprivileged ISA compliance or privileged architecture behavior.
 
 module tb_assert_control_transfer_legality_alignment;
 
@@ -412,6 +410,7 @@ module tb_assert_control_transfer_legality_alignment;
     endtask
 
     task run_older_memory_fault_cancels_younger_misalignment;
+        integer timeout;
         begin
             prepare_trap_phase(32'd40);
             dut.IMemory[2] = {20'h00001, 5'd8, 7'b0110111};
@@ -425,9 +424,13 @@ module tb_assert_control_transfer_legality_alignment;
             wrong_store_pc = 32'hffff_ffff;
             checking_enabled = 1'b1;
 
+            timeout = 0;
             while (!(dut.memory_access_fault_taken &&
-                     dut.instruction_misaligned_capture)) begin
+                      dut.instruction_misaligned_capture)) begin
                 @(negedge clock);
+                timeout = timeout + 1;
+                if (timeout > 100)
+                    $fatal(1, "Timed out waiting for overlapping memory fault and misalignment");
             end
             @(posedge clock);
             #1;
@@ -457,7 +460,7 @@ module tb_assert_control_transfer_legality_alignment;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_control_transfer_legality_alignment.vcd");
+        $dumpfile("results/waveforms/tb_assert_control_transfer_legality_alignment.vcd");
         $dumpvars(0, tb_assert_control_transfer_legality_alignment);
 
         run_misaligned_jal();

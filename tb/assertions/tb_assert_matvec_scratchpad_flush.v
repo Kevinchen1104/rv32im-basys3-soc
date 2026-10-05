@@ -1,14 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_matvec_scratchpad_flush
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Branch, jump, and trap redirects suppress younger wrong-path stores to MATVEC Scratchpad CTRL so the scratchpad
 //   accelerator does not start or update busy, done, perf, row, or result state.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Directed wrong-path side-effect regression for MATVEC Scratchpad start only; not a full formal proof of all
-//   accelerator MMIO ordering cases.
-// Assertion focus: Directed check for matvec scratchpad flush behavior or side-effect suppression.
 
 module tb_assert_matvec_scratchpad_flush;
 
@@ -150,7 +143,7 @@ module tb_assert_matvec_scratchpad_flush;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_matvec_scratchpad_flush.vcd");
+        $dumpfile("results/waveforms/tb_assert_matvec_scratchpad_flush.vcd");
         $dumpvars(0, tb_assert_matvec_scratchpad_flush);
 
         run_branch_case();

@@ -6,11 +6,10 @@
 //   bypasses D-cache, exposes the registered timer pending bit through mip.MTIP, and leaves unrelated GPIO/UART
 //   MMIO behavior intact.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   behavior, or privileged interrupt semantics.
 
 module tb_timer_mmio;
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
     wire [31:0] gpio_outputs;
@@ -108,8 +107,9 @@ module tb_timer_mmio;
     integer i;
 
     initial begin
-        $dumpfile("wave/tb_timer_mmio.vcd");
+        $dumpfile("results/waveforms/tb_timer_mmio.vcd");
         $dumpvars(0, tb_timer_mmio);
+        #1; // Initialize test memory after the DUT initial block.
 
         for (i = 0; i < 1024; i = i + 1) begin
             dut.IMemory[i] = 32'h0000_0013;
@@ -145,7 +145,7 @@ module tb_timer_mmio;
         check_reg(4, 32'd96);
         check_reg(10, 32'd96);
 
-        if (dut.Regs[7] < 32'd32) begin
+        if (^dut.Regs[7] === 1'bx || dut.Regs[7] < 32'd32) begin
             $display("FAIL: mtime read should be at least written value, got %h", dut.Regs[7]);
             $fatal;
         end

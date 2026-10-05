@@ -1,12 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_top_config_error
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: Invalid memory/init/UART/heartbeat profiles, one-word bounds, and external-memory/cache combinations.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Parameter validation only.
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_top_config_error;
 
@@ -40,6 +34,36 @@ module tb_fpga_top_config_error;
     wire invalid_heartbeat_error;
     wire invalid_uart_divisor_error;
     wire one_word_core_config_error;
+    wire [5:0] icache_config_errors;
+    genvar cache_case;
+    generate for (cache_case = 0; cache_case < 6; cache_case = cache_case + 1) begin : invalid_caches
+        localparam BYTES = (cache_case == 0) ? 32 : ((cache_case == 1) ? 96 :
+                           ((cache_case == 2) ? 8192 : ((cache_case == 3) ? 256 : 64)));
+        localparam LOOKUP = (cache_case == 3) ? 1 : ((cache_case == 4) ? 2 : 0);
+        RISCVCPU #(.MEMORY_WORD_COUNT(1), .ENABLE_ACCELERATORS(0),
+                   .ICACHE_BYTES(BYTES), .ICACHE_PARALLEL_LOOKUP(LOOKUP)) cache_dut (
+            .clock(clock), .reset(1'b1), .config_error(icache_config_errors[cache_case]),
+            .imem_rdata(128'b0), .imem_ready(1'b0), .dmem_rdata(128'b0), .dmem_ready(1'b0),
+            .gpio_inputs(32'b0), .uart_tx_ready(1'b1), .uart_rx_data(8'b0),
+            .uart_rx_valid(1'b0), .uart_rx_overrun(1'b0)
+        );
+    end endgenerate
+
+    wire [6:0] dcache_config_errors;
+    genvar data_cache_case;
+    generate for (data_cache_case = 0; data_cache_case < 7; data_cache_case = data_cache_case + 1) begin : data_cache_configs
+        localparam BYTES = (data_cache_case == 0) ? 32 : ((data_cache_case == 1) ? 96 :
+                           ((data_cache_case == 2) ? 256 : ((data_cache_case == 6) ? 128 : 64)));
+        localparam VICTIMS = (data_cache_case == 3) ? 3 : ((data_cache_case == 4) ? 16 : 0);
+        // Check the core parameter contract without elaborating an invalid cache.
+        RISCVCPU #(.MEMORY_WORD_COUNT(1), .ENABLE_ACCELERATORS(0), .ENABLE_DCACHE(0),
+                   .DCACHE_BYTES(BYTES), .DCACHE_VICTIM_LINES(VICTIMS)) cache_dut (
+            .clock(clock), .reset(1'b1), .config_error(dcache_config_errors[data_cache_case]),
+            .imem_rdata(128'b0), .imem_ready(1'b0), .dmem_rdata(128'b0), .dmem_ready(1'b0),
+            .gpio_inputs(32'b0), .uart_tx_ready(1'b1), .uart_rx_data(8'b0),
+            .uart_rx_valid(1'b0), .uart_rx_overrun(1'b0)
+        );
+    end endgenerate
 
     RISCVCPU_fpga_top #(
         .MEMORY_WORD_COUNT(64)
@@ -282,11 +306,11 @@ module tb_fpga_top_config_error;
     always #5 clock = ~clock;
 
     initial begin
-        $dumpfile("wave/tb_fpga_top_config_error.vcd");
+        $dumpfile("results/waveforms/tb_fpga_top_config_error.vcd");
         $dumpvars(0, tb_fpga_top_config_error);
 
         reset = 1'b1;
-        repeat (2) @(posedge clock);
+        repeat (2) @(negedge clock);
         reset = 1'b0;
 
         repeat (20) @(posedge clock);
@@ -401,6 +425,10 @@ module tb_fpga_top_config_error;
         release one_word_core_dut.IDEXPC;
         release one_word_core_dut.EXMEMALUOut;
 
+        if (icache_config_errors !== 6'b011111)
+            $fatal(1, "I-cache configuration validity mismatch: %b", icache_config_errors);
+        if (dcache_config_errors !== 7'b0011111)
+            $fatal(1, "D-cache configuration validity mismatch: %b", dcache_config_errors);
         $display("PASS: FPGA/core/memory blocks reported invalid parameter combinations");
         $display("PASS: tb_fpga_top_config_error passed");
         $finish;

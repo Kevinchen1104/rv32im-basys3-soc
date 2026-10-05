@@ -4,38 +4,38 @@ Purpose: Summarizes selected architectural-test integration artifacts and signat
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\arch-test-report.ps1
 Outputs:
-  Console and file report artifacts under wave\arch-test when run after arch-test execution.
-Scope:
-  Selected local integration reporting only; not official RISC-V compliance.
-Audience:
-  Public optional arch-test reporting helper.
+  Console and file report artifacts under results\arch-test when run after arch-test execution.
 #>
 param(
-    [string]$ResultsPath = "wave\arch-test-results.json",
-    [string]$DetectPath = "wave\arch-test-detect.json",
-    [string]$SetupPath = "wave\arch-test-setup.json",
-    [string]$OutputPath = "wave\arch-test-report.json"
+    [string]$ResultsPath = "results\arch-test-results.json",
+    [string]$DetectPath = "results\arch-test-detect.json",
+    [string]$SetupPath = "results\arch-test-setup.json",
+    [string]$OutputPath = "results\arch-test-report.json"
 )
 
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+. "$PSScriptRoot/result-format.ps1"
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
-function Read-JsonIfPresent {
-    param([string]$Path)
+. "$PSScriptRoot/script-common.ps1"
 
-    if (-not (Test-Path -LiteralPath $Path)) {
-        return $null
+foreach ($inputPath in @($ResultsPath, $DetectPath, $SetupPath)) {
+    if ((Resolve-RepoPath $OutputPath) -eq (Resolve-RepoPath $inputPath)) {
+        throw 'OutputPath must not overwrite an input report.'
     }
-
-    return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
 }
-
-$results = Read-JsonIfPresent $ResultsPath
-$detect = Read-JsonIfPresent $DetectPath
-$setup = Read-JsonIfPresent $SetupPath
+Write-ResultJson ([ordered]@{status='running'; results_path=$ResultsPath}) $OutputPath
+try {
+    $results = Read-JsonIfPresent $ResultsPath
+    $detect = Read-JsonIfPresent $DetectPath
+    $setup = Read-JsonIfPresent $SetupPath
+} catch {
+    Write-ResultJson ([ordered]@{status='failed'; results_path=$ResultsPath; error=$_.Exception.Message}) $OutputPath
+    throw
+}
 
 if ($null -eq $results) {
     $report = [ordered]@{
@@ -45,10 +45,10 @@ if ($null -eq $results) {
         detection_status = if ($null -eq $detect) { $null } else { $detect.status }
         setup_status = if ($null -eq $setup) { $null } else { $setup.status }
         upstream_commit = if ($null -eq $setup) { $null } else { $setup.upstream_commit }
-        claim_boundary = "no official arch-test result exists yet; no official compliance claim"
+        next_step = "Run scripts/arch-test-run.ps1 before generating this report."
     }
 
-    $report | ConvertTo-Json -Depth 6 | Set-Content -Path $OutputPath -Encoding Ascii
+    Write-ResultJson $report $OutputPath
 
     Write-Host "========================================"
     Write-Host "RISC-V arch-test report"
@@ -120,10 +120,13 @@ $report = [ordered]@{
             reason = $_.reason
         }
     })
-    claim_boundary = "selected official RISC-V arch-test sources; signature comparison is split by official or local reference kind and is not an official compliance suite result"
+    method = "Selected upstream RISC-V tests; signature comparisons are grouped by reference kind."
 }
 
-$report | ConvertTo-Json -Depth 8 | Set-Content -Path $OutputPath -Encoding Ascii
+foreach ($field in @('source_commit','verification_input_fingerprint','verification_input_count','verification_working_tree_dirty')) {
+    $report[$field] = $results.$field
+}
+Write-ResultJson $report $OutputPath
 
 Write-Host "========================================"
 Write-Host "RISC-V arch-test report"
@@ -137,5 +140,4 @@ if ($null -ne $report.reference_summary) {
     Write-Host ("Official reference available: {0}" -f $report.reference_summary.official.available)
     Write-Host ("Local reference used tests: {0}" -f $report.reference_summary.local.used_tests)
 }
-Write-Host "Boundary: selected official RISC-V arch-test sources; not an official compliance suite result"
 Write-Host ("Report written to {0}" -f $OutputPath)

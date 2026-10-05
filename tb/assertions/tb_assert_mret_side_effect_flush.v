@@ -1,13 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_mret_side_effect_flush
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Mret redirect suppresses younger wrong-path data-memory and GPIO MMIO stores while the return target
 //   executes.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Directed mret side-effect case only; not a full CSR/trap priority proof.
-// Assertion focus: Directed check for mret side effect flush behavior or side-effect suppression.
 
 module tb_assert_mret_side_effect_flush;
 
@@ -21,14 +15,14 @@ module tb_assert_mret_side_effect_flush;
         if (checking_enabled &&
             dut.EXMEMValid &&
             dut.EXMEMMemWrite &&
-            ((dut.EXMEMPC == 32'd12) || (dut.EXMEMPC == 32'd16))) begin
+            ((dut.EXMEMPC == 32'd16) || (dut.EXMEMPC == 32'd20))) begin
             $display("FAIL: post-mret wrong-path side-effect at PC %h reached MEM stage", dut.EXMEMPC);
             $fatal;
         end
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_mret_side_effect_flush.vcd");
+        $dumpfile("results/waveforms/tb_assert_mret_side_effect_flush.vcd");
         $dumpvars(0, tb_assert_mret_side_effect_flush);
         reset_cpu();
 

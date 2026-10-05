@@ -4,11 +4,9 @@ Purpose: Proves the Vivado DRC parser reconciles counts and fails closed on unkn
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\vivado-drc-parser-self-test.ps1
 Outputs:
-  Temporary report fixtures under wave\, removed before exit.
+  Temporary report fixtures under build\tests\drc\, removed before exit.
 Scope:
   Parser policy self-test only; does not invoke Vivado or inspect a synthesized design.
-Audience:
-  Release maintainers and CI-style local verification.
 #>
 $ErrorActionPreference = "Stop"
 
@@ -16,13 +14,13 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 . "$PSScriptRoot\vivado-drc-report.ps1"
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path "build/tests/drc" | Out-Null
 $fixtures = [System.Collections.Generic.List[string]]::new()
 
 function Write-DrcFixture {
     param([string] $Name, [string] $Body)
 
-    $path = Join-Path "wave" ("drc-parser-self-test-" + $Name + ".rpt")
+    $path = Join-Path "build/tests/drc" ("drc-parser-self-test-" + $Name + ".rpt")
     [System.IO.File]::WriteAllText($path, $Body, [System.Text.Encoding]::ASCII)
     $fixtures.Add($path) | Out-Null
     return $path

@@ -1,12 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_trace_trap_reference
-// Purpose: Compares DUT behavior against deterministic local reference or signature fixtures.
 // Checks: Observable retired trace order and wrong-path trace suppression for a directed trap-entry and mret-return
 //   program.
-// Pass condition: DUT outputs match the generated expected fixture or signature and no mismatch or timeout occurs.
-// Does not prove: This validates observable retire trace behavior for a directed trap/mret program; it is not a
-//   complete architectural trace spec, not formal verification, and not full privileged ISA compliance.
 
 module tb_trace_trap_reference;
 
@@ -16,7 +11,7 @@ module tb_trace_trap_reference;
     localparam NOP = 32'h00000013;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
     wire trace_valid;
@@ -158,8 +153,9 @@ module tb_trace_trap_reference;
     end
 
     initial begin
-        $dumpfile("wave/tb_trace_trap_reference.vcd");
+        $dumpfile("results/waveforms/tb_trace_trap_reference.vcd");
         $dumpvars(0, tb_trace_trap_reference);
+        #1; // Initialize test memory after the DUT initial block.
 
         for (init_index = 0; init_index < 1024; init_index = init_index + 1) begin
             dut.IMemory[init_index] = NOP;
@@ -171,7 +167,7 @@ module tb_trace_trap_reference;
         $readmemh("fixtures/generated/reference/trace_trap_reference_wrong_path.hex", wrong_path_pc, 0, WRONG_PATH_COUNT-1);
 
         reset = 1'b1;
-        repeat (2) @(posedge clock);
+        repeat (2) @(negedge clock);
         reset = 1'b0;
 
         repeat (260) @(posedge clock);

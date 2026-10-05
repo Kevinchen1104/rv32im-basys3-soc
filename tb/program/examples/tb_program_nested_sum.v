@@ -20,7 +20,7 @@ module tb_program_nested_sum;
     end
 
     initial begin
-        $dumpfile("wave/tb_program_nested_sum.vcd");
+        $dumpfile("results/waveforms/tb_program_nested_sum.vcd");
         $dumpvars(0, tb_program_nested_sum);
         reset_cpu();
         max_ras_count = 0;

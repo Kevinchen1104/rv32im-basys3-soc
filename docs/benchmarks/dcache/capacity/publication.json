@@ -1,0 +1,362 @@
+{
+  "status": "passed",
+  "generator": "scripts/publish_cache_study.py",
+  "generator_sha256": "5206a154e3f2c0df1b4b0170905e5b48139908163376b91ed203be5538427f43",
+  "normalization": "UTF-8/LF; checkout/user paths and report host headers removed; embedded original hashes preserved",
+  "checks": [
+    "300 complete cases", "same executable and retired count across caches", "exact serialized-latency accounting",
+    "same FPGA inputs and constraints", "same physical firmware/stimulus", "programming-to-build hash chain"
+  ],
+  "records": [
+    {
+      "source": "results/architecture/dcache-complete-external/summary.json",
+      "original_sha256": "ef1d3f617dc2580220c83302ba2d9b63aa85389bc03ef2895514459b76cb06e6",
+      "published": "latency-0.json",
+      "sha256": "af96e92ae6bf0246a3951ef74f911636c1df23e4f3f232c1b8c94d4fdc4b566e"
+    },
+    {
+      "source": "results/architecture/dcache-latency4-complete-external/summary.json",
+      "original_sha256": "4f5ca593abf0346ac41d98be39789b658915deff30d72eea22894f8a7b5632aa",
+      "published": "latency-4.json",
+      "sha256": "cb8463c6e8f6182d3b85b77449984565f032a20d25d8206b7710a9faa8dce2c0"
+    },
+    {
+      "source": "results/architecture/dcache-latency12-complete-external/summary.json",
+      "original_sha256": "ef71ae659d77b6351eb0a0afe87269d0912d33b0684d137ab994809d9386bf0a",
+      "published": "latency-12.json",
+      "sha256": "8729dabca793c946926f4dffb2b08a1386d731da0313d938970ca0103c64585f"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/dm64/reports/post_route_critical_paths.rpt",
+      "original_sha256": "cedcd69a36411cedcc3daf910e34575f80cb5d937da7d121549305fe08ced22a",
+      "published": "implementation/dm64/post_route_critical_paths.rpt",
+      "sha256": "2da8f141c8d944ed394532e5b3a5e015075e693450fad638faa97bb5aa74bac5"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/dm64/reports/post_route_drc.rpt",
+      "original_sha256": "29bcdeb7cb46ebaec996840d715d62b6bc3c10ee12c7161b115bd2f7bf4c5cef",
+      "published": "implementation/dm64/post_route_drc.rpt",
+      "sha256": "f4a79b8a5ecd05d1b68e2e506baf3af965a30fc984e60baa0f8dbaea1efa8bf8"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/dm64/reports/post_route_hierarchy.rpt",
+      "original_sha256": "5158ec5415236dcce5b0ea8e5bbbd0051721a6f5604a59b89510b6fc250f1a6d",
+      "published": "implementation/dm64/post_route_hierarchy.rpt",
+      "sha256": "1d101ed305cd46a6c3f20b8a6b95983110a328093c0d229a51ca52eadba08d44"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/dm64/reports/post_route_timing_summary.rpt",
+      "original_sha256": "9bdea08598710440def27f58f4a311a535b020d6c1558ddeecdb614f55e95c68",
+      "published": "implementation/dm64/post_route_timing_summary.rpt",
+      "sha256": "825b3a916ea0d59639fdbf34451d0f33fca81073519d5d3b1faaeed7c2fff56d"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/dm64/reports/post_route_utilization.rpt",
+      "original_sha256": "837464c62a944eccc29ee3dad642a31b1fc8d3c5d1f40bca09fe03f06ac9f48e",
+      "published": "implementation/dm64/post_route_utilization.rpt",
+      "sha256": "722ed8f552e5a1a6d92f2c6aa5e686a7675914d1e252bdd52b2d0c8c8cedd982"
+    },
+    {
+      "source": "results/timing/dcache-capacity-dm64.json",
+      "original_sha256": "0f2e391d879f68c558da215c551dcbde548386fa63827904215ebe45ba5b6065",
+      "published": "implementation/dm64/metadata.json",
+      "sha256": "3a24aa2c7c064be50c3fc0be05a3072a571f454e14ee4d0baf7330854c2db023"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-dm64.json",
+      "original_sha256": "aa951ca862fccd6fdb2de99507c17af97b69387d5719ede00448cc92cc50a6d3",
+      "published": "board/capacity-dm64.json",
+      "sha256": "34b5a832d972fe457e4b4f4dffbe2594cdd72b6d5213a0bb6be4246ff0e5e080"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-dm64-programming.json",
+      "original_sha256": "c4badd5c36d34da1427671b7f5bb6fde7421b1aca127e1fafa9bba90c13d12bb",
+      "published": "board/capacity-dm64-programming.json",
+      "sha256": "49b6561e3165f6b971389269bc1f1795eff2e754d55bf18889a433f71d4b9e83"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-dm64-programming.log",
+      "original_sha256": "98a5589f7f4899c74d871ab1291c4adb5a8c29df80af67c884ec6b4657dcae16",
+      "published": "board/capacity-dm64-programming.log",
+      "sha256": "492081ab0a241bb160940e0b438f045cde3bac7a3f7c2de90b6826d5ed7de81a"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/dm128/reports/post_route_critical_paths.rpt",
+      "original_sha256": "28508e01c8f0bed3d04f4f8ec08ac714e9c437ba17101139554918de9d012de1",
+      "published": "implementation/dm128/post_route_critical_paths.rpt",
+      "sha256": "3941474da8c22390755666451d2c5ac36630004ed11ba5c0d8c145e4c15b0c6d"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/dm128/reports/post_route_drc.rpt",
+      "original_sha256": "28346d38a51bd5597e9ad1960f1fffe07b0323a2fa5b29da1c21d062794a8024",
+      "published": "implementation/dm128/post_route_drc.rpt",
+      "sha256": "49b1c10de5fa83c4699d328c5a9ba5df71d7c92c579044ca1be9e25a0b6ba2c2"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/dm128/reports/post_route_hierarchy.rpt",
+      "original_sha256": "925d8c1bc709f3bde6d8a34b2c61387b55b2e783fad01cf38665c89a4ee79e11",
+      "published": "implementation/dm128/post_route_hierarchy.rpt",
+      "sha256": "0f3622c9efefc3bb9ac0d0d49d56e3fe02a50286ad15ce618686833a21b6bd22"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/dm128/reports/post_route_timing_summary.rpt",
+      "original_sha256": "268d96de97a5d165fd25c1a1984bc12aed2b1aac69def5bbd052fa0015abc8a4",
+      "published": "implementation/dm128/post_route_timing_summary.rpt",
+      "sha256": "831ed04d9f15754efbc4c2f8b17079b61172ec20e8b537799b16be596c0e8275"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/dm128/reports/post_route_utilization.rpt",
+      "original_sha256": "a89f715bef62a4136d02fbe70d215dc885b52fc92d908dfd6b530ce7d0d96f37",
+      "published": "implementation/dm128/post_route_utilization.rpt",
+      "sha256": "c65a0aa776c341ff19bf9a1970ee18d04382183e5288b8aba3268a903b34a845"
+    },
+    {
+      "source": "results/timing/dcache-capacity-dm128.json",
+      "original_sha256": "dd2c5e518c861fb2109f9f209f9bcf728dd26175207b7ce3b3d85f1c23895cab",
+      "published": "implementation/dm128/metadata.json",
+      "sha256": "5abaa51d52d8941c73e96c905029ec895d48bd3755a8d11f1f3446b88d767c84"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-dm128.json",
+      "original_sha256": "9107b28d5d61ed54af32e48d7cf9db73978e28af0395f2014704020f7d480272",
+      "published": "board/capacity-dm128.json",
+      "sha256": "ba438bc2eee29d8b3b2d630dc27c305ef512c2ecb4f4b929207dcd61116a7ca7"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-dm128-programming.json",
+      "original_sha256": "af827ae88d7fac3d163738c28b5f1d12930b26bf2e81d306ffce1282b61d7c4b",
+      "published": "board/capacity-dm128-programming.json",
+      "sha256": "77fe0a83faa0195584d92574d1a5d1309659244001e40b875e97eecc12098d57"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-dm128-programming.log",
+      "original_sha256": "457df0a30725b95748189d246b984941577be8e244c2a7f43f5f84c8dac270e0",
+      "published": "board/capacity-dm128-programming.log",
+      "sha256": "46dcf723c4716331bffd864db698fef2e58f6140ec64ce439129368c45000d93"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim1/reports/post_route_critical_paths.rpt",
+      "original_sha256": "a309b78352076adbdfe31c0e8787e82aa2b7c03752739a492e5f460e8f8e2520",
+      "published": "implementation/victim1/post_route_critical_paths.rpt",
+      "sha256": "6bdc6c636435142e9177da0d9ba91fa4d53858be338b9f6c895437b0b57f18c4"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim1/reports/post_route_drc.rpt",
+      "original_sha256": "e7a0223e9ee0cd4fb021af586740013c5fbe08a37409f811df9627c9b89bde0b",
+      "published": "implementation/victim1/post_route_drc.rpt",
+      "sha256": "5fb3565f71bfd3360a2244c7b0c5dc11c50a209b10d700e788eba1680e834fb6"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim1/reports/post_route_hierarchy.rpt",
+      "original_sha256": "c17feed07412b5cbe1eaa5a2ab556f6fc2d5c5c008186c3910c48690ccb6c92f",
+      "published": "implementation/victim1/post_route_hierarchy.rpt",
+      "sha256": "3cc8f9edb5d05ca435b50bfef1612908c9757d0537d83da3159f446ef90297e7"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim1/reports/post_route_timing_summary.rpt",
+      "original_sha256": "9323b486b3af1a5fdd1486aee0f8f81d87706396afaee5bdf4eef50ecb9e6b72",
+      "published": "implementation/victim1/post_route_timing_summary.rpt",
+      "sha256": "fd81b773cc96d50c902b7b141c33ff89d2907291965727b5737799a693c1011d"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim1/reports/post_route_utilization.rpt",
+      "original_sha256": "06c08a6356d4302b226db126d11e70a35bbc6c28dfcb5e6f6ca30df2e80d9f18",
+      "published": "implementation/victim1/post_route_utilization.rpt",
+      "sha256": "88e2edda0ecbe023ff9f058fb2ff994d8ce2b1ea77f48d051fcf18b623fdb99d"
+    },
+    {
+      "source": "results/timing/dcache-capacity-victim1.json",
+      "original_sha256": "24b35e7978709c9f130626ce33aadeffc76914b08d844baa7bdd23749418be85",
+      "published": "implementation/victim1/metadata.json",
+      "sha256": "4c3da3a2fc71ee311efcd4e46d411b25e93befaae0a9a73d98c138b7a674fcf1"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim1.json",
+      "original_sha256": "bdd88cc34c1fdc8730474e817ec5434cec2629c1298c9c1ce614536edd7041f3",
+      "published": "board/capacity-victim1.json",
+      "sha256": "212ba2d13254ea25533471134f761ae7e8d174cc874489349f9e38d4d960d497"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim1-programming.json",
+      "original_sha256": "e2072442cc008e22316635fd2ffb2b3133aa3b5a64fe85f0bdf85b94be1ed56b",
+      "published": "board/capacity-victim1-programming.json",
+      "sha256": "26b07970b16e949c9bd51c1a8c84f764f98fa1d1ac3d059fccc0dc933225915f"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim1-programming.log",
+      "original_sha256": "a40bed80e20f4e602d79f98a5dedd12c819dca9384d3a9e39a8a76139cddd794",
+      "published": "board/capacity-victim1-programming.log",
+      "sha256": "cc1f95fa2395e89eec4865fdfb79547c1f88017f50742d848818784778bf745f"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim2/reports/post_route_critical_paths.rpt",
+      "original_sha256": "8f95b18f3b259d83480f93a62b76d4d96657e68d44cd48693a0cebcdbaf60b8a",
+      "published": "implementation/victim2/post_route_critical_paths.rpt",
+      "sha256": "5b5c58b64f93d1e792774b44ee7f44d9c44120f720ff35c650362fc899f442c8"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim2/reports/post_route_drc.rpt",
+      "original_sha256": "8dba7cfa920120b4f1f7c8d0597294a9b4050518fe457ab465564ee93b743b71",
+      "published": "implementation/victim2/post_route_drc.rpt",
+      "sha256": "43d2d74c0f9115139f8c9fbb156481c5d14013e849b4367f15296c58c9d39728"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim2/reports/post_route_hierarchy.rpt",
+      "original_sha256": "5952aabff8758bda61042fb3155ddb8ed54212d554cdc8a6ce160dbe3cd3aa83",
+      "published": "implementation/victim2/post_route_hierarchy.rpt",
+      "sha256": "f1f4fe74706554363c47ec1a773de4cf8e72a1bb26873bb25a60a095e256ac86"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim2/reports/post_route_timing_summary.rpt",
+      "original_sha256": "2e6165f5f4d7e6e436126adeb1d7d745e073cca835dbef46b3fcef08d0aabd0f",
+      "published": "implementation/victim2/post_route_timing_summary.rpt",
+      "sha256": "6c84b4ae0bdbfb291cd77df9d443aa1103b4239414dbfee4bdaa21bc8a1d3d33"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim2/reports/post_route_utilization.rpt",
+      "original_sha256": "ca5dc9d5f59d0e9f155d56b79a20fa94e797dcafd5c0f20ebdf0d59389f65974",
+      "published": "implementation/victim2/post_route_utilization.rpt",
+      "sha256": "df8f560be504421fbbc5ece808031ba222bd569b5dcffaa63ca161d2279f50e3"
+    },
+    {
+      "source": "results/timing/dcache-capacity-victim2.json",
+      "original_sha256": "b15ce6b9794e8063fd45e789075fbf2e3b35ed8ab776b44a3f02153c509095e9",
+      "published": "implementation/victim2/metadata.json",
+      "sha256": "987fcdc405b2fb1019f2cb0228ec1a137b38f10238529900d11bcab5bbd78272"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim2.json",
+      "original_sha256": "4b6288d39395c8deb20688629981766aefa57ce48df22da76216ef20bacf13c2",
+      "published": "board/capacity-victim2.json",
+      "sha256": "712fa51474b143cfd0c7225207270f2535c8e86e1f324a36e6377dd267295df5"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim2-programming.json",
+      "original_sha256": "b6b3f965addc34ceb73de639f8c273659f8c013acc6aba153e82518ef88d87a0",
+      "published": "board/capacity-victim2-programming.json",
+      "sha256": "fe763bb9d2586877d34a49e98b84bf8ace854acc4488dd181d421d18eda051fa"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim2-programming.log",
+      "original_sha256": "378afb8dd95995a1acd2e6e017b671d32012ddc6fdd5de9f8c7508a40fe34ff0",
+      "published": "board/capacity-victim2-programming.log",
+      "sha256": "06c43c1b1a0272beaa2d702e429e42658c21520171b6700d5d528887cd4e9b28"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim4/reports/post_route_critical_paths.rpt",
+      "original_sha256": "bd49131f6e81adf7ae30e726aea16576afc5228dd468ba7f76360de909670f89",
+      "published": "implementation/victim4/post_route_critical_paths.rpt",
+      "sha256": "97396a15fe17bc67dfdef9eb44b7f372dcb4d875cd63c670d2a14a421fd0e23e"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim4/reports/post_route_drc.rpt",
+      "original_sha256": "7318890dc72519632f37f679dd803084e96fc26a3489397ac94eabf5372bcb6f",
+      "published": "implementation/victim4/post_route_drc.rpt",
+      "sha256": "eb570490bf8413b46a93de61bfa318604e1c36ab0337430232789aa89e487e2f"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim4/reports/post_route_hierarchy.rpt",
+      "original_sha256": "24921864a1c2b10de3a3512e38e51da6b8f19ae247805013f14bcd14f7245312",
+      "published": "implementation/victim4/post_route_hierarchy.rpt",
+      "sha256": "a7fefc37510eec9a0e04ae89ba19013205f54746ae698f3cb262fc15a7219bc0"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim4/reports/post_route_timing_summary.rpt",
+      "original_sha256": "316583bf3881e99a97766b324900b3549a42aac4b10d6d47f4c41493916c5637",
+      "published": "implementation/victim4/post_route_timing_summary.rpt",
+      "sha256": "066a23e9b4cc5c7d6c71d37a11ab24941ca04a3ca9ca7a95e70a87a72e7f6273"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim4/reports/post_route_utilization.rpt",
+      "original_sha256": "686ba9c5f206ca7d794cfe1e7d2b37da75c3565b87d73118e303aa1bd0cf0fbe",
+      "published": "implementation/victim4/post_route_utilization.rpt",
+      "sha256": "c92bf93b16d1edbce284358e01e046f60ef90795a068a773cdf7e6f57220980d"
+    },
+    {
+      "source": "results/timing/dcache-capacity-victim4.json",
+      "original_sha256": "fd5a23a6410769a7af8671bd93232a2436cac1086bec1522a5fc07813d59d292",
+      "published": "implementation/victim4/metadata.json",
+      "sha256": "893c8d3a552340d34c39fae52a239fd8f908a6effb60139f59eeac44cd7d58d8"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim4.json",
+      "original_sha256": "7111a350ba4b5617a28936dcbeaaa284dc0ce4d3a689d6aa073d5dceac95834d",
+      "published": "board/capacity-victim4.json",
+      "sha256": "f8d6045833895d8a926e68da5c31e91c0afe6a70595784243927f41b1692bac8"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim4-programming.json",
+      "original_sha256": "7edddd1819d21fa4e15140c9a0f352cee80b55eb3936ad9ad0e2435fe92b925d",
+      "published": "board/capacity-victim4-programming.json",
+      "sha256": "a01414ee3bc2deba87db3121129ed977db6391f0a66cb266ba64079398e425a3"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim4-programming.log",
+      "original_sha256": "5d24a9decb39dff23951eb8666078827684eeee429485a909ad0a14c3cedb0bd",
+      "published": "board/capacity-victim4-programming.log",
+      "sha256": "cbce66f3a7fa541617521fbebefc88c0b2321124f6f7381dd960c1b0d036979a"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim8/reports/post_route_critical_paths.rpt",
+      "original_sha256": "0b9b0a02041ebb235e63a9fd6e30469b85b0113ba1cd26eddbce63b8721d14ec",
+      "published": "implementation/victim8/post_route_critical_paths.rpt",
+      "sha256": "8e6cac0a341d5c9f8489a6a1e9f08fc0b7589dbf326e2a8d5384e4d453e530f3"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim8/reports/post_route_drc.rpt",
+      "original_sha256": "09a97f6e3207149a1392bf5cc650b373f922e2188deff550f7761285676a2f85",
+      "published": "implementation/victim8/post_route_drc.rpt",
+      "sha256": "0329a25e3cb76f37f8fa238a6e789ee275ba4ff53a44befc2d3c7b020689dd91"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim8/reports/post_route_hierarchy.rpt",
+      "original_sha256": "499eba937fa6c4d8cbd256047709bd5795dd87ddbbc787bcb80f766b403db0ce",
+      "published": "implementation/victim8/post_route_hierarchy.rpt",
+      "sha256": "1176f8d3502da84edcf71330f5cb9154f2c593d1f515ad5527f3f12703401eb5"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim8/reports/post_route_timing_summary.rpt",
+      "original_sha256": "ec642a7e5ba867e2738b21ea4f217ef2e395641332e61c99db3ececa8df9eebb",
+      "published": "implementation/victim8/post_route_timing_summary.rpt",
+      "sha256": "45d8be3757c782a453f20b9b71781050b16efa19c0c3f852558ffe8a42b87752"
+    },
+    {
+      "source": "build/vivado/dcache-capacity/victim8/reports/post_route_utilization.rpt",
+      "original_sha256": "33a19fc896196eebb0b23abeacd5f6c3dd56329a4ae39d07c8d8b82ea6cef021",
+      "published": "implementation/victim8/post_route_utilization.rpt",
+      "sha256": "7ce5d8904dc2a217b255887b236425cb2c95a4a4aed7eb09d94d95c419c17ecc"
+    },
+    {
+      "source": "results/timing/dcache-capacity-victim8.json",
+      "original_sha256": "ab1ee2700b0a5a61da79397f78e0157e627a21974d30db754546f69bd9b500fd",
+      "published": "implementation/victim8/metadata.json",
+      "sha256": "70e277ee38d3d3d597311917cc5e0a25c23dfed40b0924433ca94b8606123f40"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim8.json",
+      "original_sha256": "d0aa4cdbfdd950445f05e30a14ee80ebc0e5ea648139f99e48ee0e8daddb56fb",
+      "published": "board/capacity-victim8.json",
+      "sha256": "4d88bfb9a91d86afc67f7b2a463e28fdabde6c3b9a37bca9b866c0fe41755952"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim8-programming.json",
+      "original_sha256": "db682fca9f8413fc8bfb1cb55e1dd0aa9af2186e5f19d8670141f1484a05f2bd",
+      "published": "board/capacity-victim8-programming.json",
+      "sha256": "4d8998291c8b0ed3c460afb4ce5dab2f04f6e599b28bdd1e3627f697267b82f0"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim8-programming.log",
+      "original_sha256": "4e12735dda96ee5e9851fc8559c2bb266ffd3df3dcfa22eda7500f6a0f0d47b4",
+      "published": "board/capacity-victim8-programming.log",
+      "sha256": "91333aa59e743bb2d56d0db2081e64e1994594a6af31fff69dd43b93566abe45"
+    },
+    {
+      "published": "measurements.csv",
+      "sha256": "e21ede3b803ab837ff8c8832b39db2d1d05645a8bb4a865831792c0847909447"
+    },
+    {
+      "published": "comparison.json",
+      "sha256": "660517db2d2afd5b1ccad7d2e5e882a92cded3111c034638afffa2755f75afee"
+    }
+  ]
+}

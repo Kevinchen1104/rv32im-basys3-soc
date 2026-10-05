@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "started_at_utc": "2026-10-02T02:24:37.293588+00:00",
+  "bitstream": "build/vivado/signal_console/RISCVCPU_basys3_top.bit",
+  "bitstream_sha256": "d5f5c775ee4ce2b6efb6bc87b9fb6171026ebe4c2b0b4a2f9f94bd64584a90d0",
+  "build_summary_sha256": "fc2f60cf9ab255298ec2e5a960f8dc0813b68f4e47cd616714aefe44dbe6514c",
+  "inputs": {
+    "build/vivado/signal_console/RISCVCPU_basys3_top.bit": "d5f5c775ee4ce2b6efb6bc87b9fb6171026ebe4c2b0b4a2f9f94bd64584a90d0",
+    "results/timing/signal-console-summary.json": "fc2f60cf9ab255298ec2e5a960f8dc0813b68f4e47cd616714aefe44dbe6514c",
+    "scripts/signal_start.py": "380679b20f9efd47ba4d6f5c9bacacdcda30bd37685727cd6a3ea4920770bab8",
+    "fpga/xsdb/basys3_program.tcl": "7ef0b5770debce06b4034b14bb832d818613b615048367e19a436913540900c5"
+  },
+  "programming": {
+    "generated_at_utc": "2026-10-02T02:24:44Z",
+    "status": "pass",
+    "hardware_connected": true,
+    "inventory_count": 1,
+    "target_count": 1,
+    "selected_target": "target_id=1 name=xc7a35t jtag_device_name=xc7a35t jtag_device_id=2",
+    "device_programmed": true,
+    "configuration_verified": true,
+    "configuration_state": "FPGA is configured",
+    "retry_count": 0,
+    "cleanup_error": "",
+    "error": ""
+  },
+  "finished_at_utc": "2026-10-02T02:24:55.396461+00:00",
+  "files": {
+    "start-programming.log": "a382a73faa77efd4a22a48ab2d0dffdf424550f04a0bcb064be7ca20dc88195e"
+  }
+}

@@ -12,10 +12,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install Verilator
+      - name: Build Verilator 5.048
         run: |
           sudo apt-get update
-          sudo apt-get install -y verilator
+          sudo apt-get install -y autoconf flex bison libfl-dev g++ make help2man
+          git clone --depth 1 --branch v5.048 https://github.com/verilator/verilator.git "$RUNNER_TEMP/verilator"
+          cd "$RUNNER_TEMP/verilator"
+          autoconf
+          ./configure --prefix="$RUNNER_TEMP/verilator-install"
+          make -j2
+          make install
+          echo "$RUNNER_TEMP/verilator-install/bin" >> "$GITHUB_PATH"
 
       - name: Verify Verilator
         run: verilator --version
@@ -23,3 +30,12 @@ jobs:
       - name: Run optional Verilator lint
         shell: pwsh
         run: pwsh -ExecutionPolicy Bypass -File scripts/verilator-lint.ps1
+
+      - name: Upload lint diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verilator-lint
+          path: |
+            results/verilator-lint-summary.json
+            results/logs/lint/

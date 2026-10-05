@@ -3,7 +3,6 @@
 # Exercises: MATVEC Scratchpad MMIO, machine external-interrupt gating, polling, and done clearing.
 # Observable result: Public debug_status pass/fail signature is checked by the program testbench.
 # Used by: tb_program_matvec_scratchpad_no_interrupt
-#   claim.
 
 # MATVEC Scratchpad negative interrupt smoke.
 # CPU interrupt CSRs are enabled, but MATVEC interrupt_enable stays reset.

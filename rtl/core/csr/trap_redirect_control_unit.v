@@ -15,6 +15,7 @@ module trap_redirect_control_unit (
     input instruction_is_m_extension,
     input dcache_pipeline_stall,
     input exception_taken,
+    input exception_pending,
     input mret_taken,
 
     output interrupt_eligible,
@@ -41,7 +42,7 @@ module trap_redirect_control_unit (
     // This is a redirect request, not proof that the PC changes this cycle.
     // pipeline_control_unit applies it only after D-cache backpressure clears.
     assign redirect_taken =
-        exception_taken ||
+        exception_pending ||
         mret_taken ||
         interrupt_eligible ||
         control_redirect_pending;

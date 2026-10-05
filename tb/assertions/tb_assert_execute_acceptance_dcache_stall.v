@@ -1,10 +1,8 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_execute_acceptance_dcache_stall
 // Purpose: Checks that held execute-stage CSR and exception instructions have side effects only when D-cache backpressure releases.
 // Checks: Real multi-cycle load misses, one-shot CSR writes with pre-write readback, and one-shot illegal-instruction trap entry.
 // Pass condition: Held instructions remain inert during the miss and commit exactly once at the execute acceptance boundary.
-// Does not prove: Arbitrary cache traffic, complete privileged behavior, timing closure, or physical-board operation.
 
 module tb_assert_execute_acceptance_dcache_stall;
 
@@ -41,7 +39,10 @@ module tb_assert_execute_acceptance_dcache_stall;
             if (dut.IDEXValid && (dut.IDEXPC == 32'd24) &&
                 dut.dcache_pipeline_stall) begin
                 exception_stall_cycles = exception_stall_cycles + 1;
-                if (dut.immediate_exception_taken ||
+                if (!dut.exception_pending || !dut.redirect_taken ||
+                    dut.if_redirect || (dut.pc_next_value !== dut.PC) ||
+                    (dut.redirect_pc !== dut.CSRmtvec) ||
+                    dut.immediate_exception_taken ||
                     dut.trap_taken ||
                     dut.csr_unit_inst.trap_metadata_pending ||
                     (dut.CSRmstatus !== 32'h0000_1808)) begin
@@ -149,7 +150,7 @@ module tb_assert_execute_acceptance_dcache_stall;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_execute_acceptance_dcache_stall.vcd");
+        $dumpfile("results/waveforms/tb_assert_execute_acceptance_dcache_stall.vcd");
         $dumpvars(0, tb_assert_execute_acceptance_dcache_stall);
         phase = 0;
         csr_stall_cycles = 0;

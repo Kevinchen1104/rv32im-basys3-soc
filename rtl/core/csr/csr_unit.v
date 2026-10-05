@@ -94,9 +94,6 @@ module csr_unit (
     wire write_mstatus = csr_write_enable && (csr_addr == CSR_MSTATUS);
     wire write_mie     = csr_write_enable && (csr_addr == CSR_MIE);
     wire write_mtvec   = csr_write_enable && (csr_addr == CSR_MTVEC);
-    wire write_mepc    = csr_write_enable && (csr_addr == CSR_MEPC);
-    wire write_mcause  = csr_write_enable && (csr_addr == CSR_MCAUSE);
-    wire write_mtval   = csr_write_enable && (csr_addr == CSR_MTVAL);
     wire write_mip     = csr_write_enable && (csr_addr == CSR_MIP);
     wire addr_is_mepc   = (csr_addr == CSR_MEPC);
     wire addr_is_mcause = (csr_addr == CSR_MCAUSE);

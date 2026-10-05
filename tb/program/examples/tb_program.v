@@ -12,7 +12,7 @@ module tb_program;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_program.vcd");
+        $dumpfile("results/waveforms/tb_program.vcd");
         $dumpvars(0, tb_program);
         reset_cpu();
 

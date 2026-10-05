@@ -1,16 +1,8 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_pipeline_invariants
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Runs a reusable simulation assertion monitor across generated hazard, generated call/return, and directed
 //   trap/mret scenarios to check x0 stability, PC alignment, valid-gated commit and side effects, trace commit
 //   consistency, reset cleanup, and bounded wrong-path poison safety.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Simulation assertion monitor over directed/generated scenarios; not formal verification, not
-//   exhaustive property proof, not timing signoff, not complete pipeline correctness proof, and not full RISC-V
-//   compliance.
-// Assertion focus: Directed check for pipeline invariants behavior or side-effect suppression.
 
 module tb_pipeline_invariants;
 
@@ -21,7 +13,7 @@ module tb_pipeline_invariants;
     localparam INITIAL_DMEM_WORD_COUNT = 128;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
     wire [31:0] gpio_outputs;
@@ -87,6 +79,7 @@ module tb_pipeline_invariants;
 
     task reset_and_clear_cpu;
         begin
+            #1;
             for (i = 0; i < 1024; i = i + 1) begin
                 dut.IMemory[i] = NOP;
                 dut.DMemory[i] = 32'h0;
@@ -94,8 +87,8 @@ module tb_pipeline_invariants;
 
             reset = 1'b1;
             repeat (2) @(posedge clock);
+            @(negedge clock);
             reset = 1'b0;
-            @(posedge clock);
         end
     endtask
 
@@ -108,7 +101,7 @@ module tb_pipeline_invariants;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_pipeline_invariants.vcd");
+        $dumpfile("results/waveforms/tb_pipeline_invariants.vcd");
         $dumpvars(0, tb_pipeline_invariants);
 
         reset_and_clear_cpu();

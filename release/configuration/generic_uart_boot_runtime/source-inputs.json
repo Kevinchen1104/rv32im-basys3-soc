@@ -1,0 +1,14 @@
+{
+  "hash_mode": "raw",
+  "fingerprint": "eaed579c1e9f2c23499538bfa96fc09b4d4c3a6851a6c1b1f7ad82241732dc88",
+  "inputs": [
+    {
+      "path": "fpga/fpga_sources.f",
+      "sha256": "c86bc176c33364a534346e20a800b10307dddaaf5d3a18dd0f4b1364fc163619"
+    },
+    {
+      "path": "fpga/boards/generic_uart_boot_runtime/board.json",
+      "sha256": "5f505e1076d2f557335ebf443b40c4bdffbd5c1604d035499127949ba310e4a1"
+    }
+  ]
+}

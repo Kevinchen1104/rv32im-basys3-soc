@@ -1,0 +1,58 @@
+{
+  "status": "passed",
+  "recorded_at_utc": "2026-10-01T15:07:04.402440+00:00",
+  "profile": "fast_cpu",
+  "clock_mhz": 100,
+  "command_responses_checked": 96,
+  "numerical_outputs_checked": 416,
+  "expected_rejections_checked": 26,
+  "operator": {
+    "led15_to_led8": "10101011",
+    "led_confirmation": "operator_reported",
+    "action": "SW0 off to on, then press and release BTN C",
+    "confirmation": "\u71c8\u865f\u6b63\u78ba\uff0c\u5df2\u5207 SW0 \u4e26 reset"
+  },
+  "reset_validation": "second UART firmware upload after physical BTN C; no second JTAG programming",
+  "artifacts": [
+    {
+      "path": ".gitattributes",
+      "bytes": 29,
+      "sha256": "71d0d266ae1ffb0606b42ca7a44e7b9364febfbf305c38600539441d481512f4"
+    },
+    {
+      "path": "after-reset.json",
+      "bytes": 24447,
+      "sha256": "bae3198416c1f1a144485767ca8bc4e7fcf1e9b8acb22a6df262fae9140d5a5e"
+    },
+    {
+      "path": "check_session.py",
+      "bytes": 7008,
+      "sha256": "941eaad973005967780a2e39b32386ca7d5af9a9c32169241ab82f365dbe355c"
+    },
+    {
+      "path": "identity.json",
+      "bytes": 26803,
+      "sha256": "285d9b2c18a4951f53aa94c3d6ce397a153ffb301f0dc798c6425fcfa9023a25"
+    },
+    {
+      "path": "initial.json",
+      "bytes": 24444,
+      "sha256": "aa0bbc5d71cc8c34078d9e49a917ef87f198f2bb314a4a90273e373092ef1b83"
+    },
+    {
+      "path": "programming.json",
+      "bytes": 403,
+      "sha256": "d61a646f3ea31f0a015d6de682b6a40bab7abdac8e90d0ff8d21cef92c5d1da6"
+    },
+    {
+      "path": "programming.txt",
+      "bytes": 928,
+      "sha256": "301d52682b22e9a35913565ea3440e9f24e29a45ef347b82a5f4350e171279af"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4082,
+      "sha256": "5004b30c562ea05bb5b186765deec153f2bc08e12b097b791348dedae24c39b5"
+    }
+  ]
+}

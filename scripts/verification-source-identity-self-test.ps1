@@ -4,11 +4,9 @@ Purpose: Checks line-ending normalization and raw binary hashing used by verific
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\verification-source-identity-self-test.ps1
 Outputs:
-  Temporary fixtures under wave\, removed before exit.
+  Temporary fixtures under build\tests\, removed before exit.
 Scope:
   Hashing-policy self-test only; does not run RTL, tools, or hardware.
-Audience:
-  Verification and release maintainers.
 #>
 $ErrorActionPreference = "Stop"
 
@@ -16,14 +14,18 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 . "$PSScriptRoot\verification-source-identity.ps1"
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
-$lfPath = "wave\verification-identity-lf.txt"
-$crlfPath = "wave\verification-identity-crlf.txt"
-$binaryAPath = "wave\verification-identity-a.bin"
-$binaryBPath = "wave\verification-identity-b.bin"
+New-Item -ItemType Directory -Force -Path "build/tests" | Out-Null
+$lfPath = "build\tests\verification-identity-lf.txt"
+$crlfPath = "build\tests\verification-identity-crlf.txt"
+$binaryAPath = "build\tests\verification-identity-a.bin"
+$binaryBPath = "build\tests\verification-identity-b.bin"
 $documentationPath = "docs\.documentation-identity-self-test-$PID.md"
 
 try {
+    $orderedPaths = @(Get-OrdinalUniquePaths @('a_z', 'a-z', 'A_z', 'a-z'))
+    if (($orderedPaths -join ',') -cne 'A_z,a-z,a_z') {
+        throw 'Source identity requires ordinal, case-sensitive path ordering.'
+    }
     [System.IO.File]::WriteAllBytes(
         $lfPath,
         [System.Text.Encoding]::UTF8.GetBytes("alpha`nbeta`n")

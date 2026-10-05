@@ -20,7 +20,7 @@ module tb_program_nested;
     end
 
     initial begin
-        $dumpfile("wave/tb_program_nested.vcd");
+        $dumpfile("results/waveforms/tb_program_nested.vcd");
         $dumpvars(0, tb_program_nested);
         reset_cpu();
         max_ras_count = 0;

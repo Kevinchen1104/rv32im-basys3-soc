@@ -1,0 +1,1707 @@
+{
+  "status": "passed",
+  "started_at_utc": "2026-10-02T23:58:44.443539+00:00",
+  "profiles": {
+    "parallel64": {
+      "FAST_MULTIPLY": 1,
+      "ICACHE": 1,
+      "DCACHE": 1,
+      "PREDICTION": 1,
+      "SCRATCHPAD": 0,
+      "DMA": 0,
+      "ICACHE_BYTES": 64,
+      "ICACHE_PARALLEL_LOOKUP": 1,
+      "EXTERNAL_DMEM": 1,
+      "EXTERNAL_IMEM": 1,
+      "DMEM_EXTRA_WAIT": 0
+    },
+    "indexed64": {
+      "FAST_MULTIPLY": 1,
+      "ICACHE": 1,
+      "DCACHE": 1,
+      "PREDICTION": 1,
+      "SCRATCHPAD": 0,
+      "DMA": 0,
+      "ICACHE_BYTES": 64,
+      "ICACHE_PARALLEL_LOOKUP": 0,
+      "EXTERNAL_DMEM": 1,
+      "EXTERNAL_IMEM": 1,
+      "DMEM_EXTRA_WAIT": 0
+    },
+    "indexed256": {
+      "FAST_MULTIPLY": 1,
+      "ICACHE": 1,
+      "DCACHE": 1,
+      "PREDICTION": 1,
+      "SCRATCHPAD": 0,
+      "DMA": 0,
+      "ICACHE_BYTES": 256,
+      "ICACHE_PARALLEL_LOOKUP": 0,
+      "EXTERNAL_DMEM": 1,
+      "EXTERNAL_IMEM": 1,
+      "DMEM_EXTRA_WAIT": 0
+    },
+    "indexed1024": {
+      "FAST_MULTIPLY": 1,
+      "ICACHE": 1,
+      "DCACHE": 1,
+      "PREDICTION": 1,
+      "SCRATCHPAD": 0,
+      "DMA": 0,
+      "ICACHE_BYTES": 1024,
+      "ICACHE_PARALLEL_LOOKUP": 0,
+      "EXTERNAL_DMEM": 1,
+      "EXTERNAL_IMEM": 1,
+      "DMEM_EXTRA_WAIT": 0
+    }
+  },
+  "memory_model": "asynchronous external IMEM handshake model and external_dmem_bram; both scaled to 16 KiB",
+  "stall_priority": ["uart", "dma", "dcache", "rv32m", "icache", "load_use"],
+  "planned_cases": 80,
+  "controlled_variables": {
+    "icache_ways": 2,
+    "line_bytes": 16,
+    "dcache_bytes": 64,
+    "icache_replacement": "invalid way first, then per-set LRU",
+    "fast_multiply": true,
+    "branch_prediction": true,
+    "accelerators": false,
+    "interval": "retired benchmark markers, otherwise main to program_done",
+    "initial_state": "reset before each run; initialization before the interval may warm caches",
+    "imem_refill": "ready in the request cycle, matching the boot-complete board IMEM interface; UART boot is not simulated",
+    "scope": "cycle-accurate simulation, not physical-board elapsed time"
+  },
+  "source": {
+    "commit": "5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e",
+    "working_tree_dirty": false,
+    "input_fingerprint": "40ec0b8f1f8421eb1bd23a885a8652fffb038d2001afbd5b66beba585e3b6ff3",
+    "inputs": {
+      "firmware/c/architecture_workload.c": "bcf34cfe0b236d85fe3f00b19ef2fdf17d0949e125b1c8b442f3026d1c5c9192",
+      "firmware/c/arithmetic.c": "3e5dba20e930b5798452e3165e94b95cdecceabaa815452be10219f2a840cb66",
+      "firmware/c/board.ld": "0278142aed9e1fd259791bdce6105c0edb55d1caf5eb89ae4f4fd8731f020349",
+      "firmware/c/board_matvec.c": "937a0b3c946cbf554e42d92e3e0e1402ad8952741661430f84574d70f1faf7c1",
+      "firmware/c/calls.c": "6561d566e336ebd1f496da24f0278cddb430db5405623b6c77ba563e5fa5ab41",
+      "firmware/c/link.ld": "e5d24840c7f1ee420ff845d2676a56d9949b708ad31e989d54125d04bec6536a",
+      "firmware/c/matvec.c": "d6cb23bb874bbb58e5ee8f29bbcf7c18702a098253b8dda2fc2675ff39bc9083",
+      "firmware/c/matvec_benchmark.c": "f0846f7c90f474f9c1fad4ed6a42c88a66335e1791d781d49bd7eab37c85fee0",
+      "firmware/c/memory.c": "31b372bb100fab74196bbef4b6c3533bd9f0113d67d9f2190a98da0fcd8c983d",
+      "firmware/c/memory_sweep.c": "c4dbd0182dc443f7e0e34f82972d8aae06425874627f80e4efac368fc12b9676",
+      "firmware/c/platform.h": "7f1536937e8fac392ef54471c6b16c4a8348f1e18ea491154146c3fe7f95ecc4",
+      "firmware/c/signal_console.c": "691406df52107cded0f38607ef942ec8319b10aa95815bfd98e324ae2f2ae278",
+      "firmware/c/start.S": "e68b7a40ce8396211f9c3fcb616681786feec328b6f6ec35ca6ccfa5c2a1ad36",
+      "fpga/fpga_sources.f": "c86bc176c33364a534346e20a800b10307dddaaf5d3a18dd0f4b1364fc163619",
+      "rtl/accelerators/matvec/int8_matvec_dma_lite.v": "88f9dcf8cc9fa0c402337e3321b23e78460fe8f5b7788a259aacf890ce5720ca",
+      "rtl/accelerators/matvec/int8_matvec_scratchpad_accelerator.v": "750ca5bbd3f9b8019ff08f7889446b64bca3c7fd3e7cc2bd52f79a8ffd5bcae3",
+      "rtl/boot/uart/boot_reset_controller.v": "ebe79111994a55b904da017a17aa007ce46fafe622b7edea3e00c7a7e85e97a6",
+      "rtl/boot/uart/uart_packet_boot_imem.v": "a41bed1939b851e6a270a65541d73b6aaa855c8a16352175c38400369d69c9f9",
+      "rtl/boot/uart/uart_serial_packet_boot_imem.v": "829d2aee3b78e69a465213a473080ed8bacabc9e4aef134ef50d6ffd82e894bc",
+      "rtl/core/csr/csr_unit.v": "04c568da1afc36c8e7a97e768173ab2e2f4087b050f666cfb6f8cc96ebce17cd",
+      "rtl/core/csr/exception_decode_unit.v": "1fd70d824ededf838d3b92a23303a7212c1149264489b7744a4cdd9866609e2d",
+      "rtl/core/csr/trap_redirect_control_unit.v": "17169f8f67f5fa21aeefaeeec9e34310b0d3ca4d4c07469331d3e9960df51801",
+      "rtl/core/execute/branch_jump_unit.v": "a3f4b032268c087afc258656a3cb6835bb922c5f9a86473ee5c9d894a5666137",
+      "rtl/core/execute/riscv_alu.v": "cacfa207c9836327cc4ec3901d8c64193557e2622db047a2a3433a915e9f0e08",
+      "rtl/core/execute/rv32m_multicycle_unit.v": "1d6af289b84109f2a662d48ee85942f8df6fc2a3bb2817da3f90eae8a3d5a7d1",
+      "rtl/core/frontend/branch_predictor.v": "fa1beb06949f5c8c6f76a18abd25698722c0c90e6a3854dcf554edff7002245a",
+      "rtl/core/frontend/ras_unit.v": "142731b13e0c4c32452346511ec79909e431d9ebb252b318726945dd9b957a43",
+      "rtl/core/pipeline/forwarding_unit.v": "65af61c7979c224453809c2fb7bc44c364b1e630c3145f20c30f459712d87362",
+      "rtl/core/pipeline/hazard_unit.v": "546f98c41b7b21e4e9a105d4649f0a7481eb2422acba514dbf6a72f93f5ec8b4",
+      "rtl/core/pipeline/pipeline_control_unit.v": "be0928ae8f3cadcf88e5861e8533869b19a7de9b53ff683630b77c89ebf29481",
+      "rtl/core/riscv_cpu_core.v": "98e1d6e56935f423ff12e621aede60a6e7bcb1a3184d7023f195543f49d82994",
+      "rtl/memory/bram/external_dmem_bram.v": "a170244a7dce1f30fefb51257df95a07531299e160b03afc40c7cdec49554dbb",
+      "rtl/memory/cache/dcache_unit.v": "2fa0a650343a9f7b01812fddd37504c1965a0a32353b58169138a9f25db7724c",
+      "rtl/memory/cache/icache_unit.v": "c95be8060998ade794a60d21bedda1ab6ba67cb15c0bb1c3fdb9b64606cbbdac",
+      "rtl/memory/load_store_format_unit.v": "58c7e7ff17a47b4e5d20157531c2abcbcea631cd4ad328f5acbcad2721871c01",
+      "rtl/peripherals/timer/machine_timer.v": "61b7b67fd240f4e9559b7e07af81a889edb90032c5ab26a0066fdddccc15c4d1",
+      "rtl/peripherals/uart/uart_rx.v": "90d81ca3e31fd50366db97929498f9520d9724abdfe1092026f0eaf764b5d1e6",
+      "rtl/peripherals/uart/uart_rx_mmio_buffer.v": "b2b40426553090a4b23c4a73cc185bde3f977f05bd71307b151a550b5b811e4f",
+      "rtl/peripherals/uart/uart_tx.v": "73d3b813c43d2bc5117741ae35432dce524004fb43a490197e171a9ce77de9a2",
+      "rtl/rtl_sources.f": "12072d8acaf8fa249a078c3557716f55b9819af6611c3c0996502b2871706070",
+      "rtl/soc/mmio/mmio_decode.v": "ddcf03d0ec255b662f4333e454da23c14d73e0bf33f96e8ffe2326bfc13815d5",
+      "rtl/soc/mmio/mmio_read_mux.v": "94e4cd860422e34de976864c8970dd5eb3cb8235731ef76c420057e48c42e424",
+      "rtl/soc/perf/performance_counter_unit.v": "60fadcfce1844892027eccdf2b740abc1c8154977f374d2fda5e27b922d5d7b9",
+      "rtl/top/boards/basys3/basys3_lowfreq_clock_gen.v": "748cde385747dbdd79ab76ac6738530b5604db8ba5445486447272a980b11c62",
+      "rtl/top/boards/basys3/riscv_cpu_basys3_board_smoke_top.v": "21aa81d515c69aad6c79212554bdb4c904ce7885e48a6436ca995565d4c01757",
+      "rtl/top/boards/basys3/riscv_cpu_basys3_full_lowfreq_top.v": "0d920fe5593eed3f1f38f9cee462acba0b6d9b291814a66f9784ed1bc9b9b2e5",
+      "rtl/top/boards/basys3/riscv_cpu_basys3_top.v": "1b85f7e4fbd00bec6e937dec76e162f77b2d1d314a864519025cdad8e6098ab8",
+      "rtl/top/generic/riscv_cpu_fpga_debug_led_top.v": "2b69230aa3a1e21d73235a6be3830f8599bcb8e4586bbe1f8982f0f370f3af88",
+      "rtl/top/generic/riscv_cpu_fpga_top.v": "9172cd6959da2a4bc2faf2be9957c8dfef4e6fa76eb0f53158345a5ccdd4b0bb",
+      "rtl/top/soc/riscv_cpu_uart_boot_bram_soc_top.v": "711e865a22d4e3c5a264964ab67a3246069c48ca62516f497bd233d08a166d35",
+      "rtl/top/soc/riscv_cpu_uart_boot_fpga_top.v": "217aaadda3703b81b7d44ee7ef28ba8fe5b3b5c0d1ea6e6471f63d50a11d7544",
+      "rtl/top/soc/riscv_cpu_uart_boot_runtime_soc_top.v": "5d9f3a7896cb81fb7357835b89c0aa8b2dd853979a52c30097a7797d893eff15",
+      "scripts/architecture_benchmark.py": "30a0916685dfe923402c101de7f1fad7cea81f53b40606e6559e4560c7883c27",
+      "scripts/compiled_programs.py": "c3ed7fb9955e7c1b3b0c598d51ca1c9f8b48a7bfa21258b8f673af5cfaaa60c3",
+      "scripts/dcache_analysis.py": "73efd08e05c5781be3932a167a8a88492adb7c993d5c188e6e9df2f767b51990",
+      "scripts/execution_context.py": "5d276bd11723fd738f769f210d31bc9d1e65a07a47fc70860b0859d80be1b99b",
+      "scripts/matvec_benchmark.py": "f015ac64639f5764061e28c86e12317dfd9ec68495ce8434243e83d241b2847e",
+      "scripts/result_json.py": "b35b6d47898ce8524b9b0da20555989575d4ec82e7ac2084a6d1409704bcac63",
+      "scripts/tests/test_architecture_benchmark.py": "17cf082c57abdd1335b9db1be844703967d84de022fef2a83a5727177f6dea64",
+      "tb/reference/tb_arch_test_signature.v": "72e05a05f8b270dcb86b5dc1a086fe8f1969444b5363eec73186719f39316272",
+      "tb/reference/tb_architecture_benchmark.v": "5ec450525f3fc843a399c7205e6a75b518ea371db5f7019b00b49e193bf6bc93",
+      "tb/reference/tb_board_matvec.v": "c89c9de30090ae00a85e53b9d0380ba4ba6cdd952c484c7b17e06b3a5c6111c5",
+      "tb/reference/tb_compiled_program.v": "b871c57eb177128dd6639cdb4adcabaa84cc68f97c7e20e9f4ce82719a980c32",
+      "tb/reference/tb_matvec_benchmark.v": "3672bd52db948eb404c616c3cbaf23bf1b7db04f369e257886698b0c03218dad",
+      "tb/reference/tb_random_call_reference.v": "859e8345d0c97cd02ee68deed42c87799a28a0e882511ecb710515f022414ed9",
+      "tb/reference/tb_random_control_reference.v": "f575d34225f4ee68b83fdf0cdd4c4b393ab0a7314dc9369136c79a8916a834b7",
+      "tb/reference/tb_random_hazard_reference.v": "f7bd187febacd90013235deb063be5b29c32a4caad3ba1c20c39ce851b9f23fc",
+      "tb/reference/tb_random_memory_reference.v": "38ccd1b83505fd183ac6ff1ff004682204acf3e1692c002634a4eabcdc56748e",
+      "tb/reference/tb_random_reference.v": "41cc10748a96947ee4b275a289cefa5550345017697a526962750561fefbbd96",
+      "tb/reference/tb_signal_console.v": "d4f8d81b31d64152cad4f42e7d6011a6809d7bf64aa23f04bdcc3b02e78de872",
+      "tb/reference/tb_trace.v": "6dd7bc861bf087cf1f534aae5873ba986faabc0bad58a246d09e98834060a19b",
+      "tb/reference/tb_trace_lockstep_reference.v": "9189d232c2f83cc8a073b97c540b6bbf48a72c92dc0cf9afec4a9094e584d830",
+      "tb/reference/tb_trace_reference.v": "de01e1335f612abe7988c816fb7a3c63bbfde6a54d9634f9597e4744b2e4f5f8",
+      "tb/reference/tb_trace_trap_reference.v": "89969a1909d46d12fbf8aed2dc0f5c88652cb30e25e331869a2e2a983c486527"
+    }
+  },
+  "reference_version": "2.1.4",
+  "tools": {
+    "gcc": "riscv64-unknown-elf-gcc.EXE (GCC) 15.1.0",
+    "objcopy": "GNU objcopy (GNU Binutils) 2.46.0.20260210",
+    "objdump": "GNU objdump (GNU Binutils) 2.46.0.20260210",
+    "nm": "GNU nm (GNU Binutils) 2.46.0.20260210",
+    "iverilog": "Icarus Verilog version 12.0 (devel) (s20150603-1539-g2693dd32b)",
+    "vvp": "Icarus Verilog runtime version 12.0 (devel) (s20150603-1539-g2693dd32b)"
+  },
+  "artifacts": {
+    "arithmetic-O2-indexed1024/memory.hex": "a8b3e8d590c1d7dd514ea6b0e144a68c8367a09671d64401ba6b4a06336a4f83",
+    "arithmetic-O2-indexed1024/simulation.log": "8d754a9e0d54344d7a6d35da3284dbbdfc98d1e9314ee646ea89b1e3844af02e",
+    "arithmetic-O2-indexed1024/trace.txt": "652523e6ebb38be2c0c6904f3beb29ad416453a9a71dba694f954e2089e6de85",
+    "arithmetic-O2-indexed256/memory.hex": "a8b3e8d590c1d7dd514ea6b0e144a68c8367a09671d64401ba6b4a06336a4f83",
+    "arithmetic-O2-indexed256/simulation.log": "35d5c414a60c283070c21db8c4880e49064607d0890280cc9e005aa898ec6576",
+    "arithmetic-O2-indexed256/trace.txt": "652523e6ebb38be2c0c6904f3beb29ad416453a9a71dba694f954e2089e6de85",
+    "arithmetic-O2-indexed64/memory.hex": "a8b3e8d590c1d7dd514ea6b0e144a68c8367a09671d64401ba6b4a06336a4f83",
+    "arithmetic-O2-indexed64/simulation.log": "d8783faffb303310f222c491ebe0e1f6be083aef40afb389d07b6777e2240697",
+    "arithmetic-O2-indexed64/trace.txt": "652523e6ebb38be2c0c6904f3beb29ad416453a9a71dba694f954e2089e6de85",
+    "arithmetic-O2-parallel64/memory.hex": "a8b3e8d590c1d7dd514ea6b0e144a68c8367a09671d64401ba6b4a06336a4f83",
+    "arithmetic-O2-parallel64/simulation.log": "f449241d05026196b8e801c31583a0c7001b88c19f6fe657e3e35448a00601a1",
+    "arithmetic-O2-parallel64/trace.txt": "652523e6ebb38be2c0c6904f3beb29ad416453a9a71dba694f954e2089e6de85",
+    "arithmetic-Os-indexed1024/memory.hex": "a8b3e8d590c1d7dd514ea6b0e144a68c8367a09671d64401ba6b4a06336a4f83",
+    "arithmetic-Os-indexed1024/simulation.log": "d652022d662cb873bb7e6eb8116870e58d655621eba38295f00c53a107801704",
+    "arithmetic-Os-indexed1024/trace.txt": "dc49677ecad2e8f641584f285e7e08240e3781bfe1770a3b03d1381bb4b24eb3",
+    "arithmetic-Os-indexed256/memory.hex": "a8b3e8d590c1d7dd514ea6b0e144a68c8367a09671d64401ba6b4a06336a4f83",
+    "arithmetic-Os-indexed256/simulation.log": "0e2edc7138a35e786c8ce202a0bb0a8be6b9ef7dcc6a853a5841479d8ab975ca",
+    "arithmetic-Os-indexed256/trace.txt": "dc49677ecad2e8f641584f285e7e08240e3781bfe1770a3b03d1381bb4b24eb3",
+    "arithmetic-Os-indexed64/memory.hex": "a8b3e8d590c1d7dd514ea6b0e144a68c8367a09671d64401ba6b4a06336a4f83",
+    "arithmetic-Os-indexed64/simulation.log": "89f2f161a1677df15edc692c85dd70071882d49fac443473a9308d3ab898b07b",
+    "arithmetic-Os-indexed64/trace.txt": "dc49677ecad2e8f641584f285e7e08240e3781bfe1770a3b03d1381bb4b24eb3",
+    "arithmetic-Os-parallel64/memory.hex": "a8b3e8d590c1d7dd514ea6b0e144a68c8367a09671d64401ba6b4a06336a4f83",
+    "arithmetic-Os-parallel64/simulation.log": "bec3639a31b44d21bd672f484b855c97954ea17515ed03020dea825dcd262095",
+    "arithmetic-Os-parallel64/trace.txt": "dc49677ecad2e8f641584f285e7e08240e3781bfe1770a3b03d1381bb4b24eb3",
+    "build/arithmetic-O2/disassembly.log": "e3fee6a6cae5123712a1444f361776b0749d2857cea371ac1d50f1e26df2e4a1",
+    "build/arithmetic-O2/gcc.log": "c375b46bbc6a70b51b496310ca1b8909b5152c5d9c1273c22f7cb6d5138c94b2",
+    "build/arithmetic-O2/objcopy.log": "0af0f4cf4d6a81698a045a75e7dd4f2b44663071498e1a6fd08bafc5fa267ca1",
+    "build/arithmetic-O2/symbols.log": "c122d60a0fec8d1f88e4e265b9dfd91fd8097e9efb06fbf74be8cbb1b239a3c7",
+    "build/arithmetic-Os/disassembly.log": "4a2ded4a580587b4f5d54d97a5ab39380eea9ce9313c0ed00ef71dd0f728b4b0",
+    "build/arithmetic-Os/gcc.log": "6490a3995ee75369f1cdadf709b3c17d45e87402aa0ed5fe4a2f5100278b2186",
+    "build/arithmetic-Os/objcopy.log": "95ff2efb8d7ec9c1646187a1aa21f99e27e4171fe12b201e968c0eb8d6518f14",
+    "build/arithmetic-Os/symbols.log": "a249b5133523674317dbd70a6f0f51cadd6c244db471e49cd5ab5d1899edd344",
+    "build/calls-O2/disassembly.log": "dc6c781e6f23e34774497a8deb2677629e971643dc90e0be9b55bb1b2f16b315",
+    "build/calls-O2/gcc.log": "a937dc2eb656fc3e9a87955479eafa86081b7a5471a78e6e3613eb1c0521c331",
+    "build/calls-O2/objcopy.log": "f1a444319cd79ac5f0170fc2e1c7777ce0acfac7f239f638a65deb8335b494c1",
+    "build/calls-O2/symbols.log": "83cb306ee43445135bad9f9ac27129d9b7eab664841504f9dad60a6861b1b73f",
+    "build/calls-Os/disassembly.log": "c5c3bf65a373eafb0611f5f74e3ad6609ad8f9acd075bc6e248181fb14bbf267",
+    "build/calls-Os/gcc.log": "0e19da19abe9d6d302b8de5a45d0149ca291ef23d52e206f35f1000366d56534",
+    "build/calls-Os/objcopy.log": "5edabc6c1ea6b773ccbab7db6197bd7ee19c1dd4ca7e70ee2cf998d9cc040eac",
+    "build/calls-Os/symbols.log": "7ee410e3fbfa2356e12baf6a07c8c1072a06412b5e228b2defeef690694e0f70",
+    "build/conflict-O2/disassembly.log": "fc20b8c6feda8e56c99fa9244d26e212f4f03a07c11043a295af75659bea341e",
+    "build/conflict-O2/gcc.log": "e6c0a3f2b09ad797c4990d0cac21160189573346f80104ebd312562a45e5e1b6",
+    "build/conflict-O2/objcopy.log": "b771d40b5b54a9a3fd247144cd7f3428f9dc7db5f54c55f6df2088a6ede98551",
+    "build/conflict-O2/symbols.log": "8b83d4d31a7712517bb0d0b0a77ded76a04d129f3a7bed39996b0729bca230e8",
+    "build/conflict-Os/disassembly.log": "8e8ce9878d42acf9f664b7aca6ac1b3dadde7d54479fe0382ea6b87bc407f79c",
+    "build/conflict-Os/gcc.log": "01b933510fb08b7e51e9620a7a5b1e599369efb213571f8de69e6df2c5e7fc43",
+    "build/conflict-Os/objcopy.log": "92981dbec3605eca96e83b13c738c7119c2bb7b466420eb34aa4e26d14b9aae3",
+    "build/conflict-Os/symbols.log": "79490ccd5950fd0762a55d5bdbb68a63f33c2b96edcbbf0fe5969e700221ce1f",
+    "build/crc32-O2/disassembly.log": "256c7d5f0094d2841e4f87d08a54e9fb8cd7ecace9631ab7ec99a44c3eeac225",
+    "build/crc32-O2/gcc.log": "7f9ad46b7fa620f3750e38847b2fcd0327168edcb1ba009af0dd4115e42050b4",
+    "build/crc32-O2/objcopy.log": "e7a2e3bec8d9802b8306ff6428b2f84e5ac765aec8a8252c6d41050278ecb929",
+    "build/crc32-O2/symbols.log": "2cc5ad186cd730c7f23a5efcbd02032001469df05c1124698128b0ca8af1308f",
+    "build/crc32-Os/disassembly.log": "e19fdb47511b7a107eea8cb6e2dcfbf9a24e3e5191b85a59079bfc7b9236f75f",
+    "build/crc32-Os/gcc.log": "72feebce415f7b91fad67ab334705bc32ff51603dc36f9da3883b076d7f1952a",
+    "build/crc32-Os/objcopy.log": "317ba6a009d67110b3a031f5b00f308f69a8a659486e2bb0cd2ebab4d6768b55",
+    "build/crc32-Os/symbols.log": "ced2582aca32e40c13b76197b74713e1050db8146e75fc3a001fb63c84ce213e",
+    "build/fir-O2/disassembly.log": "054003030f35fce88a8efddeb4e998b06b2ba66e101025542e77decfab138db5",
+    "build/fir-O2/gcc.log": "77615a3128d540bb494183caf5641413384f0d48e2340b7d4e4d7a5ad5728db6",
+    "build/fir-O2/objcopy.log": "44b192187822ae0a023c45af4f1a05ef165467fd97124b7dac4012daf8e5216e",
+    "build/fir-O2/symbols.log": "fea1293adfc046e1332e01ac1f7ff771db45728d6a2567e7327ad74784a1130e",
+    "build/fir-Os/disassembly.log": "f9e99057d54a7dd4c030d45f6030e2b286108b36625ceb96be53565de5db1d87",
+    "build/fir-Os/gcc.log": "5c3c7bebc11aa185fc2c508ca3b339f4045012a17ad7cf788bf491aae7be9784",
+    "build/fir-Os/objcopy.log": "c59fadf7df1c0ea3affb2c5a82fed0f7e5f4aef46cabc2901a8661c2e75543fc",
+    "build/fir-Os/symbols.log": "b7be19c530a489ba8190930cb70d47279ba053bf720cc4d9f98d11eb0aef0e4f",
+    "build/indexed1024.log": "51657f87147eeae09d8c061242fb763271725c75d7578677de46d47eff842f57",
+    "build/indexed256.log": "10d8ca663371304839538a00ab674b3c2637d5ea79a996edc2f0963c09f4e635",
+    "build/indexed64.log": "1e97b85b47a3e39f3e8033de4f0d1e0d62f630bf78a98e97842842da9cd8db5e",
+    "build/matvec-O2/disassembly.log": "917a786f8d50668b97e1ba614504f49ccc9a684f7eec71e61f1b359e24c79958",
+    "build/matvec-O2/gcc.log": "de382ac9ae47c8869cc7eb27956f5378131eb61e6ebfcdde101b46db57c62eab",
+    "build/matvec-O2/objcopy.log": "706a67aeae80dd40a4829c7bfff06aee60f27d1d2c03e549f02fc553b362694d",
+    "build/matvec-O2/symbols.log": "b0474af3f60c62c5ade0ecd06b23d3ec087fb0e6d7602c1df92172b8b7fab478",
+    "build/matvec-Os/disassembly.log": "11d1a63c391d5a8c3358d22a8a473ffc10b8e62a85c3aca333f11f0a38cd5744",
+    "build/matvec-Os/gcc.log": "c7a564ad9a882975f13e080aa756eee5f3f823c9b03c62da246bb7bb7b59463b",
+    "build/matvec-Os/objcopy.log": "b597afb7f319bc6d8924cf2305c98996d31ed8452fde4492448a59d729ac20bb",
+    "build/matvec-Os/symbols.log": "c953315e37bbbdad0c4f1656f3edd2f239f0cb44ead32a07c5ad3c354ae36c08",
+    "build/memory-O2/disassembly.log": "6e94bf633c6097716609fa059d194eb603a9d154045ccad44f833a1da0184119",
+    "build/memory-O2/gcc.log": "7f18e06c4d6684fadb9dfe04f8888768b41f5cb686aee697c2ae05bbffe2baa2",
+    "build/memory-O2/objcopy.log": "2ffdcf581faf6f00e14d5a3705ca3cccc258f4a37af7a8123d6b55e1c9ded679",
+    "build/memory-O2/symbols.log": "31e1f1782a5d08e62319fd833d2c387cc20e84debf65c1e853f2333ef3d50c31",
+    "build/memory-Os/disassembly.log": "79d158bd32b31e25c3967c126d71907516965f00e93775cd69ac15e883597538",
+    "build/memory-Os/gcc.log": "3cc68b2681c0681be16f96a40d3ac86e38a48656945fc19b2b4af567b4402d6e",
+    "build/memory-Os/objcopy.log": "a3c51895a4a8bd87e5a7af26bad3b43b7f117dbda6e7888f7616d59a9a8f729e",
+    "build/memory-Os/symbols.log": "b9de04d6980608309a620c33c882f9d92245ffc1a606d45825fd39b026b57fe3",
+    "build/parallel64.log": "8b8a469de9118956a331e54c774c586ef82d224c692eefd15c5c8d60e9f2e13b",
+    "build/resident-O2/disassembly.log": "93113bb317196f6012bda01874ec7c4dde065f425176f8c626edd621fe96a6dc",
+    "build/resident-O2/gcc.log": "b6234e472d36c9477250cffca18eeac25ba6857ad60ada645150097a7a0a4208",
+    "build/resident-O2/objcopy.log": "f5d8fa9d4addb4a1c3039a4505f351b634b962bc00c6192546257a5fb2ede2e9",
+    "build/resident-O2/symbols.log": "b7a6700f0a3490421641392a28a2b3e3d797ec9ddc6c5801b68c984b683736e0",
+    "build/resident-Os/disassembly.log": "a71e6346337439a6178e98f00891e136e47be19bed04e431f8157086e8115758",
+    "build/resident-Os/gcc.log": "03d83c1ff9e577a4c13a8aa48fd7716290e50c51f7929e4851da744ce4e16b87",
+    "build/resident-Os/objcopy.log": "608af64fb6cf4f8ac24ec292c9a2691bd329991c1cdafa395ab0a3fd357bd1ec",
+    "build/resident-Os/symbols.log": "de529f6fdb5018b05ee86af2d30ff85b855c9bfe9c7e0edb986157f8693f0e38",
+    "build/sequential-O2/disassembly.log": "e38cb20e397b847c9a35d38d8d80c4a94de7913d31814ff8b621da771b2d0e93",
+    "build/sequential-O2/gcc.log": "bdc95e028a9f706fc9a1588b201d2c4f5f147c9983b6e1b563da704fad1ab20b",
+    "build/sequential-O2/objcopy.log": "a92f9a541f17ae98477b187c46971808afa8d0077d699ceac77972464ddf1c77",
+    "build/sequential-O2/symbols.log": "8586f50ea860ad68ae122ba759d3ce3b9266a8fa151a1e00c2dcf889b91945ed",
+    "build/sequential-Os/disassembly.log": "be0a184fa7e33a0a5145105ceddcc4fd7841e836e5bc3c5709eb5cf0d982ec13",
+    "build/sequential-Os/gcc.log": "976a9e8e9d2f184c9a68004ccca5d17731a0389b163d5f22d23dd711f27ca48f",
+    "build/sequential-Os/objcopy.log": "5ec3ae6130ee2ff2569f463fe0ee30f37ae36694c59e8c803e8039cc66540c4c",
+    "build/sequential-Os/symbols.log": "e86978d85a2fe1d492100527101c1d3c2ee6177f8dadb5fd6dd9575e5efd8e6c",
+    "build/sort-O2/disassembly.log": "8c9104b93a7c9a08dc3916ee4dc6ff9467b20d86a4e3c22883467bba882f1213",
+    "build/sort-O2/gcc.log": "c23023c28afb4896fdd61dcda62b1bc9689acde1e3729590f0a7058f13259706",
+    "build/sort-O2/objcopy.log": "566e7f40e2f6e755105d235c47f43d6f5df496470fc90081914ff3f9c83948fa",
+    "build/sort-O2/symbols.log": "08e12193cffa26114df2f4ed2b07d1613c7faa0c32272b23366f28040587d23e",
+    "build/sort-Os/disassembly.log": "09bf76eb049ddc47a3da3aed47857d3452eb56b5c2c4209470f06e3bb7ef0fa9",
+    "build/sort-Os/gcc.log": "9a1d6d763efdc19dcbf9aae3823c50d56619858972f390c602a6b2d11390995b",
+    "build/sort-Os/objcopy.log": "adae0669fcec6ff289efd1d2666e5c02ab1697d9b6200ad6f0d32080bb80cef2",
+    "build/sort-Os/symbols.log": "8d32cf3f019017a4a884990677f1449ff3a3c3e368a0152b6e0b53b2b648c810",
+    "calls-O2-indexed1024/memory.hex": "b15a4940cc3fe4a3b5d25111c5f3f2f8ece80269b045d91f59104121adfd0817",
+    "calls-O2-indexed1024/simulation.log": "cbc18e46939651e5bbc8e97c78942547ee1e99ea939770cb26b1302072cffb10",
+    "calls-O2-indexed1024/trace.txt": "a80470db8669445a867e17522e18b7ff28efc2aaf5ec6bf5113221136fa9e796",
+    "calls-O2-indexed256/memory.hex": "b15a4940cc3fe4a3b5d25111c5f3f2f8ece80269b045d91f59104121adfd0817",
+    "calls-O2-indexed256/simulation.log": "dcf38569cc966e8d79226059cc9d23ee1c47effc9abe61dd862c94d0a827dc7f",
+    "calls-O2-indexed256/trace.txt": "a80470db8669445a867e17522e18b7ff28efc2aaf5ec6bf5113221136fa9e796",
+    "calls-O2-indexed64/memory.hex": "b15a4940cc3fe4a3b5d25111c5f3f2f8ece80269b045d91f59104121adfd0817",
+    "calls-O2-indexed64/simulation.log": "5fe8b2864c73a5b0862c657b4cbb2225b34446a26dac6c4228ee478f58b6cc16",
+    "calls-O2-indexed64/trace.txt": "a80470db8669445a867e17522e18b7ff28efc2aaf5ec6bf5113221136fa9e796",
+    "calls-O2-parallel64/memory.hex": "b15a4940cc3fe4a3b5d25111c5f3f2f8ece80269b045d91f59104121adfd0817",
+    "calls-O2-parallel64/simulation.log": "2bbdf034da6ffeba8a739a150f2a9620e36bec7cd906a101f3630c69aa5fde03",
+    "calls-O2-parallel64/trace.txt": "a80470db8669445a867e17522e18b7ff28efc2aaf5ec6bf5113221136fa9e796",
+    "calls-Os-indexed1024/memory.hex": "784524e7b46aa328ba986675afe3d28be5b28fb954311c51efac8e17f0e7cf4c",
+    "calls-Os-indexed1024/simulation.log": "a222745ed883f7b6c9ef2bd3764a17c3627b57f86f6d5a751c0e27de577a09ab",
+    "calls-Os-indexed1024/trace.txt": "41c54f0e4827a4ab097eaa4139578117adb17495f0b33cc6c2b0a3a4e79c73fc",
+    "calls-Os-indexed256/memory.hex": "784524e7b46aa328ba986675afe3d28be5b28fb954311c51efac8e17f0e7cf4c",
+    "calls-Os-indexed256/simulation.log": "c21e96f35cce867898bd41ca0892bbdde7c1d4d2202fd1e525211c51d4d7e39f",
+    "calls-Os-indexed256/trace.txt": "41c54f0e4827a4ab097eaa4139578117adb17495f0b33cc6c2b0a3a4e79c73fc",
+    "calls-Os-indexed64/memory.hex": "784524e7b46aa328ba986675afe3d28be5b28fb954311c51efac8e17f0e7cf4c",
+    "calls-Os-indexed64/simulation.log": "e0e5e2e3a9b902ea1ca57af68c34b7abce5faf642d43e96f066b419ca39b07eb",
+    "calls-Os-indexed64/trace.txt": "41c54f0e4827a4ab097eaa4139578117adb17495f0b33cc6c2b0a3a4e79c73fc",
+    "calls-Os-parallel64/memory.hex": "784524e7b46aa328ba986675afe3d28be5b28fb954311c51efac8e17f0e7cf4c",
+    "calls-Os-parallel64/simulation.log": "1ef741235c5d71f127201a0a55eb58558800c3c7026608cbad86add213ea55a5",
+    "calls-Os-parallel64/trace.txt": "41c54f0e4827a4ab097eaa4139578117adb17495f0b33cc6c2b0a3a4e79c73fc",
+    "conflict-O2-indexed1024/memory.hex": "f5defde1b173e23f0d91366e0d8105aeee04c0d5de0037eafe0d996d9e37c996",
+    "conflict-O2-indexed1024/simulation.log": "54f77753989367b2c00aa45f7a49363021ecbc2b7dfec26bd33b21c7720a6ec1",
+    "conflict-O2-indexed1024/trace.txt": "24c1acd538ff2c64eb856a9e622684c9bf10a9ee53b72329d7fbcd16d6f5eef7",
+    "conflict-O2-indexed256/memory.hex": "f5defde1b173e23f0d91366e0d8105aeee04c0d5de0037eafe0d996d9e37c996",
+    "conflict-O2-indexed256/simulation.log": "36640e04b2e553f7691560ad046c6fb83d378d07a30499ab6306b82553976c12",
+    "conflict-O2-indexed256/trace.txt": "24c1acd538ff2c64eb856a9e622684c9bf10a9ee53b72329d7fbcd16d6f5eef7",
+    "conflict-O2-indexed64/memory.hex": "f5defde1b173e23f0d91366e0d8105aeee04c0d5de0037eafe0d996d9e37c996",
+    "conflict-O2-indexed64/simulation.log": "7dc51cd4ce422647a0d21cf5280eaf6d83ce846beec9a6b6f6f0fb27a4b63ca4",
+    "conflict-O2-indexed64/trace.txt": "24c1acd538ff2c64eb856a9e622684c9bf10a9ee53b72329d7fbcd16d6f5eef7",
+    "conflict-O2-parallel64/memory.hex": "f5defde1b173e23f0d91366e0d8105aeee04c0d5de0037eafe0d996d9e37c996",
+    "conflict-O2-parallel64/simulation.log": "79b9e336ec6e408b9807ddbefd80cd8c8111d43b262376aed63c75fe529e8913",
+    "conflict-O2-parallel64/trace.txt": "24c1acd538ff2c64eb856a9e622684c9bf10a9ee53b72329d7fbcd16d6f5eef7",
+    "conflict-Os-indexed1024/memory.hex": "f5defde1b173e23f0d91366e0d8105aeee04c0d5de0037eafe0d996d9e37c996",
+    "conflict-Os-indexed1024/simulation.log": "8874de72e44e5e5e1e3d32d60807e446ac3c3fe8317caeeb55ddcee1e10acba6",
+    "conflict-Os-indexed1024/trace.txt": "b0690d20cd89c8a59e2dd48f947c954bc9fe282da8df591fab27cba074b8559b",
+    "conflict-Os-indexed256/memory.hex": "f5defde1b173e23f0d91366e0d8105aeee04c0d5de0037eafe0d996d9e37c996",
+    "conflict-Os-indexed256/simulation.log": "c535eeb47d87d51810705afb2b9898be7dfb34731bedb2d1e230d97b0c94ed0e",
+    "conflict-Os-indexed256/trace.txt": "b0690d20cd89c8a59e2dd48f947c954bc9fe282da8df591fab27cba074b8559b",
+    "conflict-Os-indexed64/memory.hex": "f5defde1b173e23f0d91366e0d8105aeee04c0d5de0037eafe0d996d9e37c996",
+    "conflict-Os-indexed64/simulation.log": "03db7da3ef61a9ac4f6f2d267dabe3ba90a1f18dc8a3bc887cdb3a7457e202a9",
+    "conflict-Os-indexed64/trace.txt": "b0690d20cd89c8a59e2dd48f947c954bc9fe282da8df591fab27cba074b8559b",
+    "conflict-Os-parallel64/memory.hex": "f5defde1b173e23f0d91366e0d8105aeee04c0d5de0037eafe0d996d9e37c996",
+    "conflict-Os-parallel64/simulation.log": "fa5269c5746dcdd7e3e995860b865e7f2860dd7236b4274c62cfb7175c191f06",
+    "conflict-Os-parallel64/trace.txt": "b0690d20cd89c8a59e2dd48f947c954bc9fe282da8df591fab27cba074b8559b",
+    "crc32-O2-indexed1024/memory.hex": "cd0ad4da6c503ad7940775698a159bc2233693ce1853a7f81dd214fdd56b4070",
+    "crc32-O2-indexed1024/simulation.log": "eb7f395b84b66356626c00a8f6f6c3ef4e1abb5f77d91b39b14800731bb59459",
+    "crc32-O2-indexed1024/trace.txt": "125fe1de86e70801d28db6eb3f0d662e988c7ab73262439b3fda262cc2bf2292",
+    "crc32-O2-indexed256/memory.hex": "cd0ad4da6c503ad7940775698a159bc2233693ce1853a7f81dd214fdd56b4070",
+    "crc32-O2-indexed256/simulation.log": "59f1093147eacf1b8b542da4ff24b4e7bb08b787b32edf424080173eaf136af8",
+    "crc32-O2-indexed256/trace.txt": "125fe1de86e70801d28db6eb3f0d662e988c7ab73262439b3fda262cc2bf2292",
+    "crc32-O2-indexed64/memory.hex": "cd0ad4da6c503ad7940775698a159bc2233693ce1853a7f81dd214fdd56b4070",
+    "crc32-O2-indexed64/simulation.log": "2f7eeb07d7570b581e33c49ba609162bc7b5d516154c0d9d18a557215f208b8d",
+    "crc32-O2-indexed64/trace.txt": "125fe1de86e70801d28db6eb3f0d662e988c7ab73262439b3fda262cc2bf2292",
+    "crc32-O2-parallel64/memory.hex": "cd0ad4da6c503ad7940775698a159bc2233693ce1853a7f81dd214fdd56b4070",
+    "crc32-O2-parallel64/simulation.log": "d037a60393d90f3a1a19bf7a09a634ac88f4fec0fcdadfe9643cc9ffe8f36303",
+    "crc32-O2-parallel64/trace.txt": "125fe1de86e70801d28db6eb3f0d662e988c7ab73262439b3fda262cc2bf2292",
+    "crc32-Os-indexed1024/memory.hex": "9dee799892c30fcdd3a246c7a2a295b940653d4f8291e9efdac6251c486434d9",
+    "crc32-Os-indexed1024/simulation.log": "af8f7e8a3d85b2e1e4065279c9341e84de590dbd085fda71a4d350f5c88b3204",
+    "crc32-Os-indexed1024/trace.txt": "4161d284ecb52182935501fc01ca055f4fe7749ea39508c1b91faf41c7f16959",
+    "crc32-Os-indexed256/memory.hex": "9dee799892c30fcdd3a246c7a2a295b940653d4f8291e9efdac6251c486434d9",
+    "crc32-Os-indexed256/simulation.log": "a0dfac46be57ef08a39230e60eb722559a312330ec3c2912b5e4141f31ebb929",
+    "crc32-Os-indexed256/trace.txt": "4161d284ecb52182935501fc01ca055f4fe7749ea39508c1b91faf41c7f16959",
+    "crc32-Os-indexed64/memory.hex": "9dee799892c30fcdd3a246c7a2a295b940653d4f8291e9efdac6251c486434d9",
+    "crc32-Os-indexed64/simulation.log": "95b9441d6dcde4de83338596e599d4245231a66af85d769d27fcbddddc6954d9",
+    "crc32-Os-indexed64/trace.txt": "4161d284ecb52182935501fc01ca055f4fe7749ea39508c1b91faf41c7f16959",
+    "crc32-Os-parallel64/memory.hex": "9dee799892c30fcdd3a246c7a2a295b940653d4f8291e9efdac6251c486434d9",
+    "crc32-Os-parallel64/simulation.log": "6351ce0481e316682193d91d78d96bd2463175e30d599f061e5e6a14a989ed23",
+    "crc32-Os-parallel64/trace.txt": "4161d284ecb52182935501fc01ca055f4fe7749ea39508c1b91faf41c7f16959",
+    "fir-O2-indexed1024/memory.hex": "8cbb8752ec226f936bd358febd6d37cc78fd4ba31da44ce4aa83638f25dca2f5",
+    "fir-O2-indexed1024/simulation.log": "dc33208a1b21ac25af1da58c7224bcc2212ced8d0bb44b4211557b43cd1990b7",
+    "fir-O2-indexed1024/trace.txt": "73cd2140669ad5e243e0119712d4e96ed42cc048ca9fe765eceb22eea2a6c42b",
+    "fir-O2-indexed256/memory.hex": "8cbb8752ec226f936bd358febd6d37cc78fd4ba31da44ce4aa83638f25dca2f5",
+    "fir-O2-indexed256/simulation.log": "bf8344aae5d4d1da0b6ebc89b4b23d9acaf28cef3b4e6037a9e68d672ebee026",
+    "fir-O2-indexed256/trace.txt": "73cd2140669ad5e243e0119712d4e96ed42cc048ca9fe765eceb22eea2a6c42b",
+    "fir-O2-indexed64/memory.hex": "8cbb8752ec226f936bd358febd6d37cc78fd4ba31da44ce4aa83638f25dca2f5",
+    "fir-O2-indexed64/simulation.log": "99edd0743d9fba85f4b220a34d115da148f70644e1a43f66d001cb92caeba8e1",
+    "fir-O2-indexed64/trace.txt": "73cd2140669ad5e243e0119712d4e96ed42cc048ca9fe765eceb22eea2a6c42b",
+    "fir-O2-parallel64/memory.hex": "8cbb8752ec226f936bd358febd6d37cc78fd4ba31da44ce4aa83638f25dca2f5",
+    "fir-O2-parallel64/simulation.log": "1f4ddcfa40016d080031ae888f0a73cd285c3ed5cc160b4ceecdef0092971377",
+    "fir-O2-parallel64/trace.txt": "73cd2140669ad5e243e0119712d4e96ed42cc048ca9fe765eceb22eea2a6c42b",
+    "fir-Os-indexed1024/memory.hex": "8cbb8752ec226f936bd358febd6d37cc78fd4ba31da44ce4aa83638f25dca2f5",
+    "fir-Os-indexed1024/simulation.log": "3da52fe796c1332114d18998466e9b535ce1f7b5bbce00b35b469d3170c43713",
+    "fir-Os-indexed1024/trace.txt": "d7c30ef608e911e4247f89ef1323500b5d8518ac13c4ab4d7ef960c853ea5909",
+    "fir-Os-indexed256/memory.hex": "8cbb8752ec226f936bd358febd6d37cc78fd4ba31da44ce4aa83638f25dca2f5",
+    "fir-Os-indexed256/simulation.log": "377b77cc20437b405847e9de25c45d8fb591334686d0de307ddbd3425b2450e1",
+    "fir-Os-indexed256/trace.txt": "d7c30ef608e911e4247f89ef1323500b5d8518ac13c4ab4d7ef960c853ea5909",
+    "fir-Os-indexed64/memory.hex": "8cbb8752ec226f936bd358febd6d37cc78fd4ba31da44ce4aa83638f25dca2f5",
+    "fir-Os-indexed64/simulation.log": "2e9ce5ae36520cda1cdf6d9f5b6fa67f0e31304ff4c27f29bb37486623bfa867",
+    "fir-Os-indexed64/trace.txt": "d7c30ef608e911e4247f89ef1323500b5d8518ac13c4ab4d7ef960c853ea5909",
+    "fir-Os-parallel64/memory.hex": "8cbb8752ec226f936bd358febd6d37cc78fd4ba31da44ce4aa83638f25dca2f5",
+    "fir-Os-parallel64/simulation.log": "bc2206224b27f17d769a98b2596871aa383654a80a43e32da26c63d7008577e3",
+    "fir-Os-parallel64/trace.txt": "d7c30ef608e911e4247f89ef1323500b5d8518ac13c4ab4d7ef960c853ea5909",
+    "gcc-version.log": "53e206d4035f23d6a7483b3836cad37aaf9b98880901207f831524f7f5f3c637",
+    "iverilog-version.log": "0ae09d960188d5b066e9fce17f853ff876688b6ad60c99d8599320d0cae8c6a4",
+    "matvec-O2-indexed1024/memory.hex": "7ded428dd2243487d59054822933cb8a4c544e486ca4c396f7d64e18b04d5f28",
+    "matvec-O2-indexed1024/simulation.log": "ecd7812b932e67ca6a575c34ffcc321e1bc581e47f00fb23de44b66e8179af34",
+    "matvec-O2-indexed1024/trace.txt": "cf71cbf5e6d1f0416fefb301f4e0385a02416c9747c483af2fedc9854df5b4ba",
+    "matvec-O2-indexed256/memory.hex": "7ded428dd2243487d59054822933cb8a4c544e486ca4c396f7d64e18b04d5f28",
+    "matvec-O2-indexed256/simulation.log": "b25daa2a13217a9f4a88c0c8323346061213b983a1d8e4dcc319e681d9b499e5",
+    "matvec-O2-indexed256/trace.txt": "cf71cbf5e6d1f0416fefb301f4e0385a02416c9747c483af2fedc9854df5b4ba",
+    "matvec-O2-indexed64/memory.hex": "7ded428dd2243487d59054822933cb8a4c544e486ca4c396f7d64e18b04d5f28",
+    "matvec-O2-indexed64/simulation.log": "bf883c87b32b960f48abb5e6a227d327a1b5ad3af482a73ec282d9c51638fd60",
+    "matvec-O2-indexed64/trace.txt": "cf71cbf5e6d1f0416fefb301f4e0385a02416c9747c483af2fedc9854df5b4ba",
+    "matvec-O2-parallel64/memory.hex": "7ded428dd2243487d59054822933cb8a4c544e486ca4c396f7d64e18b04d5f28",
+    "matvec-O2-parallel64/simulation.log": "0d96cc12ada7d07f6671f841eca059a53890a2aa10e045e27c054a87331e335f",
+    "matvec-O2-parallel64/trace.txt": "cf71cbf5e6d1f0416fefb301f4e0385a02416c9747c483af2fedc9854df5b4ba",
+    "matvec-Os-indexed1024/memory.hex": "7ded428dd2243487d59054822933cb8a4c544e486ca4c396f7d64e18b04d5f28",
+    "matvec-Os-indexed1024/simulation.log": "6927ea7843e667eb22817da48872240a5291f1e32d7592e28630a02bad28c977",
+    "matvec-Os-indexed1024/trace.txt": "d181f7e1c0640ccf2b24c11cb869fd336597631f7a53cb58ca4695d326099ecb",
+    "matvec-Os-indexed256/memory.hex": "7ded428dd2243487d59054822933cb8a4c544e486ca4c396f7d64e18b04d5f28",
+    "matvec-Os-indexed256/simulation.log": "c467ac152ca174f0bc343ffca63cb319cea0b329d4266a2d84acb9d4ec8f3726",
+    "matvec-Os-indexed256/trace.txt": "d181f7e1c0640ccf2b24c11cb869fd336597631f7a53cb58ca4695d326099ecb",
+    "matvec-Os-indexed64/memory.hex": "7ded428dd2243487d59054822933cb8a4c544e486ca4c396f7d64e18b04d5f28",
+    "matvec-Os-indexed64/simulation.log": "93993f2eba6edc8d6565d54b16f792a54f27711edc7360da128f8d46a99bd7fa",
+    "matvec-Os-indexed64/trace.txt": "d181f7e1c0640ccf2b24c11cb869fd336597631f7a53cb58ca4695d326099ecb",
+    "matvec-Os-parallel64/memory.hex": "7ded428dd2243487d59054822933cb8a4c544e486ca4c396f7d64e18b04d5f28",
+    "matvec-Os-parallel64/simulation.log": "42d9923b13430cf9312dbe0d0de1609232dc7753da03065be2974fed96f29a55",
+    "matvec-Os-parallel64/trace.txt": "d181f7e1c0640ccf2b24c11cb869fd336597631f7a53cb58ca4695d326099ecb",
+    "memory-O2-indexed1024/memory.hex": "6b5efb7aada781356465841d74afe17c43fb5249f9c185d399c590459e189dbd",
+    "memory-O2-indexed1024/simulation.log": "89eb69edcf9914a02f5225f234e0cb88f744716d61684be0161bd43e43ef554f",
+    "memory-O2-indexed1024/trace.txt": "12c83fef08163634ef1e87ff3772525ab688c023dbe56245230247d278cc43c6",
+    "memory-O2-indexed256/memory.hex": "6b5efb7aada781356465841d74afe17c43fb5249f9c185d399c590459e189dbd",
+    "memory-O2-indexed256/simulation.log": "87d038590982a287a93a03b066f506be6390ca6d7f394ae2bc08c441be5c905e",
+    "memory-O2-indexed256/trace.txt": "12c83fef08163634ef1e87ff3772525ab688c023dbe56245230247d278cc43c6",
+    "memory-O2-indexed64/memory.hex": "6b5efb7aada781356465841d74afe17c43fb5249f9c185d399c590459e189dbd",
+    "memory-O2-indexed64/simulation.log": "e9e027497b283a790f4b4cc2be4f4c12b4babc40ffd1e7892897e6a1fa6e628a",
+    "memory-O2-indexed64/trace.txt": "12c83fef08163634ef1e87ff3772525ab688c023dbe56245230247d278cc43c6",
+    "memory-O2-parallel64/memory.hex": "6b5efb7aada781356465841d74afe17c43fb5249f9c185d399c590459e189dbd",
+    "memory-O2-parallel64/simulation.log": "560004ab92bcc3cc58f1208af952c7c891a359df42562a0287727a5201813d0f",
+    "memory-O2-parallel64/trace.txt": "12c83fef08163634ef1e87ff3772525ab688c023dbe56245230247d278cc43c6",
+    "memory-Os-indexed1024/memory.hex": "6b5efb7aada781356465841d74afe17c43fb5249f9c185d399c590459e189dbd",
+    "memory-Os-indexed1024/simulation.log": "74dc5414162a1a41e2bace1779707fad629b5d00a925e4ad845da994c4679420",
+    "memory-Os-indexed1024/trace.txt": "219774682315c2846b4b4bbc635f78f96cd0f06656967bce4df2e4c87ecc5b8e",
+    "memory-Os-indexed256/memory.hex": "6b5efb7aada781356465841d74afe17c43fb5249f9c185d399c590459e189dbd",
+    "memory-Os-indexed256/simulation.log": "987cb8018b8b2d4534cd224a510011f82a171637747bf7807fb00a8f6f503ffa",
+    "memory-Os-indexed256/trace.txt": "219774682315c2846b4b4bbc635f78f96cd0f06656967bce4df2e4c87ecc5b8e",
+    "memory-Os-indexed64/memory.hex": "6b5efb7aada781356465841d74afe17c43fb5249f9c185d399c590459e189dbd",
+    "memory-Os-indexed64/simulation.log": "8cd470272a3937aa7aa16c1e271bf10e8d843092a18f04af308a939dff848bfa",
+    "memory-Os-indexed64/trace.txt": "219774682315c2846b4b4bbc635f78f96cd0f06656967bce4df2e4c87ecc5b8e",
+    "memory-Os-parallel64/memory.hex": "6b5efb7aada781356465841d74afe17c43fb5249f9c185d399c590459e189dbd",
+    "memory-Os-parallel64/simulation.log": "ff754545a95a3424d15043361ab50e703f21215b87a1271fc01fd4f6d07d5ff3",
+    "memory-Os-parallel64/trace.txt": "219774682315c2846b4b4bbc635f78f96cd0f06656967bce4df2e4c87ecc5b8e",
+    "nm-version.log": "e95cdb4c0e4e6fb3e9e1bfc1ac06caf78f6bdc721fec0a4f1ae097c9ca524f87",
+    "objcopy-version.log": "fe4565e3f8add07f7081e56d1dbaf6789fcfe2dcc0d340ab075e458a0f1c6fcc",
+    "objdump-version.log": "3cff2832e7b758a44c22120f04730855440ec5a3832c15a8870d7901c4d36a0c",
+    "resident-O2-indexed1024/memory.hex": "d063a070abc441dab5e7d5671a3ae32eff7e59eef9806ebae6f9498d92dbda5b",
+    "resident-O2-indexed1024/simulation.log": "ae03598d43ec55777cbb3e7cb8d38cf35a88440afbeea14d9046584c37604593",
+    "resident-O2-indexed1024/trace.txt": "8c8265132b83ebf37e23a8d72efb40ee4eaeda6cad262e92fb9b1df25f22d1eb",
+    "resident-O2-indexed256/memory.hex": "d063a070abc441dab5e7d5671a3ae32eff7e59eef9806ebae6f9498d92dbda5b",
+    "resident-O2-indexed256/simulation.log": "8730295f165cb0b26a6fa626aaf90514533c18380a522f4026fb3eb2b66765b0",
+    "resident-O2-indexed256/trace.txt": "8c8265132b83ebf37e23a8d72efb40ee4eaeda6cad262e92fb9b1df25f22d1eb",
+    "resident-O2-indexed64/memory.hex": "d063a070abc441dab5e7d5671a3ae32eff7e59eef9806ebae6f9498d92dbda5b",
+    "resident-O2-indexed64/simulation.log": "968794ce3172e03156cc29779cb4ccd2e306750fd873b1094d2f14bb53e137ad",
+    "resident-O2-indexed64/trace.txt": "8c8265132b83ebf37e23a8d72efb40ee4eaeda6cad262e92fb9b1df25f22d1eb",
+    "resident-O2-parallel64/memory.hex": "d063a070abc441dab5e7d5671a3ae32eff7e59eef9806ebae6f9498d92dbda5b",
+    "resident-O2-parallel64/simulation.log": "50f43d62949abec2eb3684f05b2950ec3ee0a8a7afd5158da0c513f92c8d2d27",
+    "resident-O2-parallel64/trace.txt": "8c8265132b83ebf37e23a8d72efb40ee4eaeda6cad262e92fb9b1df25f22d1eb",
+    "resident-Os-indexed1024/memory.hex": "d063a070abc441dab5e7d5671a3ae32eff7e59eef9806ebae6f9498d92dbda5b",
+    "resident-Os-indexed1024/simulation.log": "efeb6312e348bb8af943b93f8b179d09fb07fa6344e95310336cef7e01dc3799",
+    "resident-Os-indexed1024/trace.txt": "702c496414219e5554343a0736df24b790556d0d14159a4145e8196bea6ad3a8",
+    "resident-Os-indexed256/memory.hex": "d063a070abc441dab5e7d5671a3ae32eff7e59eef9806ebae6f9498d92dbda5b",
+    "resident-Os-indexed256/simulation.log": "aa1c3b4a430c5e84cc344a9ec302b7099901917634c6118d9038e83c7413269f",
+    "resident-Os-indexed256/trace.txt": "702c496414219e5554343a0736df24b790556d0d14159a4145e8196bea6ad3a8",
+    "resident-Os-indexed64/memory.hex": "d063a070abc441dab5e7d5671a3ae32eff7e59eef9806ebae6f9498d92dbda5b",
+    "resident-Os-indexed64/simulation.log": "1a50a319f08038bb158b8aa8fe2802540da40f7c9a42726dc77e15b05aa46986",
+    "resident-Os-indexed64/trace.txt": "702c496414219e5554343a0736df24b790556d0d14159a4145e8196bea6ad3a8",
+    "resident-Os-parallel64/memory.hex": "d063a070abc441dab5e7d5671a3ae32eff7e59eef9806ebae6f9498d92dbda5b",
+    "resident-Os-parallel64/simulation.log": "c1b338cac30c3a1b79f01f7552cae87bd2d9810f3efb23ef75b2d48e63ea3e75",
+    "resident-Os-parallel64/trace.txt": "702c496414219e5554343a0736df24b790556d0d14159a4145e8196bea6ad3a8",
+    "sequential-O2-indexed1024/memory.hex": "f2eee9207b8c92f835d1628d9d637f5e1a8ca073c4a3a3a44ef6790847c7d261",
+    "sequential-O2-indexed1024/simulation.log": "e506c7bb72be3cc88948e25ae1c984d7167980086fe56b01c36f46de445bacb7",
+    "sequential-O2-indexed1024/trace.txt": "626d57b3fe012e2f18253358b8fba39088e46d0d08d3ef77c870ba9d83dc1a5e",
+    "sequential-O2-indexed256/memory.hex": "f2eee9207b8c92f835d1628d9d637f5e1a8ca073c4a3a3a44ef6790847c7d261",
+    "sequential-O2-indexed256/simulation.log": "bc94a5bf6a8d970544dbe7b7887819309277107bd6d6d40bab86b5a9cb4ea521",
+    "sequential-O2-indexed256/trace.txt": "626d57b3fe012e2f18253358b8fba39088e46d0d08d3ef77c870ba9d83dc1a5e",
+    "sequential-O2-indexed64/memory.hex": "f2eee9207b8c92f835d1628d9d637f5e1a8ca073c4a3a3a44ef6790847c7d261",
+    "sequential-O2-indexed64/simulation.log": "815e002629e9b0d11b7d1746c1e1ff9e5767ce751afe9092b4fb36e7e224a7ec",
+    "sequential-O2-indexed64/trace.txt": "626d57b3fe012e2f18253358b8fba39088e46d0d08d3ef77c870ba9d83dc1a5e",
+    "sequential-O2-parallel64/memory.hex": "f2eee9207b8c92f835d1628d9d637f5e1a8ca073c4a3a3a44ef6790847c7d261",
+    "sequential-O2-parallel64/simulation.log": "fceaa46d8e917e50be288e167a3b1c6ae551d49030afdee731cb18a8530df1a3",
+    "sequential-O2-parallel64/trace.txt": "626d57b3fe012e2f18253358b8fba39088e46d0d08d3ef77c870ba9d83dc1a5e",
+    "sequential-Os-indexed1024/memory.hex": "f2eee9207b8c92f835d1628d9d637f5e1a8ca073c4a3a3a44ef6790847c7d261",
+    "sequential-Os-indexed1024/simulation.log": "7b5dce2069d0f0865a2ec2791101d3c13db40794be23ec00b7022bb4f7af9853",
+    "sequential-Os-indexed1024/trace.txt": "7626bd58fdc538b45c9e38f0e387a229e28b57b0a0a1dffb6d44a8240ce47df6",
+    "sequential-Os-indexed256/memory.hex": "f2eee9207b8c92f835d1628d9d637f5e1a8ca073c4a3a3a44ef6790847c7d261",
+    "sequential-Os-indexed256/simulation.log": "88cba6f32765b7e0abad1859f4e1a91c829839549bfcafa39151ea12f8388ace",
+    "sequential-Os-indexed256/trace.txt": "7626bd58fdc538b45c9e38f0e387a229e28b57b0a0a1dffb6d44a8240ce47df6",
+    "sequential-Os-indexed64/memory.hex": "f2eee9207b8c92f835d1628d9d637f5e1a8ca073c4a3a3a44ef6790847c7d261",
+    "sequential-Os-indexed64/simulation.log": "03b91bfc489ff414c7a1f967e01ca112f3142146420d7533ee28777d0718adc1",
+    "sequential-Os-indexed64/trace.txt": "7626bd58fdc538b45c9e38f0e387a229e28b57b0a0a1dffb6d44a8240ce47df6",
+    "sequential-Os-parallel64/memory.hex": "f2eee9207b8c92f835d1628d9d637f5e1a8ca073c4a3a3a44ef6790847c7d261",
+    "sequential-Os-parallel64/simulation.log": "5b165e3ac35071455e94340918553ce7fc0af33be39ab695be3908b9409741ee",
+    "sequential-Os-parallel64/trace.txt": "7626bd58fdc538b45c9e38f0e387a229e28b57b0a0a1dffb6d44a8240ce47df6",
+    "sort-O2-indexed1024/memory.hex": "1bece1f23327f7e206e2c4e05cf3bc41827c12e3b02bfdbf26f6929d2943eae3",
+    "sort-O2-indexed1024/simulation.log": "205ab503e88743f30cb2f633f19fd4f6a97dcd52757b4b0bc51672aef5c7ef92",
+    "sort-O2-indexed1024/trace.txt": "ba21d726df68d7d6b6192fcd95b5df327bdf0e67a403bd3ae2448b1b6b92e301",
+    "sort-O2-indexed256/memory.hex": "1bece1f23327f7e206e2c4e05cf3bc41827c12e3b02bfdbf26f6929d2943eae3",
+    "sort-O2-indexed256/simulation.log": "776e9cc09cfe78997041dd743e1977b5d1e38e2e5b7426f5b1a44072f4b96556",
+    "sort-O2-indexed256/trace.txt": "ba21d726df68d7d6b6192fcd95b5df327bdf0e67a403bd3ae2448b1b6b92e301",
+    "sort-O2-indexed64/memory.hex": "1bece1f23327f7e206e2c4e05cf3bc41827c12e3b02bfdbf26f6929d2943eae3",
+    "sort-O2-indexed64/simulation.log": "8ec84fd743e3b1d5bd0d6bcef13d7eacce5cf2ed2c93544a1131d0ccc1fc1452",
+    "sort-O2-indexed64/trace.txt": "ba21d726df68d7d6b6192fcd95b5df327bdf0e67a403bd3ae2448b1b6b92e301",
+    "sort-O2-parallel64/memory.hex": "1bece1f23327f7e206e2c4e05cf3bc41827c12e3b02bfdbf26f6929d2943eae3",
+    "sort-O2-parallel64/simulation.log": "56665d1f4533025722868ef3bcc9c3f7ce322c60864bf5b05992e5dccb2b8c61",
+    "sort-O2-parallel64/trace.txt": "ba21d726df68d7d6b6192fcd95b5df327bdf0e67a403bd3ae2448b1b6b92e301",
+    "sort-Os-indexed1024/memory.hex": "1bece1f23327f7e206e2c4e05cf3bc41827c12e3b02bfdbf26f6929d2943eae3",
+    "sort-Os-indexed1024/simulation.log": "392c10728ce09f0a5ef6da69bd41161538bfdc141f447c174527d85aa870e60e",
+    "sort-Os-indexed1024/trace.txt": "c81d8da30627bec0dd680f8844180e0d95dd467b0a5aac65511a96faf7755cd2",
+    "sort-Os-indexed256/memory.hex": "1bece1f23327f7e206e2c4e05cf3bc41827c12e3b02bfdbf26f6929d2943eae3",
+    "sort-Os-indexed256/simulation.log": "516c56cad1d18d506f642286e82ec4a75a61a791849ca5894a78cb531218a6cb",
+    "sort-Os-indexed256/trace.txt": "c81d8da30627bec0dd680f8844180e0d95dd467b0a5aac65511a96faf7755cd2",
+    "sort-Os-indexed64/memory.hex": "1bece1f23327f7e206e2c4e05cf3bc41827c12e3b02bfdbf26f6929d2943eae3",
+    "sort-Os-indexed64/simulation.log": "9aa4b4a90a2628aa8d1cea0c65f563695a379b3839364a5f5e1ed0ee3e1c39a3",
+    "sort-Os-indexed64/trace.txt": "c81d8da30627bec0dd680f8844180e0d95dd467b0a5aac65511a96faf7755cd2",
+    "sort-Os-parallel64/memory.hex": "1bece1f23327f7e206e2c4e05cf3bc41827c12e3b02bfdbf26f6929d2943eae3",
+    "sort-Os-parallel64/simulation.log": "b1cbb39e9a90de8eb5b193a42541784bbc77f2f15621a2bb04996a71c192581f",
+    "sort-Os-parallel64/trace.txt": "c81d8da30627bec0dd680f8844180e0d95dd467b0a5aac65511a96faf7755cd2",
+    "vvp-version.log": "a72532465a6cdfc70e45d754bca4e6a52c463d36c63eb44fb622e754fb683268"
+  },
+  "finished_at_utc": "2026-10-03T00:01:45.037659+00:00",
+  "measurement_count": 80,
+  "overlap_histograms": [
+    {
+      "workload": "arithmetic",
+      "optimization": "O2",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 44,
+        "4": 9,
+        "8": 146,
+        "16": 16,
+        "20": 2,
+        "24": 4
+      }
+    },
+    {
+      "workload": "arithmetic",
+      "optimization": "O2",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 44,
+        "4": 9,
+        "8": 146,
+        "16": 16,
+        "20": 2,
+        "24": 4
+      }
+    },
+    {
+      "workload": "arithmetic",
+      "optimization": "O2",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 44,
+        "4": 9,
+        "8": 146,
+        "16": 14,
+        "20": 2,
+        "24": 4
+      }
+    },
+    {
+      "workload": "arithmetic",
+      "optimization": "O2",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 44,
+        "4": 9,
+        "8": 146,
+        "16": 14,
+        "20": 2,
+        "24": 4
+      }
+    },
+    {
+      "workload": "arithmetic",
+      "optimization": "Os",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 44,
+        "4": 8,
+        "8": 148,
+        "16": 17,
+        "20": 3,
+        "24": 2
+      }
+    },
+    {
+      "workload": "arithmetic",
+      "optimization": "Os",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 44,
+        "4": 8,
+        "8": 148,
+        "16": 17,
+        "20": 3,
+        "24": 2
+      }
+    },
+    {
+      "workload": "arithmetic",
+      "optimization": "Os",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 44,
+        "4": 8,
+        "8": 148,
+        "16": 15,
+        "20": 3,
+        "24": 2
+      }
+    },
+    {
+      "workload": "arithmetic",
+      "optimization": "Os",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 44,
+        "4": 8,
+        "8": 148,
+        "16": 15,
+        "20": 3,
+        "24": 2
+      }
+    },
+    {
+      "workload": "memory",
+      "optimization": "O2",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 1637,
+        "4": 140,
+        "16": 42,
+        "20": 5,
+        "32": 1,
+        "36": 2,
+        "52": 2
+      }
+    },
+    {
+      "workload": "memory",
+      "optimization": "O2",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 1637,
+        "4": 140,
+        "16": 42,
+        "20": 5,
+        "32": 1,
+        "36": 2,
+        "52": 2
+      }
+    },
+    {
+      "workload": "memory",
+      "optimization": "O2",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 1637,
+        "4": 140,
+        "16": 36,
+        "20": 5,
+        "32": 1,
+        "36": 2,
+        "52": 2
+      }
+    },
+    {
+      "workload": "memory",
+      "optimization": "O2",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 1638,
+        "4": 140,
+        "16": 31,
+        "20": 5,
+        "32": 1,
+        "36": 2,
+        "52": 2
+      }
+    },
+    {
+      "workload": "memory",
+      "optimization": "Os",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 1756,
+        "4": 139,
+        "8": 600,
+        "16": 44,
+        "20": 6,
+        "32": 121,
+        "36": 4
+      }
+    },
+    {
+      "workload": "memory",
+      "optimization": "Os",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 1756,
+        "4": 139,
+        "8": 600,
+        "16": 44,
+        "20": 6,
+        "32": 121,
+        "36": 4
+      }
+    },
+    {
+      "workload": "memory",
+      "optimization": "Os",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 1758,
+        "4": 139,
+        "8": 600,
+        "16": 38,
+        "20": 6,
+        "32": 121,
+        "36": 4
+      }
+    },
+    {
+      "workload": "memory",
+      "optimization": "Os",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 1758,
+        "4": 139,
+        "8": 600,
+        "16": 36,
+        "20": 6,
+        "32": 121,
+        "36": 4
+      }
+    },
+    {
+      "workload": "calls",
+      "optimization": "O2",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 381,
+        "4": 28,
+        "16": 182,
+        "20": 4
+      }
+    },
+    {
+      "workload": "calls",
+      "optimization": "O2",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 381,
+        "4": 28,
+        "16": 182,
+        "20": 4
+      }
+    },
+    {
+      "workload": "calls",
+      "optimization": "O2",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 384,
+        "4": 28,
+        "16": 40,
+        "20": 4
+      }
+    },
+    {
+      "workload": "calls",
+      "optimization": "O2",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 384,
+        "4": 28,
+        "16": 34,
+        "20": 4
+      }
+    },
+    {
+      "workload": "calls",
+      "optimization": "Os",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 483,
+        "4": 29,
+        "8": 70,
+        "16": 223,
+        "20": 3
+      }
+    },
+    {
+      "workload": "calls",
+      "optimization": "Os",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 483,
+        "4": 29,
+        "8": 70,
+        "16": 223,
+        "20": 3
+      }
+    },
+    {
+      "workload": "calls",
+      "optimization": "Os",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 486,
+        "4": 29,
+        "8": 70,
+        "16": 33,
+        "20": 3
+      }
+    },
+    {
+      "workload": "calls",
+      "optimization": "Os",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 486,
+        "4": 29,
+        "8": 70,
+        "16": 31,
+        "20": 3
+      }
+    },
+    {
+      "workload": "matvec",
+      "optimization": "O2",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 254,
+        "4": 43,
+        "8": 80,
+        "16": 48,
+        "20": 8
+      }
+    },
+    {
+      "workload": "matvec",
+      "optimization": "O2",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 254,
+        "4": 43,
+        "8": 80,
+        "16": 48,
+        "20": 8
+      }
+    },
+    {
+      "workload": "matvec",
+      "optimization": "O2",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 254,
+        "4": 49,
+        "8": 80,
+        "16": 12,
+        "20": 2
+      }
+    },
+    {
+      "workload": "matvec",
+      "optimization": "O2",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 254,
+        "4": 49,
+        "8": 80,
+        "16": 12,
+        "20": 2
+      }
+    },
+    {
+      "workload": "matvec",
+      "optimization": "Os",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 254,
+        "4": 43,
+        "8": 80,
+        "16": 48,
+        "20": 8
+      }
+    },
+    {
+      "workload": "matvec",
+      "optimization": "Os",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 254,
+        "4": 43,
+        "8": 80,
+        "16": 48,
+        "20": 8
+      }
+    },
+    {
+      "workload": "matvec",
+      "optimization": "Os",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 254,
+        "4": 49,
+        "8": 80,
+        "16": 12,
+        "20": 2
+      }
+    },
+    {
+      "workload": "matvec",
+      "optimization": "Os",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 254,
+        "4": 49,
+        "8": 80,
+        "16": 12,
+        "20": 2
+      }
+    },
+    {
+      "workload": "fir",
+      "optimization": "O2",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 6368,
+        "4": 1286,
+        "8": 2420,
+        "16": 589,
+        "20": 60,
+        "32": 484,
+        "36": 663
+      }
+    },
+    {
+      "workload": "fir",
+      "optimization": "O2",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 6368,
+        "4": 1286,
+        "8": 2420,
+        "16": 589,
+        "20": 60,
+        "32": 484,
+        "36": 663
+      }
+    },
+    {
+      "workload": "fir",
+      "optimization": "O2",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 6374,
+        "4": 980,
+        "8": 2420,
+        "16": 14,
+        "20": 3,
+        "32": 484,
+        "36": 1026
+      }
+    },
+    {
+      "workload": "fir",
+      "optimization": "O2",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 6374,
+        "4": 980,
+        "8": 2420,
+        "16": 14,
+        "20": 3,
+        "32": 484,
+        "36": 1026
+      }
+    },
+    {
+      "workload": "fir",
+      "optimization": "Os",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 6478,
+        "4": 974,
+        "8": 2420,
+        "16": 612,
+        "20": 2,
+        "32": 484,
+        "36": 1033
+      }
+    },
+    {
+      "workload": "fir",
+      "optimization": "Os",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 6478,
+        "4": 974,
+        "8": 2420,
+        "16": 612,
+        "20": 2,
+        "32": 484,
+        "36": 1033
+      }
+    },
+    {
+      "workload": "fir",
+      "optimization": "Os",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 6478,
+        "4": 974,
+        "8": 2420,
+        "16": 12,
+        "20": 2,
+        "32": 484,
+        "36": 1033
+      }
+    },
+    {
+      "workload": "fir",
+      "optimization": "Os",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 6478,
+        "4": 974,
+        "8": 2420,
+        "16": 12,
+        "20": 2,
+        "32": 484,
+        "36": 1033
+      }
+    },
+    {
+      "workload": "crc32",
+      "optimization": "O2",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7582,
+        "4": 626,
+        "16": 3991,
+        "20": 122
+      }
+    },
+    {
+      "workload": "crc32",
+      "optimization": "O2",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7582,
+        "4": 626,
+        "16": 3991,
+        "20": 122
+      }
+    },
+    {
+      "workload": "crc32",
+      "optimization": "O2",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7584,
+        "4": 744,
+        "16": 45,
+        "20": 4
+      }
+    },
+    {
+      "workload": "crc32",
+      "optimization": "O2",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7584,
+        "4": 744,
+        "16": 39,
+        "20": 4
+      }
+    },
+    {
+      "workload": "crc32",
+      "optimization": "Os",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 10094,
+        "4": 144,
+        "16": 781,
+        "32": 128
+      }
+    },
+    {
+      "workload": "crc32",
+      "optimization": "Os",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 10094,
+        "4": 144,
+        "16": 781,
+        "32": 128
+      }
+    },
+    {
+      "workload": "crc32",
+      "optimization": "Os",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 10094,
+        "4": 144,
+        "16": 13,
+        "32": 128
+      }
+    },
+    {
+      "workload": "crc32",
+      "optimization": "Os",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 10094,
+        "4": 144,
+        "16": 13,
+        "32": 128
+      }
+    },
+    {
+      "workload": "sort",
+      "optimization": "O2",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 11261,
+        "4": 1376,
+        "16": 734,
+        "20": 35,
+        "32": 928
+      }
+    },
+    {
+      "workload": "sort",
+      "optimization": "O2",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 11261,
+        "4": 1376,
+        "16": 734,
+        "20": 35,
+        "32": 928
+      }
+    },
+    {
+      "workload": "sort",
+      "optimization": "O2",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 11263,
+        "4": 1410,
+        "16": 24,
+        "20": 1,
+        "32": 928
+      }
+    },
+    {
+      "workload": "sort",
+      "optimization": "O2",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 11263,
+        "4": 1410,
+        "16": 24,
+        "20": 1,
+        "32": 928
+      }
+    },
+    {
+      "workload": "sort",
+      "optimization": "Os",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 11295,
+        "4": 1406,
+        "16": 734,
+        "20": 5,
+        "32": 884,
+        "48": 49
+      }
+    },
+    {
+      "workload": "sort",
+      "optimization": "Os",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 11295,
+        "4": 1406,
+        "16": 734,
+        "20": 5,
+        "32": 884,
+        "48": 49
+      }
+    },
+    {
+      "workload": "sort",
+      "optimization": "Os",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 11314,
+        "4": 1410,
+        "16": 19,
+        "20": 1,
+        "32": 933
+      }
+    },
+    {
+      "workload": "sort",
+      "optimization": "Os",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 11314,
+        "4": 1410,
+        "16": 19,
+        "20": 1,
+        "32": 933
+      }
+    },
+    {
+      "workload": "resident",
+      "optimization": "O2",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 31,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "resident",
+      "optimization": "O2",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 31,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "resident",
+      "optimization": "O2",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 31,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "resident",
+      "optimization": "O2",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 31,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "resident",
+      "optimization": "Os",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 29,
+        "16": 3,
+        "20": 3
+      }
+    },
+    {
+      "workload": "resident",
+      "optimization": "Os",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 29,
+        "16": 3,
+        "20": 3
+      }
+    },
+    {
+      "workload": "resident",
+      "optimization": "Os",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 29,
+        "16": 3,
+        "20": 3
+      }
+    },
+    {
+      "workload": "resident",
+      "optimization": "Os",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 29,
+        "16": 3,
+        "20": 3
+      }
+    },
+    {
+      "workload": "sequential",
+      "optimization": "O2",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 1039,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "sequential",
+      "optimization": "O2",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 1039,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "sequential",
+      "optimization": "O2",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 1039,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "sequential",
+      "optimization": "O2",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 1039,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "sequential",
+      "optimization": "Os",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 1037,
+        "16": 3,
+        "20": 3
+      }
+    },
+    {
+      "workload": "sequential",
+      "optimization": "Os",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 1037,
+        "16": 3,
+        "20": 3
+      }
+    },
+    {
+      "workload": "sequential",
+      "optimization": "Os",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 1037,
+        "16": 3,
+        "20": 3
+      }
+    },
+    {
+      "workload": "sequential",
+      "optimization": "Os",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 1037,
+        "16": 3,
+        "20": 3
+      }
+    },
+    {
+      "workload": "conflict",
+      "optimization": "O2",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 4102,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "conflict",
+      "optimization": "O2",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 4102,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "conflict",
+      "optimization": "O2",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 4102,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "conflict",
+      "optimization": "O2",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7182,
+        "4": 4102,
+        "16": 6,
+        "20": 1
+      }
+    },
+    {
+      "workload": "conflict",
+      "optimization": "Os",
+      "profile": "parallel64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 4100,
+        "16": 3,
+        "20": 3
+      }
+    },
+    {
+      "workload": "conflict",
+      "optimization": "Os",
+      "profile": "indexed64",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 4100,
+        "16": 3,
+        "20": 3
+      }
+    },
+    {
+      "workload": "conflict",
+      "optimization": "Os",
+      "profile": "indexed256",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 4100,
+        "16": 3,
+        "20": 3
+      }
+    },
+    {
+      "workload": "conflict",
+      "optimization": "Os",
+      "profile": "indexed1024",
+      "scenario": null,
+      "rows": null,
+      "jobs": null,
+      "nonzero_masks": {
+        "0": 7180,
+        "4": 4100,
+        "16": 3,
+        "20": 3
+      }
+    }
+  ],
+  "csv_sha256": "e44d2a4456888b278dad5315bdc3228dae3c31be9ea801a5363fa0004d393b8d"
+}

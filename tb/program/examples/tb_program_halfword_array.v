@@ -12,7 +12,7 @@ module tb_program_halfword_array;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_program_halfword_array.vcd");
+        $dumpfile("results/waveforms/tb_program_halfword_array.vcd");
         $dumpvars(0, tb_program_halfword_array);
         reset_cpu();
 

@@ -1,11 +1,10 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_forwarded_alignment_equivalence
-// Purpose: Proves by directed simulation that the dedicated alignment-low mux matches full rs1 forwarding.
+// Purpose: Checks by directed simulation that the dedicated alignment-low mux matches full rs1 forwarding.
 // Checks: No bypass, EX/MEM and MEM/WB bypass, priority, x0 exclusion, PC+4, all low-bit values,
 //   and equal low bits with intentionally different upper 30 bits.
 // Pass condition: Every directed forwarding combination preserves priority and low-bit equivalence.
-// Does not prove: Directed simulation only; a separate symbolic smoke covers all standalone input combinations.
+// A separate one-step symbolic harness checks arbitrary forwarding inputs.
 
 module tb_assert_forwarded_alignment_equivalence;
     reg [31:0] idex_a;

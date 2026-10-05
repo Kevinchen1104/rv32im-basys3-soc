@@ -5,10 +5,6 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\random-reference.ps1 -Check -SkipSimulation
 Outputs:
   fixtures\generated\reference\random_reference* artifacts or freshness diagnostics.
-Scope:
-  Directed random-reference evidence only; not exhaustive verification.
-Audience:
-  Internal helper used by scripts\check.ps1.
 #>
 param(
     [int]$Seed = 1104,
@@ -17,6 +13,7 @@ param(
     [switch]$SkipSimulation
 )
 
+. "$PSScriptRoot/reference-common.ps1"
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
@@ -25,45 +22,10 @@ Set-Location $repoRoot
 $hexPath = Join-Path $repoRoot "fixtures/generated/reference/random_reference.hex"
 $expectedPath = Join-Path $repoRoot "fixtures/generated/reference/random_reference_expected.hex"
 
-function To-UInt32 {
-    param([int64]$Value)
-    return [uint32]($Value -band 0xffffffffL)
-}
-
-function To-SInt32 {
-    param([uint32]$Value)
-    if (($Value -band 0x80000000) -ne 0) {
-        return [int64]$Value - 4294967296L
-    }
-    return [int64]$Value
-}
-
-function Encode-RType {
-    param([int]$Funct7, [int]$Rs2, [int]$Rs1, [int]$Funct3, [int]$Rd)
-    return [uint32](([uint64]$Funct7 -shl 25) -bor
-                    ([uint64]$Rs2 -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]0x33)
-}
-
-function Encode-IType {
-    param([int]$Immediate, [int]$Rs1, [int]$Funct3, [int]$Rd, [int]$Opcode)
-    return [uint32](([uint64]($Immediate -band 0xfff) -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]$Opcode)
-}
-
 function Encode-UType {
     param([int]$Immediate, [int]$Rd, [int]$Opcode)
     return [uint32](([uint64]($Immediate -band 0xfffff) -shl 12) -bor
                     ([uint64]$Rd -shl 7) -bor [uint64]$Opcode)
-}
-
-function Format-HexWord {
-    param([uint32]$Value)
-    return "{0:x8}" -f $Value
 }
 
 $random = [System.Random]::new($Seed)

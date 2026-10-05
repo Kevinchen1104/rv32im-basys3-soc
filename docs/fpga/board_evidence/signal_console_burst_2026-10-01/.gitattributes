@@ -1,0 +1,2 @@
+# Preserve Vivado's original report bytes and column padding.
+*.rpt -text -whitespace

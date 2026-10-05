@@ -12,7 +12,7 @@ module tb_program_string_escape;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_program_string_escape.vcd");
+        $dumpfile("results/waveforms/tb_program_string_escape.vcd");
         $dumpvars(0, tb_program_string_escape);
         reset_cpu();
 

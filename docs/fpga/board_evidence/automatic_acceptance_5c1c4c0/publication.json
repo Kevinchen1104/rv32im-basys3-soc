@@ -1,0 +1,288 @@
+{
+  "status": "passed",
+  "scope": "automatic JTAG, UART, numerical outputs, reload and viewer",
+  "manual_led_observation": "not_performed",
+  "manual_reset_button_test": "not_performed",
+  "build_input_checks": [
+    {
+      "source_commit": "9d46f0418a7ac6296a8a116aef524cca6b58a5e3",
+      "source_fingerprint": "293d6cc96a7134b3c6caeca1e80984bd5c21b79d6f7083e6b77882c8416e983a",
+      "input_count": 45,
+      "inputs_match_recorded_commit": true,
+      "raw_inputs_match_capture": true,
+      "original_working_tree_dirty": false,
+      "original_verification_inputs_changed_during_run": true
+    },
+    {
+      "source_commit": "5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e",
+      "source_fingerprint": "293d6cc96a7134b3c6caeca1e80984bd5c21b79d6f7083e6b77882c8416e983a",
+      "input_count": 45,
+      "inputs_match_recorded_commit": true,
+      "raw_inputs_match_capture": true,
+      "original_working_tree_dirty": true,
+      "original_verification_inputs_changed_during_run": false
+    }
+  ],
+  "records": [
+    {
+      "source": "results/acceptance-review.json",
+      "original_sha256": "179036ac60f38d75b77ac05a780db68afa7d14fb7cffd4c79ed5f6040af7b96d",
+      "published": "acceptance.json"
+    },
+    {
+      "source": "results/timing/default-current.json",
+      "original_sha256": "ef7e577c0baa5b5e00bc11185abe51add1ec548f8582678cf0bbc60315ba317d",
+      "published": "default-build.json"
+    },
+    {
+      "source": "results/timing/signal-console-summary.json",
+      "original_sha256": "0e33f9a3d0a02f0af132218558b1861ea1b3806f6d366eb2ba10667af1a361a1",
+      "published": "application-build.json"
+    },
+    {
+      "source": "build/vivado/signal_console/reports/post_route_critical_paths.rpt",
+      "original_sha256": "3d59b20949d8efa348cc4827072c2ee6f1cfe62abde58c2f76601423c273c884",
+      "published": "application-reports/post_route_critical_paths.rpt"
+    },
+    {
+      "source": "build/vivado/signal_console/reports/post_route_drc.rpt",
+      "original_sha256": "605cc49f3e1f58382d1b2a8f05490e95287391b9c612c2c65b61dea1d1b4ba0b",
+      "published": "application-reports/post_route_drc.rpt"
+    },
+    {
+      "source": "build/vivado/signal_console/reports/post_route_hierarchy.rpt",
+      "original_sha256": "1c5f68977b90b601b1134eb07dbc4aff2f3234cfb0359216858fbf39b58c0d03",
+      "published": "application-reports/post_route_hierarchy.rpt"
+    },
+    {
+      "source": "build/vivado/signal_console/reports/post_route_timing_summary.rpt",
+      "original_sha256": "65ef67a8e3b5c87bd1c6c0b8b166165f6a8f51fa16f2da52c16cc9080ba428fd",
+      "published": "application-reports/post_route_timing_summary.rpt"
+    },
+    {
+      "source": "build/vivado/signal_console/reports/post_route_utilization.rpt",
+      "original_sha256": "694016f0888d1a96f8336a803c24c96083e760363ac70d2a58e59d5520a3b176",
+      "published": "application-reports/post_route_utilization.rpt"
+    },
+    {
+      "source": "results/board/review-automatic/Showcase/programming.hardware.json",
+      "original_sha256": "7ad2b67ac863838e837ad742dab0bec872c5619936344ad1f5587f5d795fa8e2",
+      "published": "default/Showcase/programming.hardware.json"
+    },
+    {
+      "source": "results/board/review-automatic/Showcase/programming.json",
+      "original_sha256": "a945fe7ed8908fa4bbc52784c73a13be88bb5225f8466e9a30d7d8dd11fe9884",
+      "published": "default/Showcase/programming.json"
+    },
+    {
+      "source": "results/board/review-automatic/Showcase/programming.log",
+      "original_sha256": "9e32b04ae043f3d2e50aebcdb79a0d2f6df8a12e8e48967b2c75bd1a16a4dd21",
+      "published": "default/Showcase/programming.log"
+    },
+    {
+      "source": "results/board/review-automatic/Showcase/summary.json",
+      "original_sha256": "b538256cb601bf6483b79aac425461a3abedafe38444c678bc1bed839268916a",
+      "published": "default/Showcase/summary.json"
+    },
+    {
+      "source": "results/board/review-automatic/Showcase/uart.txt",
+      "original_sha256": "983a592b146062541104b69e82c2abe463b498d70c659545141f05fa8d73ef9a",
+      "published": "default/Showcase/uart.txt"
+    },
+    {
+      "source": "results/board/review-automatic/Interactive/programming.hardware.json",
+      "original_sha256": "ada140cd9a2ad254073ecb424d489baae9f0b5fa927e2cf5315213f889842817",
+      "published": "default/Interactive/programming.hardware.json"
+    },
+    {
+      "source": "results/board/review-automatic/Interactive/programming.json",
+      "original_sha256": "ba9c4c2f2fa5f9e3d5b5503638a985699081de3815529ec7fc1052cc83bc6760",
+      "published": "default/Interactive/programming.json"
+    },
+    {
+      "source": "results/board/review-automatic/Interactive/programming.log",
+      "original_sha256": "b86574f942ec77eb114af8e64400ad606b178c5bd713b4e965ebf1326a977278",
+      "published": "default/Interactive/programming.log"
+    },
+    {
+      "source": "results/board/review-automatic/Interactive/summary.json",
+      "original_sha256": "b872fe2ad18f47b66445ac0f3c0a02eff4f0a7cffbd06328abccaca8847ae660",
+      "published": "default/Interactive/summary.json"
+    },
+    {
+      "source": "results/board/review-automatic/Interactive/uart.txt",
+      "original_sha256": "3640188d8d3f56b1a613d7cb900d04798814d4654f50f48d738a66f11ef33736",
+      "published": "default/Interactive/uart.txt"
+    },
+    {
+      "source": "results/board/review-automatic/HardwareValidation/programming.hardware.json",
+      "original_sha256": "6e2a64440e7b883f447c2fe1dc14b319ac11f6beb3a94b8a29054ddc0bd27055",
+      "published": "default/HardwareValidation/programming.hardware.json"
+    },
+    {
+      "source": "results/board/review-automatic/HardwareValidation/programming.json",
+      "original_sha256": "3375c5c62e1edbd093c065f3f5f9339e100528a711532f86846ba987884075c3",
+      "published": "default/HardwareValidation/programming.json"
+    },
+    {
+      "source": "results/board/review-automatic/HardwareValidation/programming.log",
+      "original_sha256": "c4706e73841fd988ad5d62bb3be4532d216450e56203fc49546909a1688b0d62",
+      "published": "default/HardwareValidation/programming.log"
+    },
+    {
+      "source": "results/board/review-automatic/HardwareValidation/summary.json",
+      "original_sha256": "05cff28982fed0b14073cb2d204a53a125bf96675de406445ad983195bc5950a",
+      "published": "default/HardwareValidation/summary.json"
+    },
+    {
+      "source": "results/board/review-automatic/HardwareValidation/uart.txt",
+      "original_sha256": "e79c0a5cf34d98c178a4f4fe0a6f0cd65472daf786f0d523c2e97338725e6282",
+      "published": "default/HardwareValidation/uart.txt"
+    },
+    {
+      "source": "results/board/review-automatic/Matvec/comparison.json",
+      "original_sha256": "fdbc8f176cd33a259e9e89fdffa801a3145a56faa789a785549aab4c56f9a0ae",
+      "published": "default/Matvec/comparison.json"
+    },
+    {
+      "source": "results/board/review-automatic/Matvec/measurements.csv",
+      "original_sha256": "16553e1cf78b2b93e627adbaa51b318331e864e28de342fb78c6143aa61c5577",
+      "published": "default/Matvec/measurements.csv"
+    },
+    {
+      "source": "results/board/review-automatic/Matvec/programming.hardware.json",
+      "original_sha256": "6eaffe2693196059ae3d3d9ffe54fd98f47b2723069432135514970d3904f811",
+      "published": "default/Matvec/programming.hardware.json"
+    },
+    {
+      "source": "results/board/review-automatic/Matvec/programming.json",
+      "original_sha256": "2f2662f0050fe0fa87b85c48c6799848ab1e3a726bf155d0797028243d5819dd",
+      "published": "default/Matvec/programming.json"
+    },
+    {
+      "source": "results/board/review-automatic/Matvec/programming.log",
+      "original_sha256": "11ca201fdedd104e6e594e1c47ea2cde49f6e234692b3e1f52c7577eb686a8a3",
+      "published": "default/Matvec/programming.log"
+    },
+    {
+      "source": "results/board/review-automatic/Matvec/summary.json",
+      "original_sha256": "cced0ee153defb42eb50c77d6fbf39f79327f9665d3579aa8a5c7c3ee3802c6c",
+      "published": "default/Matvec/summary.json"
+    },
+    {
+      "source": "results/board/review-automatic/Matvec/uart.txt",
+      "original_sha256": "77113bf1dd8c8d2815c12a2aed1e949ac9917ec3021ad51ac216845d73d9f2ac",
+      "published": "default/Matvec/uart.txt"
+    },
+    {
+      "source": "results/board/review-automatic/MatvecReload/comparison.json",
+      "original_sha256": "e21a50461f065bf1ebb098a0081b87424303f72c3df01a53c71afacc3fa4a9a7",
+      "published": "default/MatvecReload/comparison.json"
+    },
+    {
+      "source": "results/board/review-automatic/MatvecReload/measurements.csv",
+      "original_sha256": "16553e1cf78b2b93e627adbaa51b318331e864e28de342fb78c6143aa61c5577",
+      "published": "default/MatvecReload/measurements.csv"
+    },
+    {
+      "source": "results/board/review-automatic/MatvecReload/programming.hardware.json",
+      "original_sha256": "ae94772072584575967e568b981752c2e85be4025ccf56144f655a3f52c8da45",
+      "published": "default/MatvecReload/programming.hardware.json"
+    },
+    {
+      "source": "results/board/review-automatic/MatvecReload/programming.json",
+      "original_sha256": "2dbef6ad14854fb7e7fce8cf3b2b17aeeadf9914360733f3a0b8cf456fb88b45",
+      "published": "default/MatvecReload/programming.json"
+    },
+    {
+      "source": "results/board/review-automatic/MatvecReload/programming.log",
+      "original_sha256": "01c0e9157ae3cd87d0a614029636dfcd0c8b8e3d271fb36d8930c637c4816780",
+      "published": "default/MatvecReload/programming.log"
+    },
+    {
+      "source": "results/board/review-automatic/MatvecReload/summary.json",
+      "original_sha256": "e6bfd493b2921af1b6d5e19c753a161622cf24a1238e101765037d0982cce8f2",
+      "published": "default/MatvecReload/summary.json"
+    },
+    {
+      "source": "results/board/review-automatic/MatvecReload/uart.txt",
+      "original_sha256": "77113bf1dd8c8d2815c12a2aed1e949ac9917ec3021ad51ac216845d73d9f2ac",
+      "published": "default/MatvecReload/uart.txt"
+    },
+    {
+      "source": "results/signal-console/board-burst/default-review.json",
+      "original_sha256": "87760beb9fc889c882e622d4fe723b7d97774103a7607dcfb73d79023cd402ed",
+      "published": "fir/default-review.json"
+    },
+    {
+      "source": "results/signal-console/board-burst/default-review-programming.json",
+      "original_sha256": "9081e8eba2144dddc26575d118b66ac67239774c31098e1c373e0b3675fb8a5d",
+      "published": "fir/default-review-programming.json"
+    },
+    {
+      "source": "results/signal-console/board-burst/default-review-programming.log",
+      "original_sha256": "e52b493b97f502b192056c9ea317e62beb0948a13453f8c9e0c48816d985efeb",
+      "published": "fir/default-review-programming.log"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-dm128-reload.json",
+      "original_sha256": "8b78d79a4e2be17840c942d66edc120a10385f7b9e80d4c951981e67a5ff9f0f",
+      "published": "fir/capacity-dm128-reload.json"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-dm128-reload-programming.json",
+      "original_sha256": "0145ee9e80fb27fb1d16d3232d05ae97f3ee9342a0f2c5ef6b46ac0f7f48b9f0",
+      "published": "fir/capacity-dm128-reload-programming.json"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-dm128-reload-programming.log",
+      "original_sha256": "b191ea509ec47403902c43592a7b9ba1a068f3f3a40cb9d754ba59c84e3bea8f",
+      "published": "fir/capacity-dm128-reload-programming.log"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim4-reload.json",
+      "original_sha256": "dac388eb8c851c6805783365a3ec63b59b2ffef041844f9dacf993580b3c0c64",
+      "published": "fir/capacity-victim4-reload.json"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim4-reload-programming.json",
+      "original_sha256": "19e463d4376e9fa2fe0f47bc93b3e52cdee9a3487a77acd6114cd5e0674d25b0",
+      "published": "fir/capacity-victim4-reload-programming.json"
+    },
+    {
+      "source": "results/signal-console/board-burst/capacity-victim4-reload-programming.log",
+      "original_sha256": "34234b6d09fc9952c4c313dd9edb7b5e10751c2b3b1547de3e83a8067797f605",
+      "published": "fir/capacity-victim4-reload-programming.log"
+    },
+    {
+      "source": "results/signal-console/viewer-validation.json",
+      "original_sha256": "345bfc0ec28113146751e9d0a776ec44f0b130254e259d45c473a8eb72e8478b",
+      "published": "viewer/validation.json"
+    },
+    {
+      "source": "results/signal-console/board-burst/default-viewer-review-programming.json",
+      "original_sha256": "7bb02454637d088e6a0bc4565c7d3642c775ee3e82e9e8bd9136f5c48c9995e9",
+      "published": "viewer/programming.json"
+    },
+    {
+      "source": "results/signal-console/board-burst/default-viewer-review-programming.log",
+      "original_sha256": "e2fcf3a3b68f726754b7ee15f64669d28507e27e1ac2637749a7dc9f3b39c6a3",
+      "published": "viewer/programming.log"
+    },
+    {
+      "source": "results/signal-console/viewer-checked.csv",
+      "original_sha256": "9d097e117cec5a694e5d86bca862508e6dddd3a49d0055314c1532fdb3c2a720",
+      "published": "viewer/viewer-checked.csv"
+    },
+    {
+      "source": "results/signal-console/viewer-checked.png",
+      "original_sha256": "00acf924dc5cd913443899bb47f3c1d1a19270818fd33e5124dab2613075339b",
+      "published": "viewer/viewer-checked.png"
+    },
+    {
+      "source": "results/signal-console/viewer-checked.json",
+      "original_sha256": "5250a244348e9ca0604af426951871c132c0774e1ae493d03e5248f85361b151",
+      "published": "viewer/viewer-checked.json"
+    }
+  ]
+}

@@ -1,10 +1,8 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_interrupt_dcache_stall_release
 // Purpose: Checks MMIO D-cache bypass and precise interrupt acceptance across D-cache backpressure.
 // Checks: Exhaustive mapped-register aliases, undefined page holes, one-shot MMIO effects, stall-held interrupt eligibility, and exception/mret priority.
 // Pass condition: MMIO requests bypass without misses, ordinary addresses miss, and a deferred interrupt updates PC/CSRs exactly once after stall release.
-// Does not prove: Complete privileged behavior, arbitrary cache traffic, timing closure, or physical-board operation.
 // Assertion focus: Redirect requests may remain high during a stall, while PC and interrupt CSR side effects wait for the single acceptance boundary.
 
 module tb_assert_interrupt_dcache_stall_release;
@@ -342,7 +340,7 @@ module tb_assert_interrupt_dcache_stall_release;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_interrupt_dcache_stall_release.vcd");
+        $dumpfile("results/waveforms/tb_assert_interrupt_dcache_stall_release.vcd");
         $dumpvars(0, tb_assert_interrupt_dcache_stall_release);
         monitor_interrupt = 1'b0;
         monitor_gpio = 1'b0;

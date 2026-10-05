@@ -157,8 +157,47 @@ module tb_alu;
     end
     endtask
 
+    task check_all_shift_amounts;
+        integer pattern_index;
+        integer amount;
+        integer immediate_form;
+    begin
+        set_result_defaults();
+        for (pattern_index = 0; pattern_index < 68; pattern_index = pattern_index + 1) begin
+            if (pattern_index < 32)
+                result_lhs = 32'h1 << pattern_index;
+            else if (pattern_index < 64)
+                result_lhs = ~(32'h1 << (pattern_index - 32));
+            else case (pattern_index)
+                64: result_lhs = 32'h0;
+                65: result_lhs = 32'hffff_ffff;
+                66: result_lhs = 32'haaaa_aaaa;
+                67: result_lhs = 32'h5555_5555;
+            endcase
+
+            for (amount = 0; amount < 32; amount = amount + 1) begin
+                for (immediate_form = 0; immediate_form < 2; immediate_form = immediate_form + 1) begin
+                    result_opcode = immediate_form ? 7'b0010011 : 7'b0110011;
+                    // The unused operand has a different amount; upper bits
+                    // must never affect a register shift's five-bit amount.
+                    result_rhs = 32'ha5a5_ffe0 | (immediate_form ? (31 - amount) : amount);
+                    result_imm_i = 32'h5a5a_ffe0 | (immediate_form ? amount : (31 - amount));
+                    result_funct7 = 7'b0000000;
+                    result_funct3 = 3'b001;
+                    check_execute_result("shift sweep SLL/SLLI", result_lhs << amount);
+                    result_funct3 = 3'b101;
+                    check_execute_result("shift sweep SRL/SRLI", result_lhs >> amount);
+                    result_funct7 = 7'b0100000;
+                    check_execute_result("shift sweep SRA/SRAI", $signed(result_lhs) >>> amount);
+                end
+            end
+        end
+        $display("PASS: 13056 shift checks (68 patterns x 32 amounts x 6 instructions)");
+    end
+    endtask
+
     initial begin
-        $dumpfile("wave/tb_alu.vcd");
+        $dumpfile("results/waveforms/tb_alu.vcd");
         $dumpvars(0, tb_alu);
 
         set_result_defaults();
@@ -392,6 +431,12 @@ module tb_alu;
         check_result_class("unsupported ALUR funct combination", 1'b0,
                            32'h3333_3333, 32'h0);
 
+        check_all_shift_amounts();
+        result_funct7 = 7'b0000010;
+        check_execute_result("unsupported immediate shift encoding", 32'h0);
+        result_opcode = 7'b0110011;
+        check_execute_result("unsupported register shift encoding", 32'h0);
+
         reset_cpu();
 
         dut.IMemory[0] = i_type(12'hfff, 5'd0, 3'b000, 5'd1, 7'b0010011);  // addi x1, x0, -1
@@ -435,6 +480,26 @@ module tb_alu;
         check_reg(19, 32'd68);
         check_reg(20, 32'd69);
         check_reg(22, 32'd127);
+
+        reset_cpu();
+        dut.IMemory[0] = {20'h80000, 5'd1, 7'b0110111}; // lui x1, 0x80000
+        dut.IMemory[1] = i_type(12'd4, 5'd0, 3'b000, 5'd2, 7'b0010011);
+        dut.IMemory[2] = r_type(7'b0100000, 5'd2, 5'd1, 3'b101, 5'd3, 7'b0110011); // MEM/WB lhs, EX/MEM amount
+        dut.IMemory[3] = i_type(12'd1, 5'd3, 3'b001, 5'd4, 7'b0010011); // forwarded lhs into SLLI
+        dut.IMemory[4] = i_type(12'd31, 5'd0, 3'b000, 5'd5, 7'b0010011);
+        dut.IMemory[5] = NOP;
+        dut.IMemory[6] = r_type(7'b0000000, 5'd5, 5'd2, 3'b001, 5'd6, 7'b0110011); // MEM/WB amount
+        dut.IMemory[7] = r_type(7'b0000000, 5'd5, 5'd3, 3'b101, 5'd7, 7'b0110011);
+        dut.IMemory[8] = i_type(12'h41f, 5'd1, 3'b101, 5'd8, 7'b0010011);
+        dut.IMemory[9] = i_type(12'd31, 5'd1, 3'b101, 5'd9, 7'b0010011);
+        dut.IMemory[10] = b_type(0, 5'd0, 5'd0, 3'b000, 7'b1100011);
+        run_cycles(100);
+        check_reg(3, 32'hf800_0000);
+        check_reg(4, 32'hf000_0000);
+        check_reg(6, 32'h0);
+        check_reg(7, 32'h1);
+        check_reg(8, 32'hffff_ffff);
+        check_reg(9, 32'h1);
         $display("PASS: tb_alu passed");
         $finish;
     end

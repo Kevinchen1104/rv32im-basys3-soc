@@ -1,12 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_top_reset_active_low
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: Active-low reset handling in the FPGA top.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Wrapper polarity check only.
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_top_reset_active_low;
 
@@ -37,7 +31,7 @@ module tb_fpga_top_reset_active_low;
     always #5 clock = ~clock;
 
     initial begin
-        $dumpfile("wave/tb_fpga_top_reset_active_low.vcd");
+        $dumpfile("results/waveforms/tb_fpga_top_reset_active_low.vcd");
         $dumpvars(0, tb_fpga_top_reset_active_low);
 
         #2;

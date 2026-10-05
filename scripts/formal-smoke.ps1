@@ -4,20 +4,27 @@ Purpose: Runs portable formal smoke checks for selected core invariants when too
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\formal-smoke.ps1
 Outputs:
-  Formal work directories and logs under wave\formal-smoke or console blocked-tool status.
-Scope:
-  Focused formal smoke evidence only; not a complete formal proof.
-Audience:
-  Public optional formal check.
+  Work files under build/formal; command logs under results/logs/formal; JSON summary under results/.
 #>
+param(
+    [ValidateSet('Core', 'Matvec')][string]$Group = 'Core',
+    [ValidateRange(1,86400)][int]$TimeoutSeconds = 900
+)
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 . "$PSScriptRoot\verification-source-identity.ps1"
+. "$PSScriptRoot/process-runner.ps1"
+$summaryPath = if ($Group -eq 'Core') { 'results/formal-smoke-summary.json' } else { 'results/formal-matvec-smoke-summary.json' }
+$summary = [ordered]@{ status='running'; started_at_utc=(Get-Date).ToUniversalTime().ToString('o'); harnesses=@(); error_message=$null }
+Write-ResultJson $summary $summaryPath
+try {
+$startingIdentity = Add-VerificationIdentityFields $summary
 
 $sbyArgs = @()
-$python = Get-Command python3.exe -ErrorAction SilentlyContinue
+$python = Get-Command python.exe, python3.exe -CommandType Application -All -ErrorAction SilentlyContinue |
+    Where-Object { $_.Source -notmatch 'Microsoft\\WindowsApps' } | Select-Object -First 1
 $smtbmcScript = Get-Command yosys-smtbmc-script.py -ErrorAction SilentlyContinue
 if ($python -and $smtbmcScript) {
     $smtbmcCommand =
@@ -48,11 +55,12 @@ function Invoke-SymbiYosys {
 
     if ($sby) {
         try {
-            & $sby.Source @sbyArgs -f $SbyFile
-            if ($LASTEXITCODE -eq 0) {
+            $name = [IO.Path]::GetFileNameWithoutExtension($SbyFile)
+            $result = Invoke-LoggedProcess -FilePath $sby.Source -Arguments (@($sbyArgs) + @('-f', '-d', "build/formal/$name", $SbyFile)) -LogPath "results/logs/formal/$name.log" -WorkingDirectory $repoRoot -TimeoutSeconds $TimeoutSeconds
+            if ($result.status -eq 'passed') {
                 return
             }
-            exit $LASTEXITCODE
+            throw "Formal check failed: $SbyFile. $($result.error_message) See $($result.log)"
         } catch {
             if ($_.Exception.Message -notmatch "Application Control policy") {
                 throw
@@ -68,36 +76,36 @@ function Invoke-SymbiYosys {
         throw "SymbiYosys not found. Install sby/SymbiYosys to run optional formal smoke; scripts/check.ps1 remains the main release gate."
     }
 
-    & $python.Source $sbyScript.Source @sbyArgs -f $SbyFile
-    if ($LASTEXITCODE -ne 0) {
-        exit $LASTEXITCODE
-    }
+    $name = [IO.Path]::GetFileNameWithoutExtension($SbyFile)
+    $result = Invoke-LoggedProcess -FilePath $python.Source -Arguments (@($sbyScript.Source) + @($sbyArgs) + @('-f', '-d', "build/formal/$name", $SbyFile)) -LogPath "results/logs/formal/$name.log" -WorkingDirectory $repoRoot -TimeoutSeconds $TimeoutSeconds
+    if ($result.status -ne 'passed') { throw "Formal check failed: $SbyFile. See $($result.log)" }
 }
 
-Invoke-SymbiYosys "formal\forwarding_alignment_equivalence.sby"
-Invoke-SymbiYosys "formal\alu_result_classification.sby"
-Invoke-SymbiYosys "formal\registered_branch_miss_event.sby"
-Invoke-SymbiYosys "formal\branch_predictor_payload_capture.sby"
-Invoke-SymbiYosys "formal\machine_timer_pending.sby"
-Invoke-SymbiYosys "formal\trap_metadata_commit.sby"
-Invoke-SymbiYosys "formal\x0_invariant.sby"
+$harnesses = if ($Group -eq 'Core') {
+    @('forwarding_alignment_equivalence', 'alu_result_classification',
+      'registered_branch_miss_event', 'branch_predictor_payload_capture',
+      'machine_timer_pending', 'trap_metadata_commit', 'x0_invariant')
+} else { @('matvec_scratchpad_formal') }
+foreach ($name in $harnesses) { Invoke-SymbiYosys "formal/$name.sby" }
 
 $summary = [ordered]@{
     generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
     status = "pass"
-    harnesses = @(
-        "forwarding_alignment_equivalence",
-        "alu_result_classification",
-        "registered_branch_miss_event",
-        "branch_predictor_payload_capture",
-        "machine_timer_pending",
-        "trap_metadata_commit",
-        "x0_invariant"
-    )
-    claim_boundary = "Bounded formal smoke checks only; not complete CPU formal verification."
+    harnesses = @($harnesses)
+    group = $Group
+    method = 'SymbiYosys properties; modes and depths are specified in formal/*.sby'
+    log_directory = 'results/logs/formal'
 }
-Add-VerificationIdentityFields -Summary $summary | Out-Null
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
-$summary | ConvertTo-Json -Depth 4 | Set-Content -Path "wave\formal-smoke-summary.json" -Encoding Ascii
+Assert-VerificationInputsUnchanged $startingIdentity
+Add-VerificationIdentityFields -Summary $summary -Identity $startingIdentity | Out-Null
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
+} catch {
+    $summary.status = 'fail'
+    $summary['error_message'] = $_.Exception.Message
+    throw
+} finally {
+    $summary['generated_at_utc'] = (Get-Date).ToUniversalTime().ToString('o')
+    Write-ResultJson $summary $summaryPath
+}
 
 Write-Host "PASS: optional formal smoke passed"

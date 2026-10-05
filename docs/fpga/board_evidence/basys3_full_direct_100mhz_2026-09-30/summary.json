@@ -1,0 +1,69 @@
+{
+  "schema_version": 2,
+  "status": "pass",
+  "physical_validation_status": "passed",
+  "physical_validation_scope": "jtag_uart_boot_uart_runtime_rv32m_timer_irq_matvec_output_cycle_measurements_reset_reboot",
+  "date_local": "2026-09-30",
+  "timezone": "America/New_York",
+  "board": "Digilent Basys3",
+  "fpga_part": "xc7a35tcpg236-1",
+  "top": "RISCVCPU_basys3_top",
+  "soc_clock_mhz": 100,
+  "canonical_identity": {
+    "synthesis_source_commit": "849270b0fcb563baa1155e2bccb9da145121bf17",
+    "source_fingerprint": "33b7590dd9173c538d20011377e71e656a727727bfe52c3f66277377b7c5ce58",
+    "fingerprint_input_count": 40,
+    "bitstream_build_path": "build/vivado/basys3_board_current/RISCVCPU_basys3_top.bit",
+    "bitstream_size_bytes": 2192222,
+    "bitstream_sha256": "b7619a54318e0cc3dab0145b6d0e16f106b6eb3d18f58ed81ac998bad7449b15",
+    "identity_evidence_level": "host_verified_before_xsdb_programming",
+    "on_board_readback_or_hash_verification": "not_performed"
+  },
+  "post_route_timing": {
+    "vivado_version": "2026.1",
+    "status": "met",
+    "wns_ns": 0.399,
+    "tns_ns": 0,
+    "whs_ns": 0.018,
+    "ths_ns": 0
+  },
+  "uart_runs": [
+    {
+      "name": "Showcase",
+      "status": "pass",
+      "captured_at_utc": "2026-09-30T21:29:31.5813766Z"
+    },
+    {
+      "name": "Interactive",
+      "status": "pass",
+      "captured_at_utc": "2026-09-30T21:29:56.0793344Z"
+    },
+    {
+      "name": "HardwareValidation",
+      "status": "pass",
+      "captured_at_utc": "2026-09-30T21:30:10.1807422Z"
+    },
+    {
+      "name": "Matvec",
+      "status": "pass",
+      "captured_at_utc": "2026-09-30T21:30:35.1723571Z"
+    },
+    {
+      "name": "MatvecReset",
+      "status": "pass",
+      "captured_at_utc": "2026-09-30T21:32:26.8572556Z"
+    }
+  ],
+  "operator": {
+    "led_observation": "Kevin confirmed LD0 and LD2 on, LD1 off, LD3 blinking, and LD15:8=0x5a, then pressed and released BTN C before the MatvecReset capture.",
+    "reset_button_confirmed": true,
+    "evidence_level": "operator_reported"
+  },
+  "measurement": {
+    "cases_per_run": 90,
+    "outputs_per_run": 2418,
+    "runs": 2,
+    "clock_hz": 100000000,
+    "interval": "hardware cycle-counter reads around RAM-to-RAM work; excludes input preparation and UART printing"
+  }
+}

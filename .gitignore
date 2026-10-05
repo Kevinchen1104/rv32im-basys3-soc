@@ -9,6 +9,7 @@
 *.str
 *.rpt
 !release/fpga/basys3/evidence/reports/*.rpt
+!release/implementation/basys3/reports/*.rpt
 *.wdb
 *.bit
 *.bin
@@ -30,6 +31,7 @@ tight_setup_hold_pins.txt
 
 wave/*
 !wave/.gitkeep
+results/
 formal/x0_invariant/
 formal/matvec_scratchpad_formal/
 formal/forwarding_alignment_equivalence/
@@ -45,6 +47,8 @@ vendor/
 third_party/
 external/
 .venv/
+__pycache__/
+*.py[cod]
 
 .DS_Store
 Thumbs.db

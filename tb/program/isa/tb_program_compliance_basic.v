@@ -1,12 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_program_compliance_basic
-// Purpose: Runs CPU firmware as selected local ISA/compliance-style directed simulation evidence.
 // Checks: A selected RV32I compliance-style instruction smoke program covering arithmetic, logical, shift, branch,
 //   and word load/store behavior.
-// Pass condition: Firmware-visible register, memory, debug_status, I/O, or transcript signatures match expected
-//   values before timeout.
-// Does not prove: Selected local compliance-style smoke only; not an official compliance suite.
 // Firmware: firmware/hex/isa/compliance_basic.hex
 
 module tb_program_compliance_basic;
@@ -19,7 +14,7 @@ module tb_program_compliance_basic;
     localparam [31:0] PASS_SIGNATURE = 32'h1ce0_ffee;
 
     initial begin
-        $dumpfile("wave/tb_program_compliance_basic.vcd");
+        $dumpfile("results/waveforms/tb_program_compliance_basic.vcd");
         $dumpvars(0, tb_program_compliance_basic);
         reset_cpu();
 

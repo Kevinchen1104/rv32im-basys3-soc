@@ -5,7 +5,6 @@
 // Checks: Standalone forwarding unit selects EX operand and store-data bypass values with EX/MEM priority over MEM/WB;
 //   producer-valid ownership rejects invalid/x0 producers and nonzero producers do not match x0 consumers.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   retirement.
 
 module tb_forwarding_unit;
 

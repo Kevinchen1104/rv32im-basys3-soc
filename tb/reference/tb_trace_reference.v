@@ -1,11 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_trace_reference
-// Purpose: Compares DUT behavior against deterministic local reference or signature fixtures.
 // Checks: Compares generated expected trace rows against CPU trace output for ALU/register, load/store, branch/jump,
 //   subword, and CSR rows.
-// Pass condition: DUT outputs match the generated expected fixture or signature and no mismatch or timeout occurs.
-// Does not prove: Deterministic trace suite, not a full ISA or broad control-flow reference model.
 
 module tb_trace_reference;
 
@@ -13,7 +9,7 @@ module tb_trace_reference;
     localparam PROGRAM_WORDS = 259;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
     wire trace_valid;
@@ -117,14 +113,15 @@ module tb_trace_reference;
     end
 
     initial begin
-        $dumpfile("wave/tb_trace_reference.vcd");
+        $dumpfile("results/waveforms/tb_trace_reference.vcd");
         $dumpvars(0, tb_trace_reference);
+        #1; // Initialize test memory after the DUT initial block.
 
         $readmemh("fixtures/generated/reference/trace_reference.hex", dut.IMemory, 0, PROGRAM_WORDS-1);
         $readmemh("fixtures/generated/reference/trace_reference_expected.hex", expected_trace, 0, TRACE_COUNT-1);
 
         reset = 1'b1;
-        repeat (2) @(posedge clock);
+        repeat (2) @(negedge clock);
         reset = 1'b0;
 
         repeat (680) @(posedge clock);

@@ -1,12 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_top_memory_size
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: FPGA top runs board smoke with parameterized 128-word memories.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Small parameter smoke only; not memory sizing signoff.
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_top_memory_size;
 
@@ -45,11 +39,11 @@ module tb_fpga_top_memory_size;
     always #5 clock = ~clock;
 
     initial begin
-        $dumpfile("wave/tb_fpga_top_memory_size.vcd");
+        $dumpfile("results/waveforms/tb_fpga_top_memory_size.vcd");
         $dumpvars(0, tb_fpga_top_memory_size);
 
         reset = 1'b1;
-        repeat (2) @(posedge clock);
+        repeat (2) @(negedge clock);
         reset = 1'b0;
 
         repeat (260) @(posedge clock);

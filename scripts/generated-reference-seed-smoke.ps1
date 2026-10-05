@@ -1,25 +1,22 @@
 <#
 Script: scripts\generated-reference-seed-smoke.ps1
-Purpose: Regenerates selected reference programs with extra seeds and verifies fixture restoration.
+Purpose: Runs selected reference programs with extra seeds in isolated output directories.
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\generated-reference-seed-smoke.ps1
 Outputs:
-  wave\generated-reference-seed-smoke-summary.json and temporary generated fixtures under wave\.
-Scope:
-  Determinism smoke evidence only; not exhaustive random verification.
-Audience:
-  Internal helper used by scripts\check.ps1.
+  results\generated-reference-seed-smoke-summary.json and logs under results/logs/reference-seeds/. Checked-in fixtures are left untouched.
 #>
 param(
-    [string]$SummaryJson = "wave\generated-reference-seed-smoke-summary.json"
+    [string]$SummaryJson = "results\generated-reference-seed-smoke-summary.json"
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
 $families = @(
     [pscustomobject]@{
@@ -96,6 +93,7 @@ function Get-ArtifactHashes {
 
 function Test-ArtifactHashesMatch {
     param([object]$ExpectedHashes)
+    if ($null -eq $ExpectedHashes) { return $false }
 
     foreach ($artifact in $ExpectedHashes.Keys) {
         if (-not (Test-Path -LiteralPath $artifact)) {
@@ -109,29 +107,19 @@ function Test-ArtifactHashesMatch {
     return $true
 }
 
-function Invoke-ChildPowerShell {
-    param(
-        [string]$Description,
-        [string[]]$Arguments
-    )
-
-    $output = & powershell -NoProfile -ExecutionPolicy Bypass @Arguments 2>&1
-    return [pscustomobject]@{
-        description = $Description
-        exit_code = $LASTEXITCODE
-        output = @($output | ForEach-Object { $_.ToString() })
-    }
-}
+. "$PSScriptRoot/process-runner.ps1"
 
 function Write-SmokeSummary {
     param(
         [object[]]$Rows,
         [bool]$ArtifactRestored,
-        [bool]$DefaultChecksPassed
+        [bool]$DefaultChecksPassed,
+        [int]$ExpectedCount,
+        [string]$ErrorMessage
     )
 
     foreach ($row in $Rows) {
-        $row.artifact_restored = $ArtifactRestored
+        $row.artifacts_unchanged = $ArtifactRestored
     }
 
     $summaryPath = if ([System.IO.Path]::IsPathRooted($SummaryJson)) {
@@ -146,33 +134,42 @@ function Write-SmokeSummary {
 
     $summary = [ordered]@{
         generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-        status = if (@($Rows | Where-Object { $_.status -ne "passed" }).Count -eq 0 -and $ArtifactRestored -and $DefaultChecksPassed) { "passed" } else { "failed" }
+        status = if ($Rows.Count -eq $ExpectedCount -and -not $ErrorMessage -and @($Rows | Where-Object { $_.status -ne "passed" }).Count -eq 0 -and $ArtifactRestored -and $DefaultChecksPassed) { "passed" } else { "failed" }
+        planned = $ExpectedCount
         total = $Rows.Count
         passed = @($Rows | Where-Object { $_.status -eq "passed" }).Count
         failed = @($Rows | Where-Object { $_.status -ne "passed" }).Count
-        default_artifacts_restored = $ArtifactRestored
+        default_artifacts_unchanged = $ArtifactRestored
         default_artifact_checks_passed = $DefaultChecksPassed
+        error_message = $ErrorMessage
         tests = $Rows
     }
 
-    $summary | ConvertTo-Json -Depth 6 | Set-Content -Path $summaryPath -Encoding Ascii
+    Write-ResultJson $summary $summaryPath
     Write-Host "Generated reference seed smoke summary written to $summaryPath"
 }
 
-$initialHashes = Get-ArtifactHashes $families
+$initialHashes = $null
 $rows = @()
 $defaultChecksPassed = $false
 $artifactRestored = $false
+$runError = $null
+$expectedCount = ($families | ForEach-Object { $_.seeds.Count } | Measure-Object -Sum).Sum
+Write-ResultJson ([ordered]@{status='running'; tests=@()}) $SummaryJson
+New-Item -ItemType Directory -Force -Path 'build/reference' | Out-Null
+$seedLock = [IO.File]::Open((Join-Path $repoRoot 'build/reference/seed-smoke.lock'), 'OpenOrCreate', 'ReadWrite', 'None')
 
 try {
+    $initialHashes = Get-ArtifactHashes $families
     foreach ($family in $families) {
         foreach ($seed in $family.seeds) {
-            $commandText = "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\$($family.script) -Seed $seed"
+            $directory = "build/reference/$($family.name)/seed_$seed"
+            $commandText = "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\$($family.script) -Seed $seed -ArtifactDirectory $directory"
             Write-Host "========================================"
             Write-Host "Running generated reference seed smoke: $($family.name) seed $seed"
             $result = Invoke-ChildPowerShell `
                 -Description $commandText `
-                -Arguments @("-File", (Join-Path $PSScriptRoot $family.script), "-Seed", [string]$seed)
+                -Arguments @("-File", (Join-Path $PSScriptRoot $family.script), "-Seed", [string]$seed, '-ArtifactDirectory', $directory)
 
             $status = if ($result.exit_code -eq 0) { "passed" } else { "failed" }
             $lastLine = if ($result.output.Count -eq 0) { "" } else { $result.output[-1] }
@@ -181,7 +178,7 @@ try {
                 seed = $seed
                 test_name = $family.test
                 status = $status
-                artifact_restored = $false
+                artifacts_unchanged = $false
                 command = $commandText
                 summary = $lastLine
                 generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
@@ -194,44 +191,48 @@ try {
             }
         }
     }
+} catch {
+    $runError = $_.Exception.Message
+    throw
 } finally {
+  try {
     Write-Host "========================================"
-    Write-Host "Restoring checked-in default generated reference artifacts"
-    foreach ($family in $families) {
-        $restore = Invoke-ChildPowerShell `
-            -Description "restore $($family.name) seed $($family.default_seed)" `
-            -Arguments @("-File", (Join-Path $PSScriptRoot $family.script), "-Seed", [string]$family.default_seed, "-SkipSimulation")
-        if ($restore.exit_code -ne 0) {
-            Write-Host "FAIL: restore failed for $($family.name)"
-            $restore.output | ForEach-Object { Write-Host "  $_" }
-        }
-    }
+    Write-Host "Checking that tracked reference artifacts remain unchanged"
 
     $artifactRestored = Test-ArtifactHashesMatch $initialHashes
 
     if ($artifactRestored) {
-        Write-Host "PASS: generated reference artifacts restored to pre-smoke checksums"
+        Write-Host "PASS: tracked reference artifacts were not modified"
     } else {
-        Write-Host "FAIL: generated reference artifacts were not restored to pre-smoke checksums"
+        Write-Host "FAIL: tracked reference artifacts changed during the seed run"
     }
 
     $defaultChecksPassed = $true
     foreach ($family in $families) {
         $check = Invoke-ChildPowerShell `
-            -Description "check restored $($family.name)" `
+            -Description "check tracked $($family.name)" `
             -Arguments @("-File", (Join-Path $PSScriptRoot $family.script), "-Check", "-SkipSimulation")
         if ($check.exit_code -ne 0) {
             $defaultChecksPassed = $false
-            Write-Host "FAIL: restored default check failed for $($family.name)"
+            Write-Host "FAIL: default check failed for $($family.name)"
             $check.output | ForEach-Object { Write-Host "  $_" }
         }
     }
 
     if ($defaultChecksPassed) {
-        Write-Host "PASS: restored default generated reference artifacts pass freshness checks"
+        Write-Host "PASS: tracked default reference artifacts pass freshness checks"
     }
 
-    Write-SmokeSummary -Rows $rows -ArtifactRestored $artifactRestored -DefaultChecksPassed $defaultChecksPassed
+  } catch {
+    if (-not $runError) { $runError = $_.Exception.Message }
+    throw
+  } finally {
+    try {
+      Write-SmokeSummary -Rows $rows -ArtifactRestored $artifactRestored -DefaultChecksPassed $defaultChecksPassed -ExpectedCount $expectedCount -ErrorMessage $runError
+    } finally {
+    $seedLock.Dispose()
+    }
+  }
 }
 
 $failedRows = @($rows | Where-Object { $_.status -ne "passed" })

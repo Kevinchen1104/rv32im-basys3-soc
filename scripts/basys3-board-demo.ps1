@@ -4,17 +4,15 @@ Purpose: Sends a selected Basys3 demo boot packet and captures its UART protocol
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\basys3-board-demo.ps1 -Demo Interactive -Port <COMx>
 Outputs:
-  Demo-specific UART transcript and JSON summary files under wave\ by default.
+  Demo-specific UART transcript and JSON summary files under results\ by default.
 Scope:
   Physical host utility for scoped Basys3 UART evidence; not exhaustive ISA, timing, compliance, or performance proof.
-Audience:
-  Public board-bring-up helper for an operator with the selected full-feature Basys3 target already programmed.
 #>
 param(
     [ValidateSet("FullLowfreq", "FullDirect100")]
     [string] $Target = "FullLowfreq",
     [Parameter(Mandatory = $true)]
-    [ValidateSet("Showcase", "Interactive", "HardwareValidation")]
+    [ValidateSet("Showcase", "Interactive", "HardwareValidation", "Matvec")]
     [string] $Demo,
     [Parameter(Mandatory = $true)]
     [string] $Port,
@@ -27,11 +25,23 @@ param(
     [string] $SummaryPath
 )
 
+. "$PSScriptRoot/script-common.ps1"
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
+$outputPrefix = if ($Target -eq 'FullDirect100') { 'results/basys3-full-direct-100mhz' } else { 'results/basys3-full-lowfreq' }
+$demoSuffix = if ($Demo -eq 'HardwareValidation') { 'hardware-validation' } else { $Demo.ToLowerInvariant() }
+if (-not $SummaryPath) { $SummaryPath = "$outputPrefix-$demoSuffix-summary.json" }
+$resolvedSummaryPath = Resolve-RepoPath $SummaryPath
+$summary = [ordered]@{
+    generated_at_utc = (Get-Date).ToUniversalTime().ToString('o')
+    status = 'running'; target = $Target; demo = $Demo; error = $null
+}
+Write-ResultJson $summary $resolvedSummaryPath
+try {
 . (Join-Path $PSScriptRoot "canonical-basys3-evidence.ps1")
 $directEvidence = if ($Target -eq "FullDirect100") {
     Get-CanonicalBasys3Evidence -AllowPendingPhysicalEvidence
@@ -41,7 +51,7 @@ $directEvidence = if ($Target -eq "FullDirect100") {
 
 $targetConfig = if ($Target -eq "FullDirect100") {
     [ordered]@{
-        output_prefix = "wave\basys3-full-direct-100mhz"
+        output_prefix = "results\basys3-full-direct-100mhz"
         display_name = "full-direct-100-MHz"
         top = "RISCVCPU_basys3_top"
         soc_clock_mhz = 100
@@ -57,7 +67,7 @@ $targetConfig = if ($Target -eq "FullDirect100") {
     }
 } else {
     [ordered]@{
-        output_prefix = "wave\basys3-full-lowfreq"
+        output_prefix = "results\basys3-full-lowfreq"
         display_name = "full-low-frequency"
         top = "RISCVCPU_basys3_full_lowfreq_top"
         soc_clock_mhz = 6.25
@@ -73,7 +83,26 @@ $targetConfig = if ($Target -eq "FullDirect100") {
     }
 }
 
-$demoConfig = if ($Demo -eq "Interactive") {
+$demoConfig = if ($Demo -eq "Matvec") {
+    $firmwareBuild = Read-JsonFile 'build/board-matvec/build.json'
+    if ($null -eq $firmwareBuild -or $firmwareBuild.status -ne 'passed') {
+        throw 'Build board MATVEC firmware with scripts/board_matvec.py --build --simulate first.'
+    }
+    [ordered]@{
+        name = 'matvec'
+        packet_path = 'build/board-matvec/program.boot.bin'
+        expected_packet_bytes = $firmwareBuild.firmware_bytes + 20
+        expected_packet_sha256 = $firmwareBuild.packet_sha256
+        transcript_path = "$($targetConfig.output_prefix)-matvec-transcript.txt"
+        summary_path = "$($targetConfig.output_prefix)-matvec-summary.json"
+        ready_marker = $null
+        final_marker = "E 0000005a`n"
+        expected_transcript = $null
+        failure_marker = $null
+        claim_scope_lowfreq = 'RAM-to-RAM MATVEC cycle measurements and all output values captured over UART.'
+        claim_scope_direct = 'Ninety RAM-to-RAM MATVEC cycle measurements and 2,418 output values captured over UART at 100 MHz.'
+    }
+} elseif ($Demo -eq "Interactive") {
     [ordered]@{
         name = "interactive"
         packet_path = "fixtures\generated\boot\interactive_showcase_demo.boot.bin"
@@ -121,7 +150,7 @@ $demoConfig = if ($Demo -eq "Interactive") {
 }
 
 $claimBoundary = if ($Target -eq "FullDirect100") {
-    "The durable suite records a scoped physical pass for the canonical full top. DryRun never adds physical evidence, and a new UART capture remains pending its own operator LED/reset confirmation. Neither proves every RV32IM instruction, official RISC-V compliance, production DMA, benchmark speedup, power signoff, or on-board bitstream identity."
+    "UART results apply to this capture and the host-identified bitstream. LED/button observations are recorded separately."
 } else {
     "The full-feature 6.25 MHz target has no current physical pass; DryRun and a future transcript alone do not establish one without source identity and operator observations. It does not affect the separately validated direct-100-MHz top or prove every RV32IM instruction, official RISC-V compliance, production DMA, benchmark speedup, or power signoff."
 }
@@ -137,15 +166,6 @@ if ([string]::IsNullOrWhiteSpace($SummaryPath)) {
     $SummaryPath = $demoConfig.summary_path
 }
 
-function Resolve-RepoPath {
-    param([string] $Path)
-
-    if ([System.IO.Path]::IsPathRooted($Path)) {
-        return [System.IO.Path]::GetFullPath($Path)
-    }
-    return [System.IO.Path]::GetFullPath((Join-Path $repoRoot $Path))
-}
-
 function Normalize-Transcript {
     param([AllowEmptyString()][string] $Text)
 
@@ -155,23 +175,13 @@ function Normalize-Transcript {
     return ($Text -replace "`r`n", "`n" -replace "`r", "`n")
 }
 
-function Ensure-ParentDirectory {
-    param([string] $Path)
-
-    $parent = Split-Path -Parent $Path
-    if ([string]::IsNullOrWhiteSpace($parent)) {
-        throw "Output path has no parent directory: $Path"
-    }
-    New-Item -ItemType Directory -Force -Path $parent | Out-Null
-}
-
 function Write-JsonSummary {
     param(
         [System.Collections.IDictionary] $Summary,
         [string] $Path
     )
 
-    $Summary | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $Path -Encoding Ascii
+    Write-ResultJson $Summary $Path
 }
 
 $resolvedPacketPath = Resolve-RepoPath $PacketPath
@@ -234,7 +244,7 @@ $summary = [ordered]@{
     transcript_path = $TranscriptPath
     summary_path = $SummaryPath
     physical_led_confirmation = "pending_operator_confirmation"
-    reset_reboot_precondition = "operator_confirmed_boot_waiting"
+    reset_reboot_precondition = "reset_or_reconfigure_before_capture"
     claim_scope = $claimScope
     claim_boundary = $claimBoundary
     error = $null
@@ -372,7 +382,15 @@ try {
         if (-not $observedTranscript.Contains($demoConfig.final_marker)) {
             throw "Timed out after $CompletionTimeoutSeconds seconds before receiving $($demoConfig.final_marker.Trim())."
         }
-        if ($observedTranscript -cne $demoConfig.expected_transcript) {
+        if ($Demo -eq 'Matvec') {
+            [IO.File]::WriteAllText($resolvedTranscriptPath, $observedTranscript, [Text.UTF8Encoding]::new($false))
+            & '.venv/Scripts/python.exe' -B scripts/board_matvec.py --check-transcript $resolvedTranscriptPath
+            if ($LASTEXITCODE -ne 0) { throw 'Board MATVEC output comparison failed.' }
+            $comparison = Read-JsonFile (Join-Path (Split-Path -Parent $resolvedTranscriptPath) 'comparison.json')
+            $summary.cases_passed = $comparison.cases_passed
+            $summary.outputs_checked = $comparison.outputs_checked
+            $summary.comparison_sha256 = (Get-FileHash (Join-Path (Split-Path -Parent $resolvedTranscriptPath) 'comparison.json')).Hash.ToLowerInvariant()
+        } elseif ($observedTranscript -cne $demoConfig.expected_transcript) {
             throw "UART transcript was received but did not exactly match the expected $($demoConfig.name) text."
         }
 
@@ -413,7 +431,7 @@ try {
     $summary.observed_transcript = $observedTranscript
     $summary.final_marker_seen = $observedTranscript.Contains($demoConfig.final_marker)
     $summary.terminal_marker_seen = $summary.final_marker_seen
-    $summary.transcript_match = ($observedTranscript -ceq $demoConfig.expected_transcript)
+    $summary.transcript_match = if ($Demo -eq 'Matvec') { $summary.status -eq 'pass' } else { $observedTranscript -ceq $demoConfig.expected_transcript }
 
     if (-not $DryRun) {
         [System.IO.File]::WriteAllText(
@@ -451,3 +469,9 @@ if ($summary.status -ne "pass") {
 }
 
 Write-Host ("PASS: exact physical UART {0} transcript captured" -f $demoConfig.name)
+} catch {
+    $summary.status = 'fail'
+    $summary.error = $_.Exception.Message
+    Write-ResultJson $summary $resolvedSummaryPath
+    throw
+}

@@ -10,7 +10,7 @@ module tb_ras_flush;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_ras_flush.vcd");
+        $dumpfile("results/waveforms/tb_ras_flush.vcd");
         $dumpvars(0, tb_ras_flush);
         reset_cpu();
 

@@ -21,7 +21,8 @@ module uart_rx #(
     localparam STATE_START = 2'd1;
     localparam STATE_DATA = 2'd2;
     localparam STATE_STOP = 2'd3;
-    localparam CONFIG_VALID = (CLKS_PER_BIT >= 1);
+    // The synchronized receiver needs at least three clocks per serial bit.
+    localparam CONFIG_VALID = (CLKS_PER_BIT >= 3);
     localparam SAFE_CLKS_PER_BIT = CONFIG_VALID ? CLKS_PER_BIT : 1;
 
     reg [1:0] state = STATE_IDLE;

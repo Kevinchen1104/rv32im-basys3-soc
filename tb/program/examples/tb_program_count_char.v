@@ -20,7 +20,7 @@ module tb_program_count_char;
     end
 
     initial begin
-        $dumpfile("wave/tb_program_count_char.vcd");
+        $dumpfile("results/waveforms/tb_program_count_char.vcd");
         $dumpvars(0, tb_program_count_char);
         reset_cpu();
         max_ras_count = 0;

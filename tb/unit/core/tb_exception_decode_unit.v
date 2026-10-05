@@ -5,7 +5,6 @@
 // Checks: Standalone exception/legal-instruction decode unit classifies legal instructions, implemented CSR accesses
 //   including mie/mip/mtval, ecall/ebreak/mret, and misaligned instruction/data accesses.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   order, or trap handler execution.
 
 module tb_exception_decode_unit;
 

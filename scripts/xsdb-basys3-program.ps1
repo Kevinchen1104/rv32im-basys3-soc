@@ -4,11 +4,9 @@ Purpose: Validates and optionally programs the canonical direct-100-MHz Basys3 b
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\xsdb-basys3-program.ps1 -DryRun
 Outputs:
-  An XSDB-specific JSON summary and log under wave\, plus a physical result file only in physical mode.
+  An XSDB-specific JSON summary and log under results\, plus a physical result file only in physical mode.
 Scope:
   Independent one-shot fallback; DryRun never starts XSDB, hw_server, target discovery, or programming.
-Audience:
-  Basys3 operator after explicit authorization to program the connected board when the primary Vivado flow is unavailable.
 #>
 param(
     [string] $BitstreamPath = "",
@@ -16,93 +14,32 @@ param(
     [long] $ExpectedSizeBytes = 0,
     [string] $DeviceSelector = "*xc7a35t*",
     [switch] $DryRun,
-    [string] $SummaryPath = "wave\xsdb-basys3-program-summary.json",
-    [string] $LogPath = "wave\xsdb-basys3-program.log"
+    [string] $SummaryPath = "results\xsdb-basys3-program-summary.json",
+    [string] $LogPath = "results\xsdb-basys3-program.log"
 )
 
+. "$PSScriptRoot/script-common.ps1"
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
+. "$PSScriptRoot/process-runner.ps1"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
-function Resolve-RepoPath {
-    param([string] $Path)
-
-    if ([System.IO.Path]::IsPathRooted($Path)) {
-        return [System.IO.Path]::GetFullPath($Path)
-    }
-    return [System.IO.Path]::GetFullPath((Join-Path $repoRoot $Path))
-}
-
-function Ensure-ParentDirectory {
-    param([string] $Path)
-
-    $parent = Split-Path -Parent $Path
-    if ([string]::IsNullOrWhiteSpace($parent)) {
-        throw "Output path has no parent directory: $Path"
-    }
-    New-Item -ItemType Directory -Force -Path $parent | Out-Null
-}
-
-function Read-JsonFile {
-    param([string] $Path)
-
-    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
-        throw "Required JSON metadata not found: $Path"
-    }
-    return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
-}
-
-function Normalize-Hash {
-    param([string] $Hash)
-
-    if ([string]::IsNullOrWhiteSpace($Hash) -or $Hash -notmatch '^[0-9A-Fa-f]{64}$') {
-        throw "ExpectedSha256 must contain exactly 64 hexadecimal characters."
-    }
-    return $Hash.ToLowerInvariant()
-}
-
 . (Join-Path $PSScriptRoot "canonical-basys3-evidence.ps1")
 
 function Find-Xsdb {
-    $candidates = [System.Collections.Generic.List[string]]::new()
-
-    if (-not [string]::IsNullOrWhiteSpace($env:XILINX_VIVADO)) {
-        $candidates.Add((Join-Path $env:XILINX_VIVADO "bin\xsdb.bat"))
-    }
-
-    $amdRoot = "C:\AMDDesignTools"
-    if (Test-Path -LiteralPath $amdRoot -PathType Container) {
-        foreach ($versionDirectory in Get-ChildItem -LiteralPath $amdRoot -Directory -ErrorAction SilentlyContinue) {
-            $candidates.Add((Join-Path $versionDirectory.FullName "Vivado\bin\xsdb.bat"))
-        }
-    }
-
-    $records = foreach ($candidate in $candidates | Select-Object -Unique) {
-        if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) {
-            continue
-        }
-        $resolved = (Resolve-Path -LiteralPath $candidate).Path
-        $match = [regex]::Match($resolved, '(?i)[\\/](\d{4}\.\d+)[\\/]Vivado[\\/]bin[\\/]xsdb\.bat$')
-        $versionText = if ($match.Success) { $match.Groups[1].Value } else { "0.0" }
-        [pscustomobject]@{
-            Path = $resolved
-            Version = [version] $versionText
-            VersionText = $versionText
-        }
-    }
-
-    $selected = $records | Sort-Object Version -Descending | Select-Object -First 1
-    if ($null -eq $selected) {
-        throw "AMD XSDB was not found under XILINX_VIVADO or C:\AMDDesignTools."
-    }
-    return $selected
+    $path = Find-FpgaVendorTool xsdb
+    if (-not $path) { throw 'AMD XSDB was not found on PATH or in a supported installation.' }
+    $match = [regex]::Match($path, '[\\/](\d{4}\.\d+)[\\/]')
+    $version = if ($match.Success) { $match.Groups[1].Value } else { '0.0' }
+    return [pscustomobject]@{ Path=$path; Version=[version]$version; VersionText=$version }
 }
 
 $resolvedSummaryPath = Resolve-RepoPath $SummaryPath
 $resolvedLogPath = Resolve-RepoPath $LogPath
 $resolvedBitstreamPath = $null
-$tclResultPath = Resolve-RepoPath "wave\xsdb-basys3-program-hardware-result.json"
+$tclResultPath = [IO.Path]::ChangeExtension($resolvedSummaryPath, 'hardware.json')
 Ensure-ParentDirectory $resolvedSummaryPath
 
 $summary = [ordered]@{
@@ -133,12 +70,13 @@ $summary = [ordered]@{
     configuration_verified = $false
     retry_count = 0
     log_path = $LogPath
-    tcl_result_path = if ($DryRun) { $null } else { "wave\xsdb-basys3-program-hardware-result.json" }
+    tcl_result_path = if ($DryRun) { $null } else { $tclResultPath }
     physical_validation_status = "not_run"
     physical_validation_scope = "needs_revalidation"
     error = $null
-    claim_boundary = "DryRun validates XSDB discovery and the canonical bitstream without starting XSDB or hardware access. Programming success alone does not establish UART, LED, reset/reboot, every-instruction, official-compliance, performance, or power evidence."
+    claim_boundary = "Programming verifies configuration only; UART, LED and reset behavior require a separate board test. DryRun does not open hardware."
 }
+Write-ResultJson $summary $resolvedSummaryPath
 
 $failureMessage = $null
 
@@ -225,14 +163,12 @@ try {
             TMP = [Environment]::GetEnvironmentVariable("TMP", "Process")
             TMPDIR = [Environment]::GetEnvironmentVariable("TMPDIR", "Process")
         }
-        $previousErrorActionPreference = $ErrorActionPreference
-        $ErrorActionPreference = "Continue"
         try {
             $env:TEMP = $xsdbTempPath
             $env:TMP = $xsdbTempPath
             $env:TMPDIR = $xsdbTempPath
-            $xsdbOutput = & $summary.xsdb_path @xsdbArgs 2>&1
-            $xsdbExitCode = $LASTEXITCODE
+            $programming = Invoke-LoggedVendorTool -FilePath $summary.xsdb_path -Arguments $xsdbArgs `
+                -WorkingDirectory $repoRoot.Path -LogPath $resolvedLogPath
         } finally {
             foreach ($name in $savedTempEnvironment.Keys) {
                 $savedValue = $savedTempEnvironment[$name]
@@ -242,9 +178,7 @@ try {
                     [Environment]::SetEnvironmentVariable($name, $savedValue, "Process")
                 }
             }
-            $ErrorActionPreference = $previousErrorActionPreference
         }
-        $xsdbOutput | Set-Content -LiteralPath $resolvedLogPath -Encoding Ascii
 
         if (Test-Path -LiteralPath $tclResultPath -PathType Leaf) {
             $hardwareResult = Read-JsonFile $tclResultPath
@@ -258,8 +192,8 @@ try {
             }
         }
 
-        if ($xsdbExitCode -ne 0) {
-            throw "XSDB programming failed; see $LogPath."
+        if ($programming.status -ne 'passed') {
+            throw "XSDB programming $($programming.status); see $LogPath."
         }
         if (-not $summary.hardware_connected -or
             $summary.target_count -ne 1 -or
@@ -278,13 +212,13 @@ try {
     }
 } finally {
     $summary.generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-    $summary | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath $resolvedSummaryPath -Encoding Ascii
+    Write-ResultJson $summary $resolvedSummaryPath
 }
 
 Write-Host "========================================"
 Write-Host "Basys3 direct-100-MHz XSDB programming fallback"
 Write-Host ("Status: {0}" -f $summary.status)
-Write-Host ("XSDB: {0} ({1})" -f ($(if ($null -eq $summary.xsdb_path) { "unavailable" } else { $summary.xsdb_path })), $summary.xsdb_version)
+Write-Host ("XSDB: {0} ({1})" -f ($(if ($null -eq $summary.xsdb_path) { "not determined" } else { $summary.xsdb_path })), $summary.xsdb_version)
 Write-Host ("Top/device: {0} / {1}" -f $summary.top, $summary.device_selector)
 Write-Host ("Bitstream: {0}" -f $summary.bitstream_path)
 Write-Host ("Size/SHA256: {0} / {1}" -f $summary.bitstream_size_bytes, $summary.bitstream_sha256)

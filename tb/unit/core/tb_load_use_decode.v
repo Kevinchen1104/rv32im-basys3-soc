@@ -44,7 +44,7 @@ module tb_load_use_decode;
     end
 
     initial begin
-        $dumpfile("wave/tb_load_use_decode.vcd");
+        $dumpfile("results/waveforms/tb_load_use_decode.vcd");
         $dumpvars(0, tb_load_use_decode);
         saw_false_stall_window = 1'b0;
         saw_true_stall_window = 1'b0;

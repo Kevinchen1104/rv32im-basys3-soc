@@ -5,10 +5,6 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\uart-boot-packet.ps1 -Hex firmware\hex\showcase\board_smoke.hex -Check
 Outputs:
   fixtures\generated\boot\*.boot.bin packet images or freshness diagnostics.
-Scope:
-  Packet fixture generation only; not physical UART board validation.
-Audience:
-  Public boot-fixture helper used by scripts\check.ps1.
 #>
 param(
     [Parameter(Mandatory=$true)]
@@ -20,6 +16,7 @@ param(
     [int]$Baud = 115200
 )
 
+. "$PSScriptRoot/reference-common.ps1"
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
@@ -35,11 +32,6 @@ function Resolve-RepoPath {
         return $Path
     }
     return (Join-Path $repoRoot $Path)
-}
-
-function To-UInt32 {
-    param([int64]$Value)
-    return [uint32]($Value -band 0xffffffffL)
 }
 
 function Format-HexWord {

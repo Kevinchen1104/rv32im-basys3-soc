@@ -5,6 +5,24 @@ on:
   pull_request:
 
 jobs:
+  python-tests:
+    name: Python clients and tools
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Python test dependencies
+        run: python -m pip install -r scripts/signal-viewer-requirements.txt -r tools/compiled-programs/requirements.txt
+      - name: Run Python tests including Tk controls
+        run: python -B scripts/python_tests.py --gui
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-tests
+          path: results/python-tests/
+
   project-check:
     name: Project check
     runs-on: windows-latest
@@ -21,11 +39,13 @@ jobs:
         shell: pwsh
         run: |
           iverilog -V
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           vvp -V
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run project check
         shell: pwsh
-        run: powershell -ExecutionPolicy Bypass -File scripts\check.ps1
+        run: powershell -ExecutionPolicy Bypass -File scripts\check.ps1 -Mode Full
 
       - name: Upload check summaries
         if: always()
@@ -33,8 +53,13 @@ jobs:
         with:
           name: check-summaries
           path: |
-            wave/regression-summary.json
-            wave/regression-evidence-summary.json
-            wave/check-summary.json
-            wave/test-catalog-summary.json
+            results/regression-summary.json
+            results/regression-evidence-summary.json
+            results/check-summary.json
+            results/test-catalog-summary.json
+            results/logs/
+            results/runner-self-test-summary.json
+            results/workflow-self-test-summary.json
+            results/RESULTS.md
+            results/regression.csv
           if-no-files-found: ignore

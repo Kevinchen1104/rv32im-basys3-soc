@@ -1,14 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_exception_branch_priority
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: An ecall trap redirects to mtvec and wins over a younger JAL path, including suppression of branch-target,
 //   fall-through, data-memory, and GPIO MMIO wrong-path markers.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Directed exception-versus-jump priority slice only; does not cover every exception source, branch
-//   type, interrupt, or cache-stall interaction.
-// Assertion focus: Directed check for exception branch priority behavior or side-effect suppression.
 
 module tb_assert_exception_branch_priority;
 
@@ -43,7 +36,7 @@ module tb_assert_exception_branch_priority;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_exception_branch_priority.vcd");
+        $dumpfile("results/waveforms/tb_assert_exception_branch_priority.vcd");
         $dumpvars(0, tb_assert_exception_branch_priority);
         reset_cpu();
 

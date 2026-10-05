@@ -1,13 +1,11 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_registered_control_redirect
 // Purpose: Exercises registered branch/jump recovery and its precise side-effect boundary.
 // Checks: Independent target/fallthrough/outcome capture, accepted target/RAS-update equivalence,
 //   recovery separation, branch/JAL/JALR targets and predictions, forwarding, back-to-back resolutions,
 //   stalled/deferred-interrupt call acceptance, non-RAS trap exclusion, RV32M dependencies,
 //   single retirement/update/count events, and wrong-path register/memory/MMIO/CSR/trap/M-start suppression.
 // Pass condition: Every directed phase reaches its target with exactly one accepted/apply event and no forbidden side effect.
-// Does not prove: Directed pipeline scenarios only; not exhaustive control flow, interrupt timing, or formal correctness.
 // Assertion focus: Raw EX mispredicts register one recovery request; only the pending request can flush the frontend.
 
 module tb_assert_registered_control_redirect;
@@ -968,7 +966,12 @@ module tb_assert_registered_control_redirect;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_registered_control_redirect.vcd");
+        #1000000;
+        $fatal(1, "Timed out waiting for registered control redirect scenarios");
+    end
+
+    initial begin
+        $dumpfile("results/waveforms/tb_assert_registered_control_redirect.vcd");
         $dumpvars(0, tb_assert_registered_control_redirect);
 
         run_taken_branch_exmem_forward();

@@ -5,7 +5,6 @@
 // Checks: Standalone pipeline control unit preserves IF/ID/EX stall, redirect, bubble, and advance priority
 //   decisions.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   PC target values, MEM/WB update, or trace timing.
 
 module tb_pipeline_control_unit;
     reg dcache_pipeline_stall;

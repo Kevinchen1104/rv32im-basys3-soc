@@ -1,10 +1,8 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_rv32m_multicycle_pipeline
 // Purpose: Exercises multicycle RV32M execution through the CPU pipeline with hazards and an interrupt.
 // Checks: Back-to-back and dependent M operations, load/store forwarding, x0, single retirement, and deferred timer interrupt entry.
 // Pass condition: Architectural registers, memory round-trip, trace counts, and timer trap state match the directed expectations.
-// Does not prove: Selected pipeline interactions only; not exhaustive RV32M arithmetic, interrupt, cache, or timing proof.
 // Assertion focus: A held M instruction completes once, retires once, and is not displaced by a pending timer interrupt.
 
 module tb_assert_rv32m_multicycle_pipeline;
@@ -144,7 +142,7 @@ module tb_assert_rv32m_multicycle_pipeline;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_rv32m_multicycle_pipeline.vcd");
+        $dumpfile("results/waveforms/tb_assert_rv32m_multicycle_pipeline.vcd");
         $dumpvars(0, tb_assert_rv32m_multicycle_pipeline);
 
         run_hazard_phase();

@@ -5,7 +5,6 @@
 // Checks: Standalone EX-stage branch/jump resolve unit computes branch decisions, jump targets, correct redirect PCs,
 //   and prediction mismatch signals.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   pipeline flush priority, or PC update ordering.
 
 module tb_branch_jump_unit;
 

@@ -6,10 +6,13 @@
 //   case, stores MATVEC results and counter snapshots, and exposes a public pass/fail signature.
 // Pass condition: Firmware-visible register, memory, debug_status, I/O, or transcript signatures match expected
 //   values before timeout.
-//   or performance claims.
 // Firmware: firmware/hex/showcase/showcase_demo.hex
 
 module tb_program_showcase_demo;
+    initial begin : watchdog
+        repeat (2000000) @(posedge clock);
+        $fatal(1, "Testbench watchdog expired");
+    end
 
     localparam integer UART_CLKS_PER_BIT = 4;
     localparam integer MESSAGE_LEN = 64;
@@ -180,10 +183,9 @@ module tb_program_showcase_demo;
                          dut.DMemory[6], dut.DMemory[9]);
                 $fatal;
             end
-            if (^dut.DMemory[10] === 1'bx ||
-                ^dut.DMemory[11] === 1'bx ||
-                ^dut.DMemory[12] === 1'bx) begin
-                $display("FAIL: MATVEC counter snapshot contains unknown values");
+            if (^{dut.DMemory[5], dut.DMemory[6], dut.DMemory[7], dut.DMemory[8],
+                  dut.DMemory[9], dut.DMemory[10], dut.DMemory[11], dut.DMemory[12]} === 1'bx) begin
+                $display("FAIL: performance counter snapshot contains unknown values");
                 $fatal;
             end
         end
@@ -212,7 +214,7 @@ module tb_program_showcase_demo;
     initial begin
         expected_message = "RV32IM SHOWCASE\nUART OK\nMATVEC PASS\nCOUNTERS PASS\nSHOWCASE PASS\n";
 
-        $dumpfile("wave/tb_program_showcase_demo.vcd");
+        $dumpfile("results/waveforms/tb_program_showcase_demo.vcd");
         $dumpvars(0, tb_program_showcase_demo);
 
         reset = 1'b1;

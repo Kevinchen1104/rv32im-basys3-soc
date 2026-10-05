@@ -1,12 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_jump_flush
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Jal redirect links PC+4, reaches the target, and suppresses younger wrong-path writeback.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: JAL directed slice only; JALR is separate.
-// Assertion focus: Directed check for jump flush behavior or side-effect suppression.
+// JALR redirection is checked by tb_assert_jalr_flush.
 
 module tb_assert_jump_flush;
 
@@ -29,7 +24,7 @@ module tb_assert_jump_flush;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_jump_flush.vcd");
+        $dumpfile("results/waveforms/tb_assert_jump_flush.vcd");
         $dumpvars(0, tb_assert_jump_flush);
         reset_cpu();
 

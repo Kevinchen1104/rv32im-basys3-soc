@@ -5,7 +5,6 @@
 // Checks: Registered descriptor validation, transaction addresses and compute stages, rows 1..4, signed int8 edge products, ordered reads/writes,
 //   stable backpressure, snoop/external equivalence, reset, descriptor range/overlap errors, unchanged counters, and polling status.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   accelerator, throughput proof, or board result.
 
 module tb_int8_matvec_dma_lite;
     reg clock;
@@ -253,7 +252,7 @@ module tb_int8_matvec_dma_lite;
         input [8*160-1:0] message;
         begin
             $display("FAIL: %0s", message);
-            $finish;
+            $fatal(1);
         end
     endtask
 
@@ -264,7 +263,7 @@ module tb_int8_matvec_dma_lite;
         begin
             if (actual !== expected) begin
                 $display("FAIL: %0s expected %h got %h", label, expected, actual);
-                $finish;
+                $fatal(1);
             end
         end
     endtask
@@ -290,7 +289,7 @@ module tb_int8_matvec_dma_lite;
                 memory[i] = 32'h0;
             end
             reset = 1'b1;
-            repeat (3) @(posedge clock);
+            repeat (3) @(negedge clock);
             reset = 1'b0;
             @(posedge clock);
             #1;
@@ -427,6 +426,8 @@ module tb_int8_matvec_dma_lite;
             if (rows >= 2) check_equal("row1 result", memory[(OUT_ADDR >> 2) + 1], 32'hffff_fffa);
             if (rows >= 3) check_equal("row2 result", memory[(OUT_ADDR >> 2) + 2], 32'h0000_0182);
             if (rows >= 4) check_equal("row3 result", memory[(OUT_ADDR >> 2) + 3], 32'h0000_0046);
+            for (i = rows; i < 4; i = i + 1)
+                check_equal("unused output row unchanged", memory[(OUT_ADDR >> 2) + i], 32'hdead_beef);
             check_equal("jobs started", {24'h0, perf_read_data[7:0]}, 32'h0000_0001);
             check_equal("jobs completed", {24'h0, perf_read_data[15:8]}, 32'h0000_0001);
             check_equal("dmem reads", {24'h0, perf_read_data[23:16]}, rows + 32'd1);
@@ -481,7 +482,7 @@ module tb_int8_matvec_dma_lite;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_int8_matvec_dma_lite.vcd");
+        $dumpfile("results/waveforms/tb_int8_matvec_dma_lite.vcd");
         $dumpvars(0, tb_int8_matvec_dma_lite);
 
         reset = 1'b0;

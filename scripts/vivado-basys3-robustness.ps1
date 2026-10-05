@@ -4,22 +4,25 @@ Purpose: Runs several documented Vivado implementation strategies and summarizes
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\vivado-basys3-robustness.ps1
 Outputs:
-  Per-strategy Vivado reports under build/vivado/basys3_robustness and one JSON summary under wave.
+  Per-strategy Vivado reports under build/vivado/basys3_robustness and one JSON summary under results/.
 Scope:
   Multi-strategy implementation evidence; this is not a random-seed guarantee or physical-board validation.
-Audience:
-  Maintainers evaluating whether the canonical 100 MHz result has repeatable implementation margin.
 #>
 param(
     [double] $MinimumWnsNs = 0.200,
     [string] $OutRoot = "build\vivado\basys3_robustness",
-    [string] $SummaryPath = "wave\vivado-basys3-robustness-summary.json",
+    [string] $SummaryPath = "results\vivado-basys3-robustness-summary.json",
     [switch] $Resume
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
+. "$PSScriptRoot/script-common.ps1"
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
+$summary = [ordered]@{ status='running'; runs=@(); error_message=$null }
+Write-ResultJson $summary $SummaryPath
+try {
 
 function Get-ReusableStrategyResult {
     param(
@@ -55,6 +58,7 @@ function Get-ReusableStrategyResult {
         }
     }
     $timingReportPath = [string]$candidate.reports.post_route_timing.path
+    try { Assert-BuildReportArtifacts $candidate $repoRoot } catch { return $null }
     $criticalReportPath = [string]$candidate.reports.post_route_critical_path.path
     if (-not (Test-Path -LiteralPath $timingReportPath -PathType Leaf) -or
         -not (Test-Path -LiteralPath $criticalReportPath -PathType Leaf)) {
@@ -104,8 +108,8 @@ $profiles = @(
 $runs = @()
 foreach ($profile in $profiles) {
     $runOutDir = Join-Path $OutRoot $profile.name
-    $runSummary = Join-Path "wave" "vivado-basys3-robustness-$($profile.name).json"
-    $runLog = Join-Path "wave" "vivado-basys3-robustness-$($profile.name).log"
+    $runSummary = Join-Path "results" "vivado-basys3-robustness-$($profile.name).json"
+    $runLog = Join-Path "results" "vivado-basys3-robustness-$($profile.name).log"
     $result = Get-ReusableStrategyResult -Path $runSummary -Profile $profile
 
     Write-Host "========================================"
@@ -279,8 +283,7 @@ $parent = Split-Path -Parent $SummaryPath
 if (-not [string]::IsNullOrWhiteSpace($parent)) {
     New-Item -ItemType Directory -Force -Path $parent | Out-Null
 }
-$summary | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $SummaryPath -Encoding Ascii
-
+Write-ResultJson $summary $SummaryPath
 Write-Host "========================================"
 Write-Host "Basys3 implementation robustness"
 Write-Host ("Status: {0}" -f $summary.status)
@@ -291,5 +294,10 @@ Write-Host ("Minimum target: {0} ns" -f $summary.minimum_wns_target_ns)
 Write-Host ("Summary: {0}" -f $SummaryPath)
 
 if (-not $allImplemented -or -not $identityConsistent) {
-    exit 1
+    throw 'Implementation strategies failed or used inconsistent inputs.'
 }
+} catch {
+    $summary.status = 'fail'
+    $summary['error_message'] = $_.Exception.Message
+    throw
+} finally { Write-ResultJson $summary $SummaryPath }

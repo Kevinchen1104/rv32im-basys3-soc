@@ -10,7 +10,7 @@ module tb_memory;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_memory.vcd");
+        $dumpfile("results/waveforms/tb_memory.vcd");
         $dumpvars(0, tb_memory);
         reset_cpu();
 

@@ -1,13 +1,15 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_uart_boot_hardware_validation_suite
 // Purpose: Packet-boots the combined hardware validation suite through the runtime SoC external-memory wrapper.
 // Checks: Serial packet loading, exact UART transcript, GPIO/public status, external-DMem snapshots, and DMA traffic.
 // Pass condition: Loader, CPU, timer interrupt, DMA-lite, external memory, and UART evidence all complete cleanly.
-// Does not prove: Simulation wrapper evidence only; not physical-board validation or exhaustive feature coverage.
 // Firmware: firmware/hex/showcase/hardware_validation_suite.hex
 
 module tb_fpga_uart_boot_hardware_validation_suite;
+    initial begin : watchdog
+        repeat (2000000) @(posedge clock);
+        $fatal(1, "Testbench watchdog expired");
+    end
 
     localparam integer UART_CLKS_PER_BIT = 4;
     localparam integer PROGRAM_WORD_COUNT = 508;
@@ -182,7 +184,7 @@ module tb_fpga_uart_boot_hardware_validation_suite;
 
     initial begin
         expected_message = "RV32IM HW VALIDATION\nRV32M PASS\nTIMER IRQ PASS\nMATVEC DMA PASS\nHW VALIDATION PASS\n";
-        $dumpfile("wave/tb_fpga_uart_boot_hardware_validation_suite.vcd");
+        $dumpfile("results/waveforms/tb_fpga_uart_boot_hardware_validation_suite.vcd");
         $dumpvars(0, tb_fpga_uart_boot_hardware_validation_suite);
         $readmemh("firmware/hex/showcase/hardware_validation_suite.hex", program_words, 0, PROGRAM_WORD_COUNT - 1);
 
@@ -242,8 +244,8 @@ module tb_fpga_uart_boot_hardware_validation_suite;
         end
 
         check_external_word(80, 32'h8000_0007);
-        if (dut.dmem.memory[81] === 32'h0 || dut.dmem.memory[81][1:0] !== 2'b00 ||
-            !dut.dmem.memory[82][7] || dut.dmem.memory[83] !== 32'h1 ||
+        if (^dut.dmem.memory[81] === 1'bx || dut.dmem.memory[81] === 32'h0 || dut.dmem.memory[81][1:0] !== 2'b00 ||
+            dut.dmem.memory[82][7] !== 1'b1 || dut.dmem.memory[83] !== 32'h1 ||
             (dut.dmem.memory[84] & 32'h88) !== 32'h88) begin
             $display("FAIL: external timer snapshots mepc=%h mip=%h flag=%h mstatus=%h",
                      dut.dmem.memory[81], dut.dmem.memory[82], dut.dmem.memory[83], dut.dmem.memory[84]);

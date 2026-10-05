@@ -10,7 +10,7 @@ module tb_branch;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_branch.vcd");
+        $dumpfile("results/waveforms/tb_branch.vcd");
         $dumpvars(0, tb_branch);
         reset_cpu();
 

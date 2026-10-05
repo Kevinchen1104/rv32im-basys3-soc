@@ -1,5 +1,5 @@
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
     wire [31:0] gpio_outputs;
@@ -19,7 +19,13 @@
     wire [127:0] dmem_wdata;
     wire [15:0] dmem_byte_enable;
 
-    RISCVCPU dut (
+`ifndef CORE_FAST_MULTIPLY
+`define CORE_FAST_MULTIPLY 0
+`endif
+`ifndef CORE_DCACHE_VICTIM_LINES
+`define CORE_DCACHE_VICTIM_LINES 0
+`endif
+    RISCVCPU #(.FAST_MULTIPLY(`CORE_FAST_MULTIPLY), .DCACHE_VICTIM_LINES(`CORE_DCACHE_VICTIM_LINES)) dut (
         .clock(clock),
         .reset(reset),
         .imem_addr(imem_addr),
@@ -49,6 +55,28 @@
     always #5 clock = ~clock;
 
     localparam NOP = 32'h00000013;
+
+    function automatic string reference_path;
+        input string filename;
+        string directory;
+        begin
+            if (!$value$plusargs("fixture_dir=%s", directory))
+                directory = "fixtures/generated/reference";
+            reference_path = $sformatf("%0s/%0s", directory, filename);
+        end
+    endfunction
+
+    function automatic integer reference_word_count;
+        input integer default_count;
+        integer count;
+        begin
+            if (!$value$plusargs("program_words=%d", count))
+                count = default_count;
+            if (count < 1 || count > 1024)
+                $fatal(1, "Reference program does not fit instruction memory");
+            reference_word_count = count;
+        end
+    endfunction
 
     function [31:0] r_type;
         input [6:0] funct7;
@@ -111,6 +139,8 @@
     task reset_cpu;
         integer i;
         begin
+            // Let DUT initialization finish before writing its memory arrays.
+            #1;
             for (i = 0; i < 1024; i = i + 1) begin
                 dut.IMemory[i] = NOP;
                 dut.DMemory[i] = 32'h0;
@@ -118,7 +148,7 @@
 
             reset = 1'b1;
             @(posedge clock);
-            #1;
+            @(negedge clock);
             reset = 1'b0;
         end
     endtask

@@ -1,12 +1,12 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_registered_branch_miss_event
 // Purpose: Checks that accepted branch misses become one registered pulse before counter increment.
 // Checks: Registered-event/counter cycle timing, stalled raw mismatch rejection, single acceptance on release, correctly
 //   predicted branch exclusion, JAL miss exclusion, and unchanged visible branch-miss totals.
 // Pass condition: Every cycle matches capture(t)=accepted_branch_miss(t-1) and count increments only from capture.
-// Does not prove: Directed CPU scenario plus cycle monitor only; separate bounded formal covers arbitrary event inputs.
 // Assertion focus: Registered accepted branch-miss performance-counter event semantics.
+// Standalone counter tests cover back-to-back events, reset, and rollover; a bounded proof checks arbitrary
+// event inputs.
 
 module tb_assert_registered_branch_miss_event;
 
@@ -15,7 +15,6 @@ module tb_assert_registered_branch_miss_event;
     reg checking_enabled = 1'b0;
     reg sampled_accept;
     reg sampled_registered_event;
-    reg sampled_capture;
     reg sampled_raw;
     reg sampled_stall;
     reg sampled_control_accept;
@@ -26,7 +25,6 @@ module tb_assert_registered_branch_miss_event;
     reg [31:0] sampled_pc;
     integer accepted_branch_miss_count = 0;
     integer registered_branch_miss_event_count = 0;
-    integer counter_increment_count = 0;
     reg saw_stalled_raw = 1'b0;
     reg saw_release_accept = 1'b0;
     reg saw_correct_prediction = 1'b0;
@@ -36,8 +34,6 @@ module tb_assert_registered_branch_miss_event;
         if (checking_enabled) begin
             sampled_accept = dut.branch_mispredict;
             sampled_registered_event = dut.branch_mispredict_event;
-            sampled_capture =
-                dut.gen_performance_counters.performance_counter_inst.branch_mispredict_event_capture;
             sampled_raw = dut.branch_mispredict_raw;
             sampled_stall = dut.dcache_pipeline_stall;
             sampled_control_accept = dut.control_resolution_accept;
@@ -48,6 +44,12 @@ module tb_assert_registered_branch_miss_event;
             sampled_pc = dut.IDEXPC;
 
             #1;
+
+            if (dut.branch_mispredict_event !== sampled_accept) begin
+                $display("FAIL: registered branch event expected accepted miss=%0b got %0b at PC %h",
+                    sampled_accept, dut.branch_mispredict_event, sampled_pc);
+                $fatal;
+            end
 
             if (dut.gen_performance_counters.performance_counter_inst.branch_mispredict_event_capture !==
                 sampled_registered_event) begin
@@ -76,9 +78,6 @@ module tb_assert_registered_branch_miss_event;
                 registered_branch_miss_event_count =
                     registered_branch_miss_event_count + 1;
             end
-            if (sampled_registered_event) begin
-                counter_increment_count = counter_increment_count + 1;
-            end
 
             if (sampled_raw && sampled_stall && !sampled_accept && (sampled_pc == 32'd8)) begin
                 saw_stalled_raw = 1'b1;
@@ -103,7 +102,7 @@ module tb_assert_registered_branch_miss_event;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_registered_branch_miss_event.vcd");
+        $dumpfile("results/waveforms/tb_assert_registered_branch_miss_event.vcd");
         $dumpvars(0, tb_assert_registered_branch_miss_event);
         reset_cpu();
 
@@ -139,12 +138,10 @@ module tb_assert_registered_branch_miss_event;
             $fatal;
         end
         if (accepted_branch_miss_count != registered_branch_miss_event_count ||
-            registered_branch_miss_event_count != counter_increment_count ||
             dut.BranchMissCount !== accepted_branch_miss_count ||
             dut.perf_branch_miss_count !== accepted_branch_miss_count) begin
-            $display("FAIL: totals accepted=%0d registered=%0d increments=%0d internal=%0d public=%0d",
+            $display("FAIL: totals accepted=%0d registered=%0d internal=%0d public=%0d",
                 accepted_branch_miss_count, registered_branch_miss_event_count,
-                counter_increment_count,
                 dut.BranchMissCount, dut.perf_branch_miss_count);
             $fatal;
         end

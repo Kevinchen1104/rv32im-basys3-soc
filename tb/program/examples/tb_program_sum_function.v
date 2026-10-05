@@ -20,7 +20,7 @@ module tb_program_sum_function;
     end
 
     initial begin
-        $dumpfile("wave/tb_program_sum_function.vcd");
+        $dumpfile("results/waveforms/tb_program_sum_function.vcd");
         $dumpvars(0, tb_program_sum_function);
         reset_cpu();
         max_ras_count = 0;

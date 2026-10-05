@@ -1,0 +1,221 @@
+{
+  "status": "passed",
+  "normalization": "UTF-8/LF, checkout and user-profile paths normalized; tool path fields and report host headers removed",
+  "latency_accounting": "all 64 nonzero-delay cases equal zero-delay cycles plus extra_wait*(fills+writebacks)",
+  "derived_records": [
+    {
+      "published": "docs/benchmarks/dcache/measurements.csv",
+      "published_sha256": "83dabfc9506d6156d60ef1e889dab31721e26016b860764532138c51a36a2043"
+    },
+    {
+      "published": "docs/benchmarks/dcache/verification.json",
+      "published_sha256": "99a4a892ec79950e155246746070520cde53e7b54d323d2e0b93406b84df5fc5"
+    }
+  ],
+  "records": [
+    {
+      "source": "results/architecture/dcache-complete-external/summary.json",
+      "original_sha256": "d18fec625a8b9caae9ef4c99ad26c0e1b52f2f4f7f8f1268ddc9eaa72b2c9077",
+      "published": "docs/benchmarks/dcache/latency-0.json",
+      "published_sha256": "3a319497762d5d542801b39b56e752c9c64b43b02428dc2299077b31e727097f"
+    },
+    {
+      "source": "results/architecture/dcache-latency4-complete-external/summary.json",
+      "original_sha256": "4f7495732a15ecdd24db33ba2a7ec10c0cd07d287b67448f4a81a565470be21e",
+      "published": "docs/benchmarks/dcache/latency-4.json",
+      "published_sha256": "9269e693ef4cf5e05c4ae0e0362314bcf9dcc883ba49cb9a03096e0e5853dee4"
+    },
+    {
+      "source": "results/architecture/dcache-latency12-complete-external/summary.json",
+      "original_sha256": "53cd762f4ae6832da833e6c653fe3da120162231a5a43d508330ffe3d721ef2a",
+      "published": "docs/benchmarks/dcache/latency-12.json",
+      "published_sha256": "d76ea36324a2d94754ce86c1160784aa8936a2d1d72033d699de5ae4d107c041"
+    },
+    {
+      "source": "results/timing/dcache-baseline.json",
+      "original_sha256": "95413410997a8214a4ee13f7fa3192cf0c9a082c3485fc87a1ca44a29d5b21da",
+      "published": "docs/benchmarks/dcache/implementation/baseline/metadata.json",
+      "published_sha256": "26b2d8b8bb17109f8fbbee101c1aa2201e4d40ab3f0ef99cf6c0bbfb7aacb20f"
+    },
+    {
+      "source": "build/vivado/dcache-baseline/reports/post_route_critical_paths.rpt",
+      "original_sha256": "8c240c2b291764bd3d8425fadf5263c284639f4c7d1ba5897c74d64318aa79b6",
+      "published": "docs/benchmarks/dcache/implementation/baseline/post_route_critical_paths.rpt",
+      "published_sha256": "3c55225f1fc642855923bc023e6199bdaf5a8be63bf75e80c1effc37884b0366"
+    },
+    {
+      "source": "build/vivado/dcache-baseline/reports/post_route_drc.rpt",
+      "original_sha256": "49101394ed8f0c720731aec9c562af316ea08798371a6d2f5a4d8e3375400eaf",
+      "published": "docs/benchmarks/dcache/implementation/baseline/post_route_drc.rpt",
+      "published_sha256": "64f75b5530e978fa3cff92aba3d616660cfde175fed1e6ab063da8bf28bdd5cc"
+    },
+    {
+      "source": "build/vivado/dcache-baseline/reports/post_route_hierarchy.rpt",
+      "original_sha256": "ee7ff8928bf8d87c241081da9b2e914540dee2d366982e899a99d47dcdf89c41",
+      "published": "docs/benchmarks/dcache/implementation/baseline/post_route_hierarchy.rpt",
+      "published_sha256": "0c7f57603ff6f7c3a28ae6a0374657426742559c41016d49cc94cf7c8b12631c"
+    },
+    {
+      "source": "build/vivado/dcache-baseline/reports/post_route_timing_summary.rpt",
+      "original_sha256": "fd76de168617d489382f3883b49c131630355249733b337beedeaeb4a44f8fa5",
+      "published": "docs/benchmarks/dcache/implementation/baseline/post_route_timing_summary.rpt",
+      "published_sha256": "a6eac80aa7fc397ec423e6be6fada5869a56e681b99412d126f687a3ecc66044"
+    },
+    {
+      "source": "build/vivado/dcache-baseline/reports/post_route_utilization.rpt",
+      "original_sha256": "4a0bc16021eb7cba2c7584b8cb361fe7812c1209036369af13c1aa7b51229275",
+      "published": "docs/benchmarks/dcache/implementation/baseline/post_route_utilization.rpt",
+      "published_sha256": "27e3aa9e9b63fc1728bbf6194f9c0ec9294501118cdf90da520202eacaf51d70"
+    },
+    {
+      "source": "results/timing/dcache-victim4.json",
+      "original_sha256": "2544ecc74bb7a34ced9164937e6df3f485b83dc74314e44aada74d72b2e0a594",
+      "published": "docs/benchmarks/dcache/implementation/victim4/metadata.json",
+      "published_sha256": "10795fab9dcb2522ffa3a46769bf852a79ed8a3de3531a40408e0a9b32cda51f"
+    },
+    {
+      "source": "build/vivado/dcache-victim4/reports/post_route_critical_paths.rpt",
+      "original_sha256": "196a4657fe88ff28c347931a2eed65682c4e3e8409e8ca9ebcfdd75a18d9162e",
+      "published": "docs/benchmarks/dcache/implementation/victim4/post_route_critical_paths.rpt",
+      "published_sha256": "5e15351800af99c6b800e49b27993a0a07267094fdef21f20af835f6eef7757c"
+    },
+    {
+      "source": "build/vivado/dcache-victim4/reports/post_route_drc.rpt",
+      "original_sha256": "fe72d2fd712b6a535f02df79f4775208add2a08e93032f9a404af6674fecded6",
+      "published": "docs/benchmarks/dcache/implementation/victim4/post_route_drc.rpt",
+      "published_sha256": "72edcaa6ca4966248ec9486491d660cd3e7961a99bacedd017be671c730929fd"
+    },
+    {
+      "source": "build/vivado/dcache-victim4/reports/post_route_hierarchy.rpt",
+      "original_sha256": "4409132d4f32c9796383cbe52e6e90cfb54accd0908c5377a12bd1c4d7670119",
+      "published": "docs/benchmarks/dcache/implementation/victim4/post_route_hierarchy.rpt",
+      "published_sha256": "2ccc5eb1bcf46ad2058757fcd8b50ed345c6e3804d05c77bde974323b36aff9e"
+    },
+    {
+      "source": "build/vivado/dcache-victim4/reports/post_route_timing_summary.rpt",
+      "original_sha256": "1dec7f99c634f2532c5759f1b33370e0b97bb3c9e2f407ac018e197d2db18bac",
+      "published": "docs/benchmarks/dcache/implementation/victim4/post_route_timing_summary.rpt",
+      "published_sha256": "bd569e17513756c141c81df57b9da53c1f3e40959a7d0e6cbe8f19807cc54256"
+    },
+    {
+      "source": "build/vivado/dcache-victim4/reports/post_route_utilization.rpt",
+      "original_sha256": "61f6a8d424a9cb49e51d08ccacbd95ead163c2fcd68218bde47aea9e0265e78a",
+      "published": "docs/benchmarks/dcache/implementation/victim4/post_route_utilization.rpt",
+      "published_sha256": "59ccf389b679c9b9ee3a34e313a49d5a8fdd17035f4b1ed33aa8992cb0704dfc"
+    },
+    {
+      "source": "results/architecture/icache-board/parallel64-build.json",
+      "original_sha256": "535d8d8412bb2fd4a3036c99ad31dfc76c6515dc735e230e169ea74632b2aa28",
+      "published": "docs/benchmarks/icache/board/parallel64-build.json",
+      "published_sha256": "c884e1aa981a1c55053473df49bca5047c32fc0fcfbfcc4f1fe148f0dc5462f5"
+    },
+    {
+      "source": "results/architecture/icache-board/parallel64-programming.json",
+      "original_sha256": "e7b9708a2ffff5b2247da9a0c2a43a3dadbda241f8f2763563ad0a4a3c46c3a6",
+      "published": "docs/benchmarks/icache/board/parallel64-programming.json",
+      "published_sha256": "8a1614b29967ae81b87cfd058851a215badb75d91950e4507a077303a278de06"
+    },
+    {
+      "source": "results/architecture/icache-board/parallel64-programming.log",
+      "original_sha256": "fa3ed55943746035c69fe883a18d5a9ae47a8c77f74496bf8ba6984cdf995e51",
+      "published": "docs/benchmarks/icache/board/parallel64-programming.log",
+      "published_sha256": "c3ef10abc23a704f5c3996ca86794a69ae8c5a30404d76b0ddfb2f6ae9879b4f"
+    },
+    {
+      "source": "results/architecture/icache-board/parallel64-fir.json",
+      "original_sha256": "e29bb84e831177d45158155658514c087ea626f3df7a795406fc278fb9305723",
+      "published": "docs/benchmarks/icache/board/parallel64-fir.json",
+      "published_sha256": "331939980f1f3abe5327d7727d2e83c48f84ecf92d358c70fca4f6601f38c0a9"
+    },
+    {
+      "source": "results/architecture/icache-board/banked1024-build.json",
+      "original_sha256": "be01b8aeb7253b7b96638ed7f5772ef688745143e71029004f67911b5930538c",
+      "published": "docs/benchmarks/icache/board/banked1024-build.json",
+      "published_sha256": "58d88145ce172566527c99af2f7d4cc9091838d61d2056fb7cf265cf71c8da72"
+    },
+    {
+      "source": "results/architecture/icache-board/banked1024-programming.json",
+      "original_sha256": "3a68e8dddc6cd21bd3338b9ca557d7e11a5d6153c07f0678b3d80cc553bd33ef",
+      "published": "docs/benchmarks/icache/board/banked1024-programming.json",
+      "published_sha256": "f8575294ff52efdd059061ea1b9bafc744cc67acc5611f9936e8f2ca6289060b"
+    },
+    {
+      "source": "results/architecture/icache-board/banked1024-programming.log",
+      "original_sha256": "b58d444e1ecf8654aa24a160a23628c9dddfeac5d352091787cdabfde92d3241",
+      "published": "docs/benchmarks/icache/board/banked1024-programming.log",
+      "published_sha256": "c7202f7e9fa2e866ad90a27b08034aef6811b6d3e8db76ff0ab3f2b25936789a"
+    },
+    {
+      "source": "results/architecture/icache-board/banked1024-fir.json",
+      "original_sha256": "7df5171eca0f123ef13256663e58401a801451c03208fc4fc2c94abc00c583e5",
+      "published": "docs/benchmarks/icache/board/banked1024-fir.json",
+      "published_sha256": "cdffd496daa2d46eec8d10da2c8237b2dceaf244ec3a57606ecd62f1ac9d2724"
+    },
+    {
+      "source": "results/architecture/dcache-board/baseline-build.json",
+      "original_sha256": "95413410997a8214a4ee13f7fa3192cf0c9a082c3485fc87a1ca44a29d5b21da",
+      "published": "docs/benchmarks/dcache/board/baseline-build.json",
+      "published_sha256": "26b2d8b8bb17109f8fbbee101c1aa2201e4d40ab3f0ef99cf6c0bbfb7aacb20f"
+    },
+    {
+      "source": "results/architecture/dcache-board/baseline-programming.json",
+      "original_sha256": "a10c6de9aacf5433c9d35972235e24f20ec98f9670890212ba53136fd62ab3e0",
+      "published": "docs/benchmarks/dcache/board/baseline-programming.json",
+      "published_sha256": "e1ed2144e4978041e5337732a4a3ba3a67df72a794d9a7f158918ab1275e1080"
+    },
+    {
+      "source": "results/architecture/dcache-board/baseline-programming.log",
+      "original_sha256": "6f94091f0214b8aabdcb8239b57fda10cea84e89481cfdb6ac99eefea74eaea2",
+      "published": "docs/benchmarks/dcache/board/baseline-programming.log",
+      "published_sha256": "45cebccb299ddb6e6082dcceb48cbbe53d5288a31894fdfd5bd0149d6f007933"
+    },
+    {
+      "source": "results/architecture/dcache-board/baseline-fir.json",
+      "original_sha256": "6618581339f25a952131b3c950fdc68f4c7c3dcca214afc9a67fdba555d8d634",
+      "published": "docs/benchmarks/dcache/board/baseline-fir.json",
+      "published_sha256": "a1139fbdf5a1e093f3fd1aea7eab16a7da379919faabd13462768f77365d7038"
+    },
+    {
+      "source": "results/architecture/dcache-board/victim4-build.json",
+      "original_sha256": "2544ecc74bb7a34ced9164937e6df3f485b83dc74314e44aada74d72b2e0a594",
+      "published": "docs/benchmarks/dcache/board/victim4-build.json",
+      "published_sha256": "10795fab9dcb2522ffa3a46769bf852a79ed8a3de3531a40408e0a9b32cda51f"
+    },
+    {
+      "source": "results/architecture/dcache-board/victim4-programming.json",
+      "original_sha256": "3399dfd8ea6b95f9bdbfe72e9ff072168a629dceed915b48747f8f729cdfb7ca",
+      "published": "docs/benchmarks/dcache/board/victim4-programming.json",
+      "published_sha256": "91f0cf94d531b178a8ebce7ae70208d6a07193ec53df01ce211f5daa7c379a07"
+    },
+    {
+      "source": "results/architecture/dcache-board/victim4-programming.log",
+      "original_sha256": "f5bf7cae46b640f817516b8c78347d1df3bd0b152c15eb841f349ed963bb1a06",
+      "published": "docs/benchmarks/dcache/board/victim4-programming.log",
+      "published_sha256": "9ea32b3f45355418181a093371948f1995f87e9240cce7459f240991c2e21846"
+    },
+    {
+      "source": "results/architecture/dcache-board/victim4-fir.json",
+      "original_sha256": "d37733da3eb2a0d4167c6c5446d69efcc5fc08356ff90c35317046df40795344",
+      "published": "docs/benchmarks/dcache/board/victim4-fir.json",
+      "published_sha256": "ba2441fe90b83e830974ef4d8135a89fa4a93f614be9cee25139c4ecdf1138e7"
+    },
+    {
+      "source": "results/architecture/dcache-board/victim4-reload-programming.json",
+      "original_sha256": "87e235f313deec38863918a5908b260e002285c75c71d23ed5b21fd477b7c705",
+      "published": "docs/benchmarks/dcache/board/victim4-reload-programming.json",
+      "published_sha256": "7671a5cc54f198158fb128929c5572db96224a602195f35f404579a97e4f33b5"
+    },
+    {
+      "source": "results/architecture/dcache-board/victim4-reload-programming.log",
+      "original_sha256": "e1815417d3f5f7ad83651567d421766e2a5a2013b3e8b47f4820a700123bd25d",
+      "published": "docs/benchmarks/dcache/board/victim4-reload-programming.log",
+      "published_sha256": "ab4905228cfd74eed5b6bc8f2c33ddd8753b29436bc8c1cc2dd55de0dae37298"
+    },
+    {
+      "source": "results/architecture/dcache-board/victim4-reload-fir.json",
+      "original_sha256": "8c549b532f7aa4811652a1ce0dcb814a3f662b185c519e4b2bb4b0066555d29f",
+      "published": "docs/benchmarks/dcache/board/victim4-reload-fir.json",
+      "published_sha256": "b0815b2ecfc43b67cccaddf1960888efcb5938f248c0d61f6ddb83eda59efbf4"
+    }
+  ]
+}

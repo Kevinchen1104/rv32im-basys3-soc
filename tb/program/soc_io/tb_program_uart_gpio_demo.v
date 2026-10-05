@@ -7,10 +7,13 @@
 //   pass/fail signature.
 // Pass condition: Firmware-visible register, memory, debug_status, I/O, or transcript signatures match expected
 //   values before timeout.
-//   timing/baud tolerance proof, or physical board validation.
 // Firmware: firmware/hex/soc_io/uart_gpio_demo.hex
 
 module tb_program_uart_gpio_demo;
+    initial begin : watchdog
+        repeat (2000000) @(posedge clock);
+        $fatal(1, "Testbench watchdog expired");
+    end
 
     localparam integer UART_CLKS_PER_BIT = 4;
     localparam integer MESSAGE_LEN = 14;
@@ -163,7 +166,7 @@ module tb_program_uart_gpio_demo;
     end
 
     initial begin
-        $dumpfile("wave/tb_program_uart_gpio_demo.vcd");
+        $dumpfile("results/waveforms/tb_program_uart_gpio_demo.vcd");
         $dumpvars(0, tb_program_uart_gpio_demo);
 
         reset = 1'b1;

@@ -6,10 +6,102 @@ Common usage:
 Outputs:
   An in-memory validated evidence record; no hardware, serial port, tool process, or file is created.
 Scope:
-  Integrity and claim-boundary checks for tracked physical evidence, with optional local wave/packet source checks.
-Audience:
-  Public release and audit scripts that must reject incomplete or identity-mismatched board evidence.
+  Integrity and claim-boundary checks for tracked physical evidence, with optional local results/packet source checks.
 #>
+
+. "$PSScriptRoot/release-package.ps1"
+
+function Read-Basys3BoardRun {
+    param([string]$SummaryPath)
+    $directory = Split-Path -Parent $SummaryPath
+    $record = Read-ReleaseJson $SummaryPath
+    Assert-ReleaseManifest $directory | Out-Null
+    $build = Read-ReleaseJson (Join-Path $directory 'build.json')
+    Assert-ImplementationResult $build
+    $identity = $record.canonical_identity
+    if ($record.status -ne 'pass' -or $record.physical_validation_status -ne 'passed' -or
+        $record.top -ne 'RISCVCPU_basys3_top' -or $record.soc_clock_mhz -ne 100 -or
+        $identity.source_fingerprint -ne $build.source_fingerprint -or
+        $identity.synthesis_source_commit -ne $build.source_commit -or
+        $record.operator.reset_button_confirmed -cne $true -or -not $record.operator.led_observation) {
+        throw 'Incomplete board-run identity or operator observations.'
+    }
+    $names = @('Showcase', 'Interactive', 'HardwareValidation', 'Matvec', 'MatvecReset')
+    if (@($record.uart_runs).Count -ne $names.Count) { throw 'Board-run case count differs.' }
+    $cases = @{}
+    foreach ($name in $names) {
+        $capture = Read-ReleaseJson (Join-Path $directory "captures/$name/summary.json")
+        $programName = if ($name -eq 'MatvecReset') { 'Matvec' } else { $name }
+        $program = Read-ReleaseJson (Join-Path $directory "captures/$programName/program.json")
+        if ($capture.status -ne 'pass' -or $capture.transcript_match -cne $true -or
+            $capture.bitstream_sha256 -ne $identity.bitstream_sha256 -or
+            $capture.bitstream_source_fingerprint -ne $identity.source_fingerprint -or
+            $program.status -ne 'pass' -or $program.configuration_verified -cne $true -or
+            $program.bitstream_sha256 -ne $identity.bitstream_sha256 -or $program.target_count -ne 1) {
+            throw "Board capture/program identity failed: $name"
+        }
+        if ($name -like 'Matvec*') {
+            $comparison = Read-ReleaseJson (Join-Path $directory "captures/$name/comparison.json")
+            $transcript = Join-Path $directory "captures/$name/uart.txt"
+            $csv = Join-Path $directory "captures/$name/measurements.csv"
+            if ($comparison.status -ne 'passed' -or $comparison.cases_passed -ne 90 -or
+                $comparison.outputs_checked -ne 2418 -or
+                (Get-FileHash $transcript).Hash.ToLowerInvariant() -ne $comparison.transcript_sha256 -or
+                (Get-FileHash $csv).Hash.ToLowerInvariant() -ne $comparison.measurements_sha256) {
+                throw "MATVEC comparison evidence failed: $name"
+            }
+        }
+        $cases[$name] = [ordered]@{ status='pass'; port=$capture.port; baud=$capture.baud }
+    }
+    [ordered]@{
+        status='pass'; evidence_root=$directory.Replace('\','/'); summary_path=$SummaryPath.Replace('\','/')
+        summary_sha256=(Get-FileHash $SummaryPath).Hash.ToLowerInvariant()
+        physical_validation_status='passed'; physical_validation_scope=$record.physical_validation_scope
+        date_local=$record.date_local; source_commit=$identity.synthesis_source_commit
+        source_fingerprint=$identity.source_fingerprint; bitstream_sha256=$identity.bitstream_sha256
+        bitstream_size_bytes=$identity.bitstream_size_bytes; cases=$cases
+        programming_evidence_level='machine_captured'; uart_evidence_level='machine_captured'
+        led_reset_evidence_level='operator_reported'
+    }
+}
+
+# Adapt the recorded measurement to the existing evidence validators in memory.
+# Hardware configuration and historical measurements have separate disk sources.
+function Get-Basys3RecordedProfile {
+    $board = Get-Content 'fpga/boards/basys3/board.json' -Raw | ConvertFrom-Json
+    $path = [string]$board.recorded_physical_evidence
+    if ($path -notmatch '^docs/fpga/board_evidence/[^/]+/summary\.json$') { throw 'Invalid recorded board evidence path.' }
+    $record = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
+    $identity = $record.canonical_identity
+    $fields = @{
+        full_direct_100mhz_physical_evidence=$path
+        full_direct_100mhz_source_commit=$identity.synthesis_source_commit
+        full_direct_100mhz_source_fingerprint=$identity.source_fingerprint
+        full_direct_100mhz_fingerprint_input_count=$identity.fingerprint_input_count
+        full_direct_100mhz_bitstream_path=$identity.bitstream_build_path
+        full_direct_100mhz_bitstream_size_bytes=$identity.bitstream_size_bytes
+        full_direct_100mhz_bitstream_sha256=$identity.bitstream_sha256
+        full_direct_100mhz_vivado_version=$record.post_route_timing.vivado_version
+        full_direct_100mhz_physical_validation_date=$record.date_local
+        full_direct_100mhz_physical_validation_status=$record.physical_validation_status
+        full_direct_100mhz_physical_validation_scope=$record.physical_validation_scope
+        physical_validation_status=$record.physical_validation_status
+        physical_validation_scope=$record.physical_validation_scope
+    }
+    foreach ($metric in @('wns_ns','tns_ns','whs_ns','ths_ns')) { $fields["full_direct_100mhz_$metric"] = $record.post_route_timing.$metric }
+    foreach ($key in $fields.Keys) { $board | Add-Member -NotePropertyName $key -NotePropertyValue $fields[$key] }
+    return $board
+}
+
+function Resolve-Basys3CapturePath {
+    param([string]$Path, [string]$EvidenceRoot)
+    # Original summaries remain byte-identical. Their historical wave/ paths
+    # resolve to the preserved raw captures bundled beside the durable record.
+    if ($Path.Replace('\','/').StartsWith('wave/')) {
+        return Join-Path $EvidenceRoot ('captures/' + [IO.Path]::GetFileName($Path))
+    }
+    return $Path
+}
 
 function Get-Basys3PhysicalEvidence {
     param([switch] $VerifyCaptureSources)
@@ -18,7 +110,7 @@ function Get-Basys3PhysicalEvidence {
     if (-not (Test-Path -LiteralPath $boardPath -PathType Leaf)) {
         throw "Basys3 board identity manifest is missing: $boardPath"
     }
-    $board = Get-Content -LiteralPath $boardPath -Raw | ConvertFrom-Json
+    $board = Get-Basys3RecordedProfile
     $summaryPath = [string]$board.full_direct_100mhz_physical_evidence
     $normalizedSummaryPath = $summaryPath.Replace("\", "/")
     if ([string]::IsNullOrWhiteSpace($summaryPath) -or
@@ -31,6 +123,7 @@ function Get-Basys3PhysicalEvidence {
         throw "Basys3 physical evidence summary is missing: $summaryPath"
     }
     $summary = Get-Content -LiteralPath $summaryPath -Raw | ConvertFrom-Json
+    if ($summary.schema_version -eq 2) { return Read-Basys3BoardRun $summaryPath }
     $expectedSourceCommit = [string]$board.full_direct_100mhz_source_commit
     $expectedFingerprint = [string]$board.full_direct_100mhz_source_fingerprint
     $expectedBitstreamHash = [string]$board.full_direct_100mhz_bitstream_sha256
@@ -133,7 +226,7 @@ function Get-Basys3PhysicalEvidence {
         throw "Basys3 durable XSDB programming summary content mismatch."
     }
     if ($VerifyCaptureSources) {
-        $programmingCapturePath = [string]$programming.capture_source_path
+        $programmingCapturePath = Resolve-Basys3CapturePath $programming.capture_source_path $evidenceRoot
         if (-not (Test-Path -LiteralPath $programmingCapturePath -PathType Leaf) -or
             (Get-FileHash -LiteralPath $programmingCapturePath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $programming.capture_source_sha256) {
             throw "Basys3 source XSDB programming summary hash mismatch."
@@ -236,7 +329,7 @@ function Get-Basys3PhysicalEvidence {
             if ($packetFile.Length -ne $case.packet_bytes -or $packetHash -ne $case.packet_sha256) {
                 throw "Basys3 source packet size/hash mismatch: $($case.name)"
             }
-            $sourceSummaryPath = [string]$record.source_summary_path
+            $sourceSummaryPath = Resolve-Basys3CapturePath $record.source_summary_path $evidenceRoot
             if (-not (Test-Path -LiteralPath $sourceSummaryPath -PathType Leaf) -or
                 (Get-FileHash -LiteralPath $sourceSummaryPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $record.source_summary_sha256) {
                 throw "Basys3 source UART summary hash mismatch: $($case.name)"

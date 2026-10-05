@@ -15,30 +15,28 @@ not physical validation.
 
 ## Programming paths
 
-- USB host: copy the canonical `.bit` file to a FAT32 USB drive and use the
-  Basys3 USB-host configuration sequence documented in
-  [`docs/fpga_basys3.md`](../../../docs/fpga_basys3.md).
 - XSDB: run `scripts/xsdb-basys3-program.ps1` for a one-shot JTAG flow when
   XSDB is allowed by the host.
 - Vivado Hardware Manager: run `scripts/vivado-basys3-program.ps1` when the
   Vivado runtime and cable services are available.
 
-All three paths configure a selected bitstream; none proves UART, LED, reset,
+Both paths configure a selected bitstream; neither proves UART, LED, reset,
 or accelerator behavior by itself. See [bringup_checklist.md](bringup_checklist.md)
 for the board-side checks.
 
-The source-matched Vivado 2026.1 build at commit `d7f1afe` met 100 MHz timing,
-generated a bitstream, completed five implementation profiles that each
-reported nonnegative WNS and zero TNS,
-and passed the scoped 2026-07-30 XSDB/UART/LED/reset suite. The profile sweep
-is not random-seed evidence, and its worst WNS `+0.079 ns` missed the optional
-`+0.200 ns` margin target. See
+The source-matched Vivado 2026.1 build at `849270b` met 100 MHz timing
+(WNS `+0.399 ns`, WHS `+0.018 ns`) and passed the 2026-09-30 board suite.
+It includes JTAG/UART, RV32M, timer-interrupt and DMA checks, plus two complete
+90-case MATVEC runs with identical cycle counts after reset. See
 [`docs/fpga_basys3.md`](../../../docs/fpga_basys3.md).
 
-After evidence promotion, physical host preflight resolves canonical identity
-from the evidence-only Basys3 status, Vivado summary, source fingerprint,
-source manifest, and local bitstream size/hash. It does not require repository
-HEAD to equal the synthesis source commit when later commits contain only
-evidence.
-The physical evidence does not claim on-board bitstream readback or hash
-verification.
+Physical host preflight checks the current 100-MHz Vivado bitstream build,
+post-route timing/DRC, synthesis-source fingerprint and local bitstream hash.
+Historical board records and optional multi-strategy experiments are separate:
+neither is a prerequisite for testing a new, timing-closed build. A host-script
+edit does not change the bitstream's synthesis inputs.
+
+The `Matvec` demo captures hardware cycle counters and all numerical outputs;
+see the [measurement method](../../../docs/matvec-benchmark.md#physical-board-measurements).
+JTAG configured-state confirmation and UART capture are automated. LED and
+physical reset-button observations are recorded by the operator.

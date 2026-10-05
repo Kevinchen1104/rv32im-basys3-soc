@@ -1,12 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_trap_side_effect_flush
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Trap redirect suppresses younger wrong-path data-memory and GPIO MMIO stores while the handler executes.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Directed ecall side-effect case only; does not cover every exception priority.
-// Assertion focus: Directed check for trap side effect flush behavior or side-effect suppression.
 
 module tb_assert_trap_side_effect_flush;
 
@@ -27,7 +21,7 @@ module tb_assert_trap_side_effect_flush;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_trap_side_effect_flush.vcd");
+        $dumpfile("results/waveforms/tb_assert_trap_side_effect_flush.vcd");
         $dumpvars(0, tb_assert_trap_side_effect_flush);
         reset_cpu();
 

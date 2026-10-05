@@ -1,289 +1,140 @@
 <#
-Script: scripts\check.ps1
-Purpose: Runs the main portable project regression gate.
+Script: scripts/check.ps1
+Purpose: Runs either the everyday Quick checks or the complete portable Full gate.
 Common usage:
-  powershell -ExecutionPolicy Bypass -File scripts\check.ps1
+  powershell -ExecutionPolicy Bypass -File scripts/check.ps1 -Mode Quick
+  powershell -ExecutionPolicy Bypass -File scripts/check.ps1 -Mode Full
 Outputs:
-  wave\check-summary.json plus regression, reference, and helper artifacts under wave\.
+  Mode-specific JSON and Markdown summaries, a regression CSV, and step logs under results/.
 Scope:
-  Portable simulation/static/reference evidence only; not timing closure, physical board validation, official RISC-V compliance, or benchmark proof.
-Audience:
-  Public entrypoint.
+  Portable checks; FPGA implementation and release packaging are separate workflows.
 #>
-$ErrorActionPreference = "Stop"
+param([ValidateSet('Quick', 'Full')][string]$Mode = 'Full')
 
-$repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
+$ErrorActionPreference = 'Stop'
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 Set-Location $repoRoot
-. "$PSScriptRoot\verification-source-identity.ps1"
+. "$PSScriptRoot/verification-source-identity.ps1"
+. "$PSScriptRoot/process-runner.ps1"
+. "$PSScriptRoot/check-report.ps1"
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
-
-$stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-$checkSummary = [ordered]@{
-    status = "running"
-    failed_step = ""
-    error_message = ""
-    assembler_checks = $false
-    static_rtl_check = $false
-    vivado_drc_parser_self_test = $false
-    verification_source_identity_self_test = $false
-    release_provenance_self_test = $false
-    rtl_comment_audit = $false
-    testbench_comment_audit = $false
-    firmware_comment_audit = $false
-    script_comment_audit = $false
-    documentation_coverage_audit = $false
-    test_catalog_check = $false
-    random_memory_reference_check = $false
-    random_control_reference_check = $false
-    random_hazard_reference_check = $false
-    random_call_reference_check = $false
-    generated_reference_seed_smoke_check = $false
-    uart_boot_packet_check = $false
-    showcase_boot_packet_check = $false
-    interactive_boot_packet_check = $false
-    hardware_validation_boot_packet_check = $false
-    trace_trap_reference_check = $false
-    trace_lockstep_reference_check = $false
-    trace_lockstep_seed_smoke_check = $false
-    perf_counter_snapshot_check = $false
-    regression = $false
-    regression_evidence_report = $false
-    fpga_smoke = $false
-    ci_gate_scope = "portable PowerShell/Icarus gate; local release gates are run separately"
-    local_release_gates_run_separately = @(
-        "scripts\project-doctor.ps1",
-        "scripts\demo-smoke.ps1",
-        "scripts\showcase-demo.ps1",
-        "scripts\interactive-showcase-demo.ps1",
-        "scripts\claim-audit.ps1",
-        "scripts\docs-link-audit.ps1",
-        "scripts\final-audit.ps1",
-        "scripts\verilator-lint.ps1",
-        "scripts\synth-smoke.ps1",
-        "scripts\fpga-tool-detect.ps1",
-        "scripts\fpga-release.ps1",
-        "scripts\vivado-detect.ps1",
-        "scripts\vivado-basys3-build.ps1 -SynthOnly",
-        "scripts\fpga-release.ps1 -BoardProfile basys3",
-        "scripts\formal-smoke.ps1",
-        "scripts\formal-matvec-smoke.ps1",
-        "scripts\release-evidence.ps1",
-        "scripts\release-freeze.ps1"
+# A step declares its script, arguments, completed flags, and deadline.
+function Step {
+    param([string]$Name, [string[]]$Arguments = @(), [string[]]$Flags = @(), [int]$Timeout = 300, [string]$Label = '')
+    if (-not $Label) { $Label = $Name }
+    [pscustomobject]@{ name = $Name; label = $Label; arguments = $Arguments; flags = $Flags; timeout = $Timeout }
+}
+$fullSteps = @(
+    Step 'runner-self-test' @() @('runner_self_test')
+    Step 'workflow-self-test'
+    Step 'result-integrity-self-test'
+    Step 'result-format-self-test'
+    Step 'verification-edge-tests'
+    Step 'assembler-tests'
+    Step 'assemble' @('-Check') @('assembler_checks')
+    Step 'static-rtl-check' @() @('static_rtl_check')
+    Step 'vivado-drc-parser-self-test' @() @('vivado_drc_parser_self_test')
+    Step 'verification-source-identity-self-test' @() @('verification_source_identity_self_test')
+    Step 'release-provenance-self-test' @() @('release_provenance_self_test')
+    Step 'check-test-catalog' @() @('test_catalog_check')
+    Step 'random-reference' @('-Check', '-SkipSimulation')
+    Step 'random-memory-reference' @('-Check', '-SkipSimulation') @('random_memory_reference_check')
+    Step 'random-control-reference' @('-Check', '-SkipSimulation') @('random_control_reference_check')
+    Step 'random-hazard-reference' @('-Check', '-SkipSimulation') @('random_hazard_reference_check')
+    Step 'random-call-reference' @('-Check', '-SkipSimulation') @('random_call_reference_check')
+    Step 'generated-reference-seed-smoke' @() @('generated_reference_seed_smoke_check') 900
+    Step 'uart-boot-packet' @('-Hex', 'firmware/hex/showcase/board_smoke.hex', '-DryRun', '-Check') @('uart_boot_packet_check') -Label 'UART boot: board smoke'
+    Step 'uart-boot-packet' @('-Hex', 'firmware/hex/showcase/showcase_demo.hex', '-DryRun', '-Check') @('showcase_boot_packet_check') -Label 'UART boot: showcase'
+    Step 'uart-boot-packet' @('-Hex', 'firmware/hex/showcase/interactive_showcase_demo.hex', '-DryRun', '-Check') @('interactive_boot_packet_check') -Label 'UART boot: interactive showcase'
+    Step 'uart-boot-packet' @('-Hex', 'firmware/hex/showcase/hardware_validation_suite.hex', '-DryRun', '-Check') @('hardware_validation_boot_packet_check') -Label 'UART boot: hardware validation'
+    Step 'trace-reference' @('-Check', '-SkipSimulation')
+    Step 'trace-trap-reference' @('-Check', '-SkipSimulation') @('trace_trap_reference_check')
+    Step 'trace-lockstep-reference' @('-Check', '-SkipSimulation') @('trace_lockstep_reference_check')
+    Step 'trace-lockstep-seed-smoke' @() @('trace_lockstep_seed_smoke_check') 900
+    Step 'perf-counter-export' @('-SkipAssemble') @('perf_counter_snapshot_check')
+    Step 'perf-counter-threshold-tests'
+    Step 'run' @('-Test', 'all', '-SummaryJson', 'results/regression-summary.json') @('regression') 1800
+    Step 'regression-evidence-report' @() @('regression_evidence_report')
+    Step 'fpga-smoke' @() @('fpga_smoke')
+)
+$steps = if ($Mode -eq 'Quick') {
+    @(
+        Step 'assemble' @('-Check') @('assembler_checks')
+        Step 'static-rtl-check' @() @('static_rtl_check')
+        Step 'check-test-catalog' @() @('test_catalog_check')
+        Step 'run' @('-Test', 'quick', '-SkipAssemble', '-SummaryJson', 'results/quick-regression-summary.json') @('regression')
     )
-    started_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-    finished_at_utc = $null
-    duration_ms = 0
+} else { $fullSteps }
+
+$prefix = if ($Mode -eq 'Quick') { 'quick-' } else { '' }
+$summaryPath = "results/${prefix}check-summary.json"
+$regressionPath = "results/${prefix}regression-summary.json"
+$clock = [System.Diagnostics.Stopwatch]::StartNew()
+$summary = [ordered]@{
+    status = 'running'; mode = $Mode; failed_step = ''; error_message = ''
+    started_at_utc = (Get-Date).ToUniversalTime().ToString('o')
+    finished_at_utc = $null; duration_ms = 0
+    planned_steps = $steps.Count; steps = @()
+}
+foreach ($flag in @($fullSteps | ForEach-Object { $_.flags } | Select-Object -Unique)) {
+    $summary[$flag] = $false
+}
+New-Item -ItemType Directory -Force -Path 'results' | Out-Null
+function Save-Summary {
+    $summary.duration_ms = $clock.ElapsedMilliseconds
+    Write-ResultJson $summary $summaryPath
+    Write-CheckReport -Summary $summary -ResultsDirectory (Join-Path $repoRoot 'results') -RegressionPath $regressionPath
 }
 
-$currentStep = ""
+# Replace this mode's previous report before any subprocess starts.
+New-Item -ItemType Directory -Force -Path 'build' | Out-Null
+$workflowLock = [IO.File]::Open((Join-Path $repoRoot 'build/check.lock'), 'OpenOrCreate', 'ReadWrite', 'None')
+Save-Summary
+if ($Mode -eq 'Full') { & "$PSScriptRoot/results-overview.ps1" }
 $caughtError = $null
-
-function Write-CheckSummary {
-    $checkSummary.finished_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-    $checkSummary.duration_ms = $stopwatch.ElapsedMilliseconds
-    Add-VerificationIdentityFields -Summary $checkSummary | Out-Null
-    $checkSummary | ConvertTo-Json -Depth 3 | Set-Content -Path "wave\check-summary.json" -Encoding Ascii
-    Write-Host "Check summary written to wave\check-summary.json"
-}
-
+$currentStep = 'source identity'
 try {
-    Write-Host "========================================"
-    Write-Host "Running assembler focused tests"
-    $currentStep = "assembler focused tests"
-    & (Join-Path $PSScriptRoot "assembler-tests.ps1")
-
-    Write-Host "========================================"
-    Write-Host "Checking assembled program images"
-    $currentStep = "assembled program images"
-    & (Join-Path $PSScriptRoot "assemble.ps1") -Check
-    $checkSummary.assembler_checks = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking static RTL hygiene"
-    $currentStep = "static RTL hygiene"
-    & (Join-Path $PSScriptRoot "static-rtl-check.ps1")
-    $checkSummary.static_rtl_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking Vivado DRC parser fail-closed policy"
-    $currentStep = "Vivado DRC parser self-test"
-    & (Join-Path $PSScriptRoot "vivado-drc-parser-self-test.ps1")
-    $checkSummary.vivado_drc_parser_self_test = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking verification source identity hashing policy"
-    $currentStep = "verification source identity self-test"
-    & (Join-Path $PSScriptRoot "verification-source-identity-self-test.ps1")
-    $checkSummary.verification_source_identity_self_test = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking release provenance domain ordering"
-    $currentStep = "release provenance self-test"
-    & (Join-Path $PSScriptRoot "release-provenance-self-test.ps1")
-    $checkSummary.release_provenance_self_test = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking documentation coverage headers"
-    $currentStep = "documentation coverage headers"
-    & (Join-Path $PSScriptRoot "documentation-coverage-audit.ps1")
-    $checkSummary.rtl_comment_audit = $true
-    $checkSummary.testbench_comment_audit = $true
-    $checkSummary.firmware_comment_audit = $true
-    $checkSummary.script_comment_audit = $true
-    $checkSummary.documentation_coverage_audit = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking test coverage catalog"
-    $currentStep = "test coverage catalog"
-    & (Join-Path $PSScriptRoot "check-test-catalog.ps1")
-    $checkSummary.test_catalog_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking randomized reference program"
-    $currentStep = "randomized reference program"
-    & (Join-Path $PSScriptRoot "random-reference.ps1") -Check -SkipSimulation
-
-    Write-Host "========================================"
-    Write-Host "Checking randomized memory reference program"
-    $currentStep = "randomized memory reference program"
-    & (Join-Path $PSScriptRoot "random-memory-reference.ps1") -Check -SkipSimulation
-    $checkSummary.random_memory_reference_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking randomized control reference program"
-    $currentStep = "randomized control reference program"
-    & (Join-Path $PSScriptRoot "random-control-reference.ps1") -Check -SkipSimulation
-    $checkSummary.random_control_reference_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking randomized hazard reference program"
-    $currentStep = "randomized hazard reference program"
-    & (Join-Path $PSScriptRoot "random-hazard-reference.ps1") -Check -SkipSimulation
-    $checkSummary.random_hazard_reference_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking randomized call reference program"
-    $currentStep = "randomized call reference program"
-    & (Join-Path $PSScriptRoot "random-call-reference.ps1") -Check -SkipSimulation
-    $checkSummary.random_call_reference_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking generated reference multi-seed smoke"
-    $currentStep = "generated reference multi-seed smoke"
-    & (Join-Path $PSScriptRoot "generated-reference-seed-smoke.ps1")
-    $checkSummary.generated_reference_seed_smoke_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking UART boot packet fixture"
-    $currentStep = "UART boot packet fixture"
-    & (Join-Path $PSScriptRoot "uart-boot-packet.ps1") -Hex "firmware\hex\showcase\board_smoke.hex" -DryRun -Check
-    $checkSummary.uart_boot_packet_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking showcase UART boot packet fixture"
-    $currentStep = "showcase UART boot packet fixture"
-    & (Join-Path $PSScriptRoot "uart-boot-packet.ps1") -Hex "firmware\hex\showcase\showcase_demo.hex" -DryRun -Check
-    $checkSummary.showcase_boot_packet_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking interactive showcase UART boot packet fixture"
-    $currentStep = "interactive showcase UART boot packet fixture"
-    & (Join-Path $PSScriptRoot "uart-boot-packet.ps1") -Hex "firmware\hex\showcase\interactive_showcase_demo.hex" -DryRun -Check
-    $checkSummary.interactive_boot_packet_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking hardware validation UART boot packet fixture"
-    $currentStep = "hardware validation UART boot packet fixture"
-    & (Join-Path $PSScriptRoot "uart-boot-packet.ps1") -Hex "firmware\hex\showcase\hardware_validation_suite.hex" -DryRun -Check
-    $checkSummary.hardware_validation_boot_packet_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking trace reference program"
-    $currentStep = "trace reference program"
-    & (Join-Path $PSScriptRoot "trace-reference.ps1") -Check -SkipSimulation
-
-    Write-Host "========================================"
-    Write-Host "Checking trace trap reference program"
-    $currentStep = "trace trap reference program"
-    & (Join-Path $PSScriptRoot "trace-trap-reference.ps1") -Check -SkipSimulation
-    $checkSummary.trace_trap_reference_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking trace lockstep reference program"
-    $currentStep = "trace lockstep reference program"
-    & (Join-Path $PSScriptRoot "trace-lockstep-reference.ps1") -Check -SkipSimulation
-    $checkSummary.trace_lockstep_reference_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking trace lockstep multi-seed smoke"
-    $currentStep = "trace lockstep multi-seed smoke"
-    & (Join-Path $PSScriptRoot "trace-lockstep-seed-smoke.ps1")
-    $checkSummary.trace_lockstep_seed_smoke_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking performance counter CSV helper"
-    $currentStep = "performance counter CSV helper"
-    & (Join-Path $PSScriptRoot "perf-counter-csv.ps1") -OutputPath "wave\perf-counter-comparison.csv"
-
-    Write-Host "========================================"
-    Write-Host "Checking performance counter JSON helper"
-    $currentStep = "performance counter JSON helper"
-    & (Join-Path $PSScriptRoot "perf-counter-json.ps1") -OutputPath "wave\perf-counter-comparison.json"
-
-    Write-Host "========================================"
-    Write-Host "Checking performance counter comparison helper"
-    $currentStep = "performance counter comparison helper"
-    & (Join-Path $PSScriptRoot "perf-counter-compare.ps1") `
-        -BaselinePath "wave\perf-counter-comparison.json" `
-        -CurrentPath "wave\perf-counter-comparison.json" `
-        -FailOnDifference
-
-    Write-Host "========================================"
-    Write-Host "Checking performance counter snapshot freshness"
-    $currentStep = "performance counter snapshot freshness"
-    & (Join-Path $PSScriptRoot "check-perf-counter-snapshots.ps1") -SkipAssemble
-    $checkSummary.perf_counter_snapshot_check = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking performance counter threshold fixtures"
-    $currentStep = "performance counter threshold fixtures"
-    & (Join-Path $PSScriptRoot "perf-counter-threshold-tests.ps1")
-
-    Write-Host "========================================"
-    Write-Host "Running full CPU regression"
-    $currentStep = "full CPU regression"
-    & (Join-Path $PSScriptRoot "run.ps1") -SummaryJson "wave\regression-summary.json"
-    $checkSummary.regression = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking regression evidence report"
-    $currentStep = "regression evidence report"
-    & (Join-Path $PSScriptRoot "regression-evidence-report.ps1")
-    $checkSummary.regression_evidence_report = $true
-
-    Write-Host "========================================"
-    Write-Host "Checking FPGA top elaboration"
-    $currentStep = "FPGA top elaboration"
-    & (Join-Path $PSScriptRoot "fpga-smoke.ps1")
-    $checkSummary.fpga_smoke = $true
-
-    $checkSummary.status = "pass"
+    $startingIdentity = Add-VerificationIdentityFields -Summary $summary
+    for ($i = 0; $i -lt $steps.Count; $i++) {
+        $step = $steps[$i]
+        $currentStep = $step.name
+        Write-Host "[$($i + 1)/$($steps.Count)] $Mode - $currentStep $($step.arguments -join ' ')"
+        $log = 'results/logs/check/{0}/{1:D2}-{2}.log' -f $Mode.ToLowerInvariant(), ($i + 1), $currentStep
+        # Reference fixtures and provenance use the documented Windows PowerShell 5.1 flow.
+        $result = Invoke-LoggedProcess -FilePath 'powershell' `
+            -Arguments (@('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "$PSScriptRoot/$currentStep.ps1") + $step.arguments) `
+            -LogPath $log -WorkingDirectory $repoRoot -TimeoutSeconds $step.timeout -Quiet
+        $summary.steps += [pscustomobject]@{
+            name = $currentStep; label = $step.label; arguments = $step.arguments; status = $result.status
+            exit_code = $result.exit_code; duration_ms = $result.duration_ms; log = $result.log
+        }
+        if ($result.status -ne 'passed') {
+            throw "$currentStep $($result.status). See $log. $($result.error_message)"
+        }
+        foreach ($flag in $step.flags) { $summary[$flag] = $true }
+        Save-Summary
+    }
+    $summary.status = 'pass'
 } catch {
     $caughtError = $_
-    $checkSummary.status = "fail"
-    $checkSummary.failed_step = $currentStep
-    $checkSummary.error_message = $_.Exception.Message
-    Write-Host "FAIL: project check failed during $currentStep"
-    Write-Host $_.Exception.Message
+    $summary.status = 'fail'
+    $summary.failed_step = $currentStep
+    $summary.error_message = $_.Exception.Message
 } finally {
-    $stopwatch.Stop()
-    Write-CheckSummary
+    $clock.Stop()
+    $summary.finished_at_utc = (Get-Date).ToUniversalTime().ToString('o')
+    try {
+        if ($startingIdentity) { Assert-VerificationInputsUnchanged $startingIdentity }
+    } catch {
+        if ($null -eq $caughtError) { $caughtError = $_ }
+        $summary.status = 'fail'
+        $summary.failed_step = 'source identity'
+        $summary.error_message = $_.Exception.Message
+    }
+    try {
+        Save-Summary
+        if ($Mode -eq 'Full') { & "$PSScriptRoot/results-overview.ps1" }
+    } finally { $workflowLock.Dispose() }
 }
-
-if ($null -ne $caughtError) {
-    throw $caughtError
-}
-
-Write-Host "========================================"
-Write-Host "PASS: project check completed"
+if ($null -ne $caughtError) { throw $caughtError }
+Write-Host "PASS: $Mode check completed. Read results/$($prefix)RESULTS.md"

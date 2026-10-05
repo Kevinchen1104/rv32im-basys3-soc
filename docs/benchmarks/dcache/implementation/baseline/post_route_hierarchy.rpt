@@ -1,0 +1,55 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Fri Oct  2 06:10:23 2026
+| Command      : report_utilization -hierarchical -hierarchical_depth 5 -file ./build/vivado/dcache-baseline/reports/post_route_hierarchy.rpt
+| Design       : RISCVCPU_basys3_top
+| Device       : xc7a35tcpg236-1
+| Speed File   : -1
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++---------------------------------------------------------+------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
+|                         Instance                        |               Module               | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++---------------------------------------------------------+------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
+| RISCVCPU_basys3_top                                     |                              (top) |       7029 |       6089 |     940 |    0 | 4741 |      2 |      0 |          4 |
+|   (RISCVCPU_basys3_top)                                 |                              (top) |          0 |          0 |       0 |    0 |   32 |      0 |      0 |          0 |
+|   soc                                                   | RISCVCPU_uart_boot_runtime_soc_top |       7029 |       6089 |     940 |    0 | 4709 |      2 |      0 |          4 |
+|     serial_rx                                           |                            uart_rx |         52 |         52 |       0 |    0 |   57 |      0 |      0 |          0 |
+|     boot_imem                                           |              uart_packet_boot_imem |       1147 |        443 |     704 |    0 |  180 |      0 |      0 |          0 |
+|       (boot_imem)                                       |              uart_packet_boot_imem |       1146 |        442 |     704 |    0 |  180 |      0 |      0 |          0 |
+|     cpu                                                 |                           RISCVCPU |       5653 |       5429 |     224 |    0 | 4231 |      0 |      0 |          4 |
+|       (cpu)                                             |                           RISCVCPU |       1310 |       1310 |       0 |    0 | 1688 |      0 |      0 |          0 |
+|       csr_unit_inst                                     |                           csr_unit |        364 |        364 |       0 |    0 |  268 |      0 |      0 |          0 |
+|       debug_status_store_format                         |          load_store_format_unit__6 |         52 |         52 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       execute_alu                                       |                          riscv_alu |        676 |        676 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       execute_branch_jump                               |                   branch_jump_unit |        209 |        209 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       execute_forwarding                                |                    forwarding_unit |         92 |         92 |       0 |    0 |    0 |      0 |      0 |          0 |
+|         (execute_forwarding)                            |                    forwarding_unit |         90 |         90 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       exmem_mmio_read_mux                               |                      mmio_read_mux |        146 |        146 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       gen_branch_predictor.branch_predictor_inst        |                   branch_predictor |        245 |        245 |       0 |    0 |  599 |      0 |      0 |          0 |
+|       gen_dcache.dcache                                 |                        dcache_unit |       1121 |       1121 |       0 |    0 |  721 |      0 |      0 |          0 |
+|         (gen_dcache.dcache)                             |                        dcache_unit |       1017 |       1017 |       0 |    0 |  721 |      0 |      0 |          0 |
+|         hit_store_format                                |          load_store_format_unit__1 |         52 |         52 |       0 |    0 |    0 |      0 |      0 |          0 |
+|         pending_store_format                            |          load_store_format_unit__2 |         52 |         52 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       gen_icache.instruction_cache                      |                        icache_unit |        524 |        300 |     224 |    0 |  129 |      0 |      0 |          0 |
+|       gen_machine_timer.timer                           |                      machine_timer |         64 |         64 |       0 |    0 |  129 |      0 |      0 |          0 |
+|       gen_performance_counters.performance_counter_inst |           performance_counter_unit |          6 |          6 |       0 |    0 |  192 |      0 |      0 |          0 |
+|       gen_return_address_stack.return_address_stack     |                           ras_unit |        112 |        112 |       0 |    0 |  263 |      0 |      0 |          0 |
+|       gen_rv32m_multicycle.rv32m_execute_unit           |              rv32m_multicycle_unit |        512 |        512 |       0 |    0 |  242 |      0 |      0 |          4 |
+|       gpio_store_format                                 |          load_store_format_unit__8 |         52 |         52 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       timer_store_format                                |          load_store_format_unit__7 |         65 |         65 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     dmem                                                |                 external_dmem_bram |         80 |         80 |       0 |    0 |  141 |      2 |      0 |          0 |
++---------------------------------------------------------+------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

@@ -5,117 +5,26 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\random-control-reference.ps1 -Check -SkipSimulation
 Outputs:
   fixtures\generated\reference\random_control_reference* artifacts or freshness diagnostics.
-Scope:
-  Directed random-reference evidence only; not exhaustive verification.
-Audience:
-  Internal helper used by scripts\check.ps1.
 #>
 param(
     [int]$Seed = 2028,
     [switch]$Check,
-    [switch]$SkipSimulation
+    [switch]$SkipSimulation,
+    [string]$ArtifactDirectory = "fixtures/generated/reference"
 )
 
+. "$PSScriptRoot/reference-common.ps1"
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
+if (-not [IO.Path]::IsPathRooted($ArtifactDirectory)) { $ArtifactDirectory = Join-Path $repoRoot $ArtifactDirectory }
+New-Item -ItemType Directory -Force -Path $ArtifactDirectory | Out-Null
 
-$programPath = Join-Path $repoRoot "fixtures/generated/reference/random_control_reference.hex"
-$expectedRegsPath = Join-Path $repoRoot "fixtures/generated/reference/random_control_reference_expected_regs.hex"
-$expectedDmemPath = Join-Path $repoRoot "fixtures/generated/reference/random_control_reference_expected_dmem.hex"
-$expectedJsonPath = Join-Path $repoRoot "fixtures/generated/reference/random_control_reference_expected.json"
-
-function Normalize-TextForArtifactCompare {
-    param([string]$Text)
-
-    if ($null -eq $Text) {
-        return ""
-    }
-
-    $normalized = $Text.TrimEnd()
-    $normalized = $normalized -replace "`r`n", "`n"
-    return ($normalized -replace "`r", "`n")
-}
-
-function Write-AsciiLfFile {
-    param(
-        [string]$Path,
-        [AllowEmptyCollection()][object[]]$Value
-    )
-
-    $text = (@($Value | ForEach-Object { [string]$_ }) -join "`n")
-    $text = $text -replace "`r`n", "`n"
-    $text = $text -replace "`r", "`n"
-    if (-not $text.EndsWith("`n")) {
-        $text += "`n"
-    }
-    [System.IO.File]::WriteAllText($Path, $text, [System.Text.Encoding]::ASCII)
-}
-
-function To-UInt32 {
-    param([int64]$Value)
-    return [uint32]($Value -band 0xffffffffL)
-}
-
-function To-SInt32 {
-    param([uint32]$Value)
-    if (($Value -band 0x80000000) -ne 0) {
-        return [int64]$Value - 4294967296L
-    }
-    return [int64]$Value
-}
-
-function Encode-IType {
-    param([int]$Immediate, [int]$Rs1, [int]$Funct3, [int]$Rd, [int]$Opcode)
-    return [uint32](([uint64]($Immediate -band 0xfff) -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]$Opcode)
-}
-
-function Encode-SType {
-    param([int]$Immediate, [int]$Rs2, [int]$Rs1, [int]$Funct3)
-    $imm = $Immediate -band 0xfff
-    return [uint32](([uint64](($imm -shr 5) -band 0x7f) -shl 25) -bor
-                    ([uint64]$Rs2 -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64]($imm -band 0x1f) -shl 7) -bor [uint64]0x23)
-}
-
-function Encode-BType {
-    param([int]$Immediate, [int]$Rs2, [int]$Rs1, [int]$Funct3)
-    $imm = $Immediate -band 0x1fff
-    return [uint32](([uint64](($imm -shr 12) -band 0x1) -shl 31) -bor
-                    ([uint64](($imm -shr 5) -band 0x3f) -shl 25) -bor
-                    ([uint64]$Rs2 -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64](($imm -shr 1) -band 0xf) -shl 8) -bor
-                    ([uint64](($imm -shr 11) -band 0x1) -shl 7) -bor [uint64]0x63)
-}
-
-function Encode-JType {
-    param([int]$Immediate, [int]$Rd)
-    $imm = $Immediate -band 0x1fffff
-    return [uint32](([uint64](($imm -shr 20) -band 0x1) -shl 31) -bor
-                    ([uint64](($imm -shr 1) -band 0x3ff) -shl 21) -bor
-                    ([uint64](($imm -shr 11) -band 0x1) -shl 20) -bor
-                    ([uint64](($imm -shr 12) -band 0xff) -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]0x6f)
-}
-
-function Encode-UType {
-    param([int]$Immediate, [int]$Rd)
-    return [uint32](([uint64]($Immediate -band 0xfffff) -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]0x37)
-}
-
-function Format-HexWord {
-    param([uint32]$Value)
-    return "{0:x8}" -f $Value
-}
+$programPath = Join-Path $ArtifactDirectory "random_control_reference.hex"
+$expectedRegsPath = Join-Path $ArtifactDirectory "random_control_reference_expected_regs.hex"
+$expectedDmemPath = Join-Path $ArtifactDirectory "random_control_reference_expected_dmem.hex"
+$expectedJsonPath = Join-Path $ArtifactDirectory "random_control_reference_expected.json"
 
 function Add-Entry {
     param([hashtable]$Entry)
@@ -154,14 +63,9 @@ function Add-Jalr {
 
 function Add-LoadImmediate {
     param([int]$Rd, [uint32]$Value, [string]$Note = "")
-    $signedValue = To-SInt32 $Value
-    $upper = [int]((($signedValue + 0x800) -shr 12) -band 0xfffff)
-    $base = [int64]$upper -shl 12
-    $lower = $signedValue - $base
-    if ($lower -gt 2047) { $lower -= 4096 }
-    if ($lower -lt -2048) { $lower += 4096 }
-    Add-Entry @{ kind = "lui"; rd = $Rd; imm = $upper; note = $Note; wrong_path = $false }
-    Add-Addi $Rd $Rd ([int]$lower) $Note
+    $parts = Split-LoadImmediate $Value
+    Add-Entry @{ kind = "lui"; rd = $Rd; imm = $parts.Upper; note = $Note; wrong_path = $false }
+    Add-Addi $Rd $Rd $parts.Lower $Note
 }
 
 function Get-BranchTaken {
@@ -351,20 +255,12 @@ foreach ($entry in $script:entries) {
     }
 }
 
+$jalrTargetParts = Split-LoadImmediate ([uint32]($labels["jalr_target"] + 1))
 foreach ($entry in $instructionEntries) {
     if ($entry.kind -eq "lui" -and $entry.note -eq "materialize odd jalr target") {
-        $target = [uint32]($labels["jalr_target"] + 1)
-        $signedTarget = To-SInt32 $target
-        $entry.imm = [int]((($signedTarget + 0x800) -shr 12) -band 0xfffff)
+        $entry.imm = $jalrTargetParts.Upper
     } elseif ($entry.kind -eq "addi" -and $entry.note -eq "materialize odd jalr target") {
-        $target = [uint32]($labels["jalr_target"] + 1)
-        $signedTarget = To-SInt32 $target
-        $upper = [int]((($signedTarget + 0x800) -shr 12) -band 0xfffff)
-        $base = [int64]$upper -shl 12
-        $lower = $signedTarget - $base
-        if ($lower -gt 2047) { $lower -= 4096 }
-        if ($lower -lt -2048) { $lower += 4096 }
-        $entry.imm = [int]$lower
+        $entry.imm = $jalrTargetParts.Lower
     }
 }
 
@@ -602,5 +498,5 @@ if ($Check) {
 }
 
 if (-not $SkipSimulation) {
-    & (Join-Path $PSScriptRoot "run.ps1") -Test random_control_reference
+    & (Join-Path $PSScriptRoot "run.ps1") -Test random_control_reference -SkipAssemble -PlusArgs "+fixture_dir=`"$ArtifactDirectory`" +program_words=$($words.Count)"
 }

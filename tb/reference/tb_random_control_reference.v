@@ -1,13 +1,9 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_random_control_reference
-// Purpose: Compares DUT behavior against deterministic local reference or signature fixtures.
 // Checks: Compares CPU final architectural register and sentinel DMemory state against a fixed-seed generated
 //   control-flow program interpreted by a PC-driven software reference model; metadata records static instructions,
 //   executed rows, execution order, branch/jump targets, and wrong-path side-effect suppression.
-// Pass condition: DUT outputs match the generated expected fixture or signature and no mismatch or timeout occurs.
-// Does not prove: Fixed-seed, no-loop, final-state control-flow slice; not broad constrained-random verification,
-//   full ISA/control-flow compliance, cycle-accurate pipeline modeling, or formal verification.
+// Fixed-seed program without loops; compares final architectural state.
 
 module tb_random_control_reference;
 
@@ -22,14 +18,14 @@ module tb_random_control_reference;
     localparam SENTINEL_WORD = 7;
 
     initial begin
-        $dumpfile("wave/tb_random_control_reference.vcd");
+        $dumpfile("results/waveforms/tb_random_control_reference.vcd");
         $dumpvars(0, tb_random_control_reference);
 
         reset_cpu();
         dut.DMemory[SENTINEL_WORD] = 32'h1234_abcd;
-        $readmemh("fixtures/generated/reference/random_control_reference.hex", dut.IMemory, 0, PROGRAM_WORD_COUNT - 1);
-        $readmemh("fixtures/generated/reference/random_control_reference_expected_regs.hex", expected_regs, 0, 31);
-        $readmemh("fixtures/generated/reference/random_control_reference_expected_dmem.hex", expected_dmem, 0, CHECKED_DMEM_WORD_COUNT - 1);
+        $readmemh(reference_path("random_control_reference.hex"), dut.IMemory, 0, reference_word_count(PROGRAM_WORD_COUNT) - 1);
+        $readmemh(reference_path("random_control_reference_expected_regs.hex"), expected_regs, 0, 31);
+        $readmemh(reference_path("random_control_reference_expected_dmem.hex"), expected_dmem, 0, CHECKED_DMEM_WORD_COUNT - 1);
 
         run_cycles(900);
 

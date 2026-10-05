@@ -1,12 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_reset
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Reset restores core control state, counters, CSR state, RAS state, cache FSMs, and outputs.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Directed reset-state snapshot; not all mid-transaction reset timings are covered.
-// Assertion focus: Directed check for reset behavior or side-effect suppression.
+// Samples core state after reset in this directed scenario.
 
 module tb_assert_reset;
 
@@ -47,7 +42,7 @@ module tb_assert_reset;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_reset.vcd");
+        $dumpfile("results/waveforms/tb_assert_reset.vcd");
         $dumpvars(0, tb_assert_reset);
         reset_cpu();
 

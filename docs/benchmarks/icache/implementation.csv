@@ -1,0 +1,5 @@
+profile,lut,ff,bram,dsp,period_ns,wns_ns,whs_ns,tns_ns,ths_ns,timing,drc,drc_warnings,cache_bytes,icache_lut,icache_lutram,icache_ff,source_commit
+parallel64-current,6718,5287,2,4,10,0.067,0.01,0,0,pass,pass,0,64,251,0,675,5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e
+banked64,6888,4657,2,4,10,0.142,0.038,0,0,pass,pass,0,64,391,232,45,5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e
+banked256,6905,4669,2,4,10,0.331,0.028,0,0,pass,pass,0,256,410,224,57,5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e
+banked1024,6967,4741,2,4,10,0.116,0.039,0,0,pass,pass,0,1024,523,224,129,5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e

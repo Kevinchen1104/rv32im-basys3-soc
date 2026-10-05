@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "scope": "Paired RTL simulation results across the flat-array and banked storage revisions; not formal equivalence.",
+  "cases_compared": 80,
+  "case_fields_compared": "All fields: image hash, counters, derived stall counts and the complete stall-mask histogram.",
+  "including_stall_masks_per_case": 64,
+  "baseline": {
+    "commit": "5cd9108efabdd0c1f14d43442e922e956afe7966",
+    "input_fingerprint": "a57a3a8355482cdd8f61754061a9ea7184432723849fb5707d798fcaa7b21a8f"
+  },
+  "banked": {
+    "commit": "638b31ed4253d0979b92cf47e13e6565f1d64b0d",
+    "input_fingerprint": "ee88a0c967dd09ba34baf0bd7e8db9fdd6b72d48c8d8f8a60e0bb06eb9aeafaa"
+  },
+  "differing_case_fields": 0
+}

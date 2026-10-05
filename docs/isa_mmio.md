@@ -5,9 +5,8 @@
 The processor implements the repository-tested RV32I arithmetic, control-flow,
 load/store, upper-immediate, and environment subset, plus all eight RV32M
 operations. Machine-mode CSR, exception, timer-interrupt, external-interrupt,
-and `mret` behavior is a deliberate subset. See
-[Limitations](limitations.md) before treating it as a standards-complete
-RISC-V platform.
+and `mret` behavior follows the implemented subset. See
+[Supported configuration](limitations.md) for instruction and system limits.
 
 `JALR` accepts only `funct3=000`. With no compressed-instruction extension,
 taken branch, `JAL`, and `JALR` targets must be 4-byte aligned; violations
@@ -57,9 +56,11 @@ location with top-level observation support. It is used by firmware tests and
 is intentionally not part of the peripheral decoder.
 
 UART TX stores are retained until `TX ready` is high; software polling remains
-useful for avoiding a pipeline stall. Reading RX data consumes the buffered
-byte. RX overrun is sticky until reset and indicates that a new byte arrived
-while the one-byte buffer was still full.
+useful for avoiding a pipeline stall. Reading RX data consumes the oldest byte
+in the runtime SoC's 64-byte FIFO. RX-valid indicates at least one queued byte.
+RX overrun is sticky until reset and indicates a new byte was dropped because
+the FIFO was full without a simultaneous CPU read. Register addresses and status
+bit assignments are unchanged.
 
 The 64-bit timer registers are exposed as independent 32-bit halves and are
 not atomic. For a coherent `mtime` read, software should read high, low, then

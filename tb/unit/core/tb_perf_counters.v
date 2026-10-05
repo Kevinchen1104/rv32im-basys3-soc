@@ -8,7 +8,7 @@
 module tb_perf_counters;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
     wire [31:0] perf_cycle_count;
@@ -95,8 +95,9 @@ module tb_perf_counters;
     endfunction
 
     initial begin
-        $dumpfile("wave/tb_perf_counters.vcd");
+        $dumpfile("results/waveforms/tb_perf_counters.vcd");
         $dumpvars(0, tb_perf_counters);
+        #1; // Initialize test memory after the DUT initial block.
 
         dut.IMemory[0] = i_type(12'd1, 5'd0, 3'b000, 5'd1, 7'h13); // addi x1, x0, 1
         dut.IMemory[1] = b_type(12, 5'd1, 5'd1, 3'b000, 7'h63);    // beq x1, x1, target
@@ -122,6 +123,10 @@ module tb_perf_counters;
         reset = 1'b0;
         repeat (120) @(posedge clock);
         #1;
+
+        if (^{perf_cycle_count, perf_retired_count, perf_branch_miss_count,
+              perf_icache_miss_count, perf_dcache_miss_count, perf_stall_cycle_count} === 1'bx)
+            $fatal(1, "performance counter contains an unknown value");
 
         if (perf_cycle_count !== 32'd120) begin
             $display("FAIL: expected cycle count 120, got %0d", perf_cycle_count);

@@ -8,6 +8,13 @@
 
 module RISCVCPU_basys3_top #(
     parameter MEMORY_WORD_COUNT = 1024,
+    parameter FAST_MULTIPLY = 0,
+    parameter ICACHE_BYTES = 64,
+    parameter ICACHE_PARALLEL_LOOKUP = 1,
+    parameter DCACHE_BYTES = 64,
+    parameter DCACHE_VICTIM_LINES = 0,
+    parameter ENABLE_MATVEC_SCRATCHPAD = 1,
+    parameter ENABLE_MATVEC_DMA = 1,
     parameter UART_RX_CLKS_PER_BIT = 868,
     parameter UART_TX_CLKS_PER_BIT = 868,
     parameter HEARTBEAT_COUNTER_BIT = 23
@@ -44,6 +51,13 @@ module RISCVCPU_basys3_top #(
 
     RISCVCPU_uart_boot_runtime_soc_top #(
         .MEMORY_WORD_COUNT(MEMORY_WORD_COUNT),
+        .FAST_MULTIPLY(FAST_MULTIPLY),
+        .ICACHE_BYTES(ICACHE_BYTES),
+        .ICACHE_PARALLEL_LOOKUP(ICACHE_PARALLEL_LOOKUP),
+        .DCACHE_BYTES(DCACHE_BYTES),
+        .DCACHE_VICTIM_LINES(DCACHE_VICTIM_LINES),
+        .ENABLE_MATVEC_SCRATCHPAD(ENABLE_MATVEC_SCRATCHPAD),
+        .ENABLE_MATVEC_DMA(ENABLE_MATVEC_DMA),
         .RESET_ACTIVE_LOW(0),
         .LEDS_ACTIVE_LOW(0),
         .LEDS_SHOW_DEBUG_FLAGS(1),

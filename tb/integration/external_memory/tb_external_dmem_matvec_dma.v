@@ -6,10 +6,27 @@
 //   read/write traffic, verifies DMA-written output words in the external DMem BRAM, and confirms internal DMemory is
 //   not the observation point.
 // Pass condition: Observed external-memory traffic, public status, and checked memory contents match expectations.
-//   subsystem, timing result, or board validation.
 // Firmware: firmware/hex/accelerator/matvec_dma_demo.hex
 
 module tb_external_dmem_matvec_dma;
+    wire baseline_done, victim_done, larger_done, larger_victim_done;
+    tb_external_dmem_matvec_dma_case #(.VICTIM_LINES(0)) baseline(baseline_done);
+    tb_external_dmem_matvec_dma_case #(.VICTIM_LINES(4)) victim(victim_done);
+    tb_external_dmem_matvec_dma_case #(.PRIMARY_BYTES(128)) larger(larger_done);
+    tb_external_dmem_matvec_dma_case #(.PRIMARY_BYTES(128), .VICTIM_LINES(4)) larger_victim(larger_victim_done);
+    initial begin
+        $dumpfile("results/waveforms/tb_external_dmem_matvec_dma.vcd");
+        $dumpvars(0, tb_external_dmem_matvec_dma);
+        wait (baseline_done && victim_done && larger_done && larger_victim_done);
+        $display("PASS: tb_external_dmem_matvec_dma passed with 64/128-byte primary and 0/4 victim lines");
+        $finish;
+    end
+endmodule
+
+module tb_external_dmem_matvec_dma_case #(
+    parameter VICTIM_LINES = 0,
+    parameter PRIMARY_BYTES = 64
+) (output reg done = 0);
     reg clock = 0;
     reg reset = 0;
     wire [31:0] dmem_addr;
@@ -41,6 +58,8 @@ module tb_external_dmem_matvec_dma;
         .MEMORY_WORD_COUNT(256),
         .INIT_PROGRAM_HEX("firmware/hex/accelerator/matvec_dma_demo.hex"),
         .INIT_PROGRAM_WORD_COUNT(61),
+        .DCACHE_VICTIM_LINES(VICTIM_LINES),
+        .DCACHE_BYTES(PRIMARY_BYTES),
         .USE_EXTERNAL_DMEM(1)
     ) cpu (
         .clock(clock),
@@ -121,9 +140,6 @@ module tb_external_dmem_matvec_dma;
     end
 
     initial begin
-        $dumpfile("wave/tb_external_dmem_matvec_dma.vcd");
-        $dumpvars(0, tb_external_dmem_matvec_dma);
-
         reset = 1'b1;
         repeat (2) @(posedge clock);
         #1;
@@ -189,7 +205,7 @@ module tb_external_dmem_matvec_dma;
 
         $display("INFO: synchronous external DMEM completed at cycle %0d with DMA accepted reads=%0d writes=%0d",
                  completion_cycle, dma_read_accept_count, dma_write_accept_count);
-        $display("PASS: tb_external_dmem_matvec_dma passed");
-        $finish;
+        $display("PASS: external DMEM DMA with %0d victim lines", VICTIM_LINES);
+        done = 1;
     end
 endmodule

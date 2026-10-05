@@ -4,13 +4,10 @@ Purpose: Validates that docs\test_catalog.json matches the executable regression
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\check-test-catalog.ps1
 Outputs:
-  wave\test-catalog-summary.json and console mismatch reports.
-Scope:
-  Documentation and manifest consistency only; not hardware evidence by itself.
-Audience:
-  Public maintenance check.
+  results\test-catalog-summary.json and console mismatch reports.
 #>
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
@@ -18,7 +15,10 @@ Set-Location $repoRoot
 
 $catalogPath = Join-Path $repoRoot "docs\test_catalog.json"
 $runPath = Join-Path $repoRoot "scripts\run.ps1"
-$summaryPath = Join-Path $repoRoot "wave\test-catalog-summary.json"
+$summaryPath = Join-Path $repoRoot "results\test-catalog-summary.json"
+$summary = [ordered]@{ status='running'; error_message=$null }
+Write-ResultJson $summary $summaryPath
+try {
 
 $validCategories = @(
     "smoke",
@@ -123,9 +123,10 @@ foreach ($match in $manifestMatches) {
 }
 $runTests = @($manifest.Keys)
 
-$catalog = Get-Content -Raw -Path $catalogPath | ConvertFrom-Json
-if ($catalog.schema_version -ne 2) {
-    Fail-Catalog "schema_version must be 2"
+. "$PSScriptRoot/test-catalog.ps1"
+$catalog = Read-TestCatalog -Path $catalogPath
+if ($catalog.schema_version -ne 3) {
+    Fail-Catalog "schema_version must be 3"
 }
 
 $entries = @($catalog.tests)
@@ -318,7 +319,7 @@ Assert-TagContains "ras" @(
     "random_call_reference"
 )
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
 $categoryCounts = [ordered]@{}
 foreach ($group in ($entries | Group-Object category | Sort-Object Name)) {
@@ -337,6 +338,7 @@ foreach ($group in ($allTags | Group-Object | Sort-Object Name)) {
 }
 
 $summary = [ordered]@{
+    status = 'pass'
     generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
     total_catalog_entries = $entries.Count
     run_ps1_tests = $runTests.Count
@@ -347,7 +349,13 @@ $summary = [ordered]@{
 }
 Add-VerificationIdentityFields -Summary $summary | Out-Null
 
-$summary | ConvertTo-Json -Depth 5 | Set-Content -Path $summaryPath -Encoding Ascii
-
+Write-ResultJson $summary $summaryPath
 Write-Host "PASS: test catalog matches run.ps1 manifest and required coverage buckets"
-Write-Host "Test catalog summary written to wave\test-catalog-summary.json"
+Write-Host "Test catalog summary written to results\test-catalog-summary.json"
+} catch {
+    $summary.status = 'fail'
+    $summary['error_message'] = $_.Exception.Message
+    throw
+} finally {
+    Write-ResultJson $summary $summaryPath
+}

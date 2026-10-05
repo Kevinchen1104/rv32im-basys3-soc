@@ -1,12 +1,9 @@
 `timescale 1ns/1ps
 
-// Testbench: tb_csr_unit
-// Purpose: Checks a focused CPU core unit or core-level smoke path.
 // Checks: Standalone CSR unit supports the local machine-mode CSR subset, including mtvec/mepc alignment, mtval
 //   storage, mstatus/mie/mip WARL masking for implemented bits, hardware MTIP/MEIP readback, immediate trap-entry
 //   mstatus updates, one-cycle registered trap-metadata commit, back-to-back capture/commit, and mret side effects.
-// Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   nested-gating, and flush side effects are covered by CPU tests. This is not a full privileged architecture.
+// CPU-level tests exercise interrupt gating, redirect timing, and flush interactions.
 
 module tb_csr_unit;
     reg clock;
@@ -69,7 +66,7 @@ module tb_csr_unit;
         input [255:0] message;
         begin
             $display("FAIL: %0s", message);
-            $finish;
+            $fatal(1);
         end
     endtask
 
@@ -80,7 +77,7 @@ module tb_csr_unit;
         begin
             if (actual !== expected) begin
                 $display("FAIL: %0s expected=%08x actual=%08x", label, expected, actual);
-                $finish;
+                $fatal(1);
             end
         end
     endtask

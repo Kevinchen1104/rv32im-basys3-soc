@@ -1,13 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_top_program_override
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: FPGA top program parameters select an alternate smoke image.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Parameter simulation only; no board image flow claim.
 // Firmware: firmware/hex/showcase/led_smoke.hex
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_top_program_override;
 
@@ -39,7 +33,7 @@ module tb_fpga_top_program_override;
     always #5 clock = ~clock;
 
     initial begin
-        $dumpfile("wave/tb_fpga_top_program_override.vcd");
+        $dumpfile("results/waveforms/tb_fpga_top_program_override.vcd");
         $dumpvars(0, tb_fpga_top_program_override);
 
         reset = 1'b1;

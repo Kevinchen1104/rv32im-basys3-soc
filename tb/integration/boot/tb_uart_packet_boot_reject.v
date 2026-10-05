@@ -22,6 +22,8 @@ module tb_uart_packet_boot_reject;
     wire loader_done;
     wire loader_busy;
     wire boot_error;
+    reg [31:0] imem_addr = 32'h0;
+    wire [127:0] imem_rdata;
     reg tiny_external_reset = 1'b0;
     reg [7:0] tiny_rx_data = 8'h00;
     reg tiny_rx_valid = 1'b0;
@@ -30,6 +32,7 @@ module tb_uart_packet_boot_reject;
     wire tiny_loader_done;
     wire tiny_loader_busy;
     wire tiny_boot_error;
+    wire [127:0] tiny_imem_rdata;
     wire zero_capacity_rx_ready;
     wire zero_capacity_cpu_reset;
     wire zero_capacity_loader_done;
@@ -49,9 +52,9 @@ module tb_uart_packet_boot_reject;
         .loader_done(loader_done),
         .loader_busy(loader_busy),
         .boot_error(boot_error),
-        .imem_addr(32'h0),
+        .imem_addr(imem_addr),
         .imem_read(1'b0),
-        .imem_rdata(),
+        .imem_rdata(imem_rdata),
         .imem_ready()
     );
 
@@ -70,7 +73,7 @@ module tb_uart_packet_boot_reject;
         .boot_error(tiny_boot_error),
         .imem_addr(32'h0),
         .imem_read(1'b0),
-        .imem_rdata(),
+        .imem_rdata(tiny_imem_rdata),
         .imem_ready()
     );
 
@@ -223,8 +226,10 @@ module tb_uart_packet_boot_reject;
         integer index;
         begin
             for (index = first; index < 8; index = index + 1) begin
-                if (dut.memory[index] !== 32'h0000_0013) begin
-                    $display("FAIL: memory[%0d] was not scrubbed to NOP: %h", index, dut.memory[index]);
+                imem_addr = index * 4;
+                #1;
+                if (imem_rdata[32*(index % 4) +: 32] !== 32'h0000_0013) begin
+                    $display("FAIL: memory[%0d] was not scrubbed to NOP", index);
                     $fatal;
                 end
             end
@@ -232,7 +237,7 @@ module tb_uart_packet_boot_reject;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_uart_packet_boot_reject.vcd");
+        $dumpfile("results/waveforms/tb_uart_packet_boot_reject.vcd");
         $dumpvars(0, tb_uart_packet_boot_reject);
 
         reset_loader();
@@ -274,7 +279,9 @@ module tb_uart_packet_boot_reject;
         send_word(32'h2222_2222);
         send_word(32'h2222_2222);
         wait_for_done();
-        if (dut.memory[0] !== 32'h2222_2222) begin
+        imem_addr = 32'h0;
+        #1;
+        if (imem_rdata[31:0] !== 32'h2222_2222) begin
             $display("FAIL: shorter retry did not replace word zero");
             $fatal;
         end
@@ -303,7 +310,7 @@ module tb_uart_packet_boot_reject;
         send_tiny_word(32'h89ab_cdef);
         if (!tiny_loader_done || tiny_boot_error || tiny_cpu_reset ||
             tiny_loader_busy || tiny_rx_ready ||
-            (tiny_dut.memory[0] !== 32'h89ab_cdef)) begin
+            (tiny_imem_rdata[31:0] !== 32'h89ab_cdef)) begin
             $display(
                 "FAIL: one-word boot contract done=%b error=%b reset=%b busy=%b ready=%b memory=%h",
                 tiny_loader_done,
@@ -311,7 +318,7 @@ module tb_uart_packet_boot_reject;
                 tiny_cpu_reset,
                 tiny_loader_busy,
                 tiny_rx_ready,
-                tiny_dut.memory[0]
+                tiny_imem_rdata[31:0]
             );
             $fatal;
         end

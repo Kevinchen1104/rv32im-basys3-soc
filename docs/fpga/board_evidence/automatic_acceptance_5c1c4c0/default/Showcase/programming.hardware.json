@@ -1,0 +1,14 @@
+{
+  "generated_at_utc": "2026-10-03T00:03:49Z",
+  "status": "pass",
+  "hardware_connected": true,
+  "inventory_count": 1,
+  "target_count": 1,
+  "selected_target": "target_id=1 name=xc7a35t jtag_device_name=xc7a35t jtag_device_id=2",
+  "device_programmed": true,
+  "configuration_verified": true,
+  "configuration_state": "FPGA is configured",
+  "retry_count": 0,
+  "cleanup_error": "",
+  "error": ""
+}

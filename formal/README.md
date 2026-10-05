@@ -24,7 +24,7 @@ powershell -ExecutionPolicy Bypass -File scripts/formal-smoke.ps1
 Run the accelerator check separately with:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/formal-matvec-smoke.ps1
+powershell -ExecutionPolicy Bypass -File scripts/formal-smoke.ps1 -Group Matvec
 ```
 
 The scripts use SymbiYosys when available and may use the repository's local

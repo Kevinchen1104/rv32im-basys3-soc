@@ -45,7 +45,7 @@ module tb_program_counter_loop;
     end
 
     initial begin
-        $dumpfile("wave/tb_program_counter_loop.vcd");
+        $dumpfile("results/waveforms/tb_program_counter_loop.vcd");
         $dumpvars(0, tb_program_counter_loop);
         reset_cpu();
 

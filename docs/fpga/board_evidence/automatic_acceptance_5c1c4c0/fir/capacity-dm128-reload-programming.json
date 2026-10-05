@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "started_at_utc": "2026-10-03T00:49:44.482934+00:00",
+  "bitstream": "build/vivado/dcache-capacity/dm128/RISCVCPU_basys3_top.bit",
+  "bitstream_sha256": "294a37bfb49bdb15884e67ac9de9853012a481af14bb1a9b8ca6dbcb525c1a4b",
+  "build_summary": "results/timing/dcache-capacity-dm128.json",
+  "build_summary_sha256": "dd2c5e518c861fb2109f9f209f9bcf728dd26175207b7ce3b3d85f1c23895cab",
+  "inputs": {
+    "build/vivado/dcache-capacity/dm128/RISCVCPU_basys3_top.bit": "294a37bfb49bdb15884e67ac9de9853012a481af14bb1a9b8ca6dbcb525c1a4b",
+    "results/timing/dcache-capacity-dm128.json": "dd2c5e518c861fb2109f9f209f9bcf728dd26175207b7ce3b3d85f1c23895cab",
+    "scripts/signal_start.py": "2c80ce31d5a67a815906af7a4a5d71102fd159699f0b0f3cba67d6860237230c",
+    "fpga/xsdb/basys3_program.tcl": "7ef0b5770debce06b4034b14bb832d818613b615048367e19a436913540900c5"
+  },
+  "programming": {
+    "generated_at_utc": "2026-10-03T00:49:51Z",
+    "status": "pass",
+    "hardware_connected": true,
+    "inventory_count": 1,
+    "target_count": 1,
+    "selected_target": "target_id=1 name=xc7a35t jtag_device_name=xc7a35t jtag_device_id=2",
+    "device_programmed": true,
+    "configuration_verified": true,
+    "configuration_state": "FPGA is configured",
+    "retry_count": 0,
+    "cleanup_error": "",
+    "error": ""
+  },
+  "finished_at_utc": "2026-10-03T00:49:52.074774+00:00",
+  "files": {
+    "capacity-dm128-reload-programming.log": "b191ea509ec47403902c43592a7b9ba1a068f3f3a40cb9d754ba59c84e3bea8f"
+  }
+}

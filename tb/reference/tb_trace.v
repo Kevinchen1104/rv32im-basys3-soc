@@ -1,15 +1,12 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_trace
-// Purpose: Compares DUT behavior against deterministic local reference or signature fixtures.
 // Checks: The WB-stage trace port reports retired writeback events.
-// Pass condition: DUT outputs match the generated expected fixture or signature and no mismatch or timeout occurs.
-// Does not prove: Trace visibility only; reference comparison is separate.
+// The reference testbenches compare the visible trace against expected instruction behavior.
 
 module tb_trace;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
     wire trace_valid;
@@ -105,15 +102,16 @@ module tb_trace;
     end
 
     initial begin
-        $dumpfile("wave/tb_trace.vcd");
+        $dumpfile("results/waveforms/tb_trace.vcd");
         $dumpvars(0, tb_trace);
+        #1; // Initialize test memory after the DUT initial block.
 
         dut.IMemory[0] = 32'h0050_0093; // addi x1, x0, 5
         dut.IMemory[1] = 32'h0070_8113; // addi x2, x1, 7
         dut.IMemory[2] = 32'h0020_81b3; // add x3, x1, x2
 
         reset = 1'b1;
-        repeat (2) @(posedge clock);
+        repeat (2) @(negedge clock);
         reset = 1'b0;
 
         repeat (120) @(posedge clock);

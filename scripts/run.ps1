@@ -4,11 +4,7 @@ Purpose: Compiles and runs named Icarus Verilog regression tests from the test m
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\run.ps1 -Test <name>
 Outputs:
-  Simulation executables, VCD waveforms, and optional regression summary JSON under wave\.
-Scope:
-  Directed simulation evidence only; not timing closure, physical board validation, official RISC-V compliance, or benchmark proof.
-Audience:
-  Public entrypoint.
+  Executables under build/sim; waveforms, logs, and summaries under results/.
 #>
 param(
     [ValidateNotNullOrEmpty()]
@@ -16,7 +12,9 @@ param(
     [switch]$OpenWave,
     [switch]$SkipAssemble,
     [string]$SummaryJson = "",
-    [string]$PlusArgs = ""
+    [string]$PlusArgs = "",
+    [ValidateRange(1, 86400)]
+    [int]$TimeoutSeconds = 180
 )
 
 $ErrorActionPreference = "Stop"
@@ -24,12 +22,9 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 . "$PSScriptRoot\verification-source-identity.ps1"
+. "$PSScriptRoot\process-runner.ps1"
 
-if (-not $SkipAssemble) {
-    & (Join-Path $PSScriptRoot "assemble.ps1")
-}
-
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path 'build/sim', 'results/waveforms' | Out-Null
 
 $testSources = [ordered]@{
     main = "tb/unit/core/tb_main.v"
@@ -49,7 +44,9 @@ $testSources = [ordered]@{
     pipeline_control_unit = "tb/unit/core/tb_pipeline_control_unit.v"
     ras_unit = "tb/unit/core/tb_ras_unit.v"
     icache_unit = "tb/unit/memory/tb_icache_unit.v"
+    icache_geometry = "tb/unit/memory/tb_icache_geometry.v"
     dcache_unit = "tb/unit/memory/tb_dcache_unit.v"
+    dcache_victim = "tb/unit/memory/tb_dcache_victim.v"
     assert_trap = "tb/assertions/tb_assert_trap.v"
     assert_trap_side_effect_flush = "tb/assertions/tb_assert_trap_side_effect_flush.v"
     assert_exception_branch_priority = "tb/assertions/tb_assert_exception_branch_priority.v"
@@ -81,6 +78,7 @@ $testSources = [ordered]@{
     assert_matvec_scratchpad_flush = "tb/assertions/tb_assert_matvec_scratchpad_flush.v"
     assert_matvec_scratchpad_interrupt_flush = "tb/assertions/tb_assert_matvec_scratchpad_interrupt_flush.v"
     assert_matvec_dma_arbitration = "tb/assertions/tb_assert_matvec_dma_arbitration.v"
+    assert_uncached_dma_arbitration = "tb/assertions/tb_assert_uncached_dma_arbitration.v"
     assert_matvec_dma_descriptor_overlap = "tb/assertions/tb_assert_matvec_dma_descriptor_overlap.v"
     assert_timer_interrupt_flush = "tb/assertions/tb_assert_timer_interrupt_flush.v"
     external_imem = "tb/integration/external_memory/tb_external_imem.v"
@@ -99,10 +97,13 @@ $testSources = [ordered]@{
     uart_mmio = "tb/unit/peripherals/tb_uart_mmio.v"
     uart_tx = "tb/unit/peripherals/tb_uart_tx.v"
     uart_rx = "tb/unit/peripherals/tb_uart_rx.v"
+    uart_rx_divisors = "tb/unit/peripherals/tb_uart_rx_divisors.v"
+    core_boundary_cases = "tb/integration/tb_core_boundary_cases.v"
     uart_rx_mmio_buffer = "tb/unit/peripherals/tb_uart_rx_mmio_buffer.v"
     boot_reset_controller = "tb/unit/boot/tb_boot_reset_controller.v"
     uart_packet_boot_imem = "tb/integration/boot/tb_uart_packet_boot_imem.v"
     uart_packet_boot_reject = "tb/integration/boot/tb_uart_packet_boot_reject.v"
+    uart_packet_boot_banks = "tb/integration/boot/tb_uart_packet_boot_banks.v"
     branch = "tb/unit/core/tb_branch.v"
     branch_prediction = "tb/unit/core/tb_branch_prediction.v"
     branch_predictor_update_pipeline = "tb/unit/core/tb_branch_predictor_update_pipeline.v"
@@ -197,21 +198,31 @@ $testSources = [ordered]@{
     fpga_debug_led_top = "tb/integration/fpga/tb_fpga_debug_led_top.v"
 }
 
-function Get-WaveformPath {
+# Waveform contract: named tests use results/waveforms/tb_<name>.vcd, except main and
+# the explicitly listed tests below, which do not request a waveform.
+$testsWithoutWaveforms = @(
+    'csr_unit', 'exception_decode_unit', 'performance_counter_unit',
+    'forwarding_unit', 'assert_forwarded_alignment_equivalence',
+    'branch_jump_unit', 'load_store_format_unit', 'pipeline_control_unit',
+    'ras_unit', 'icache_unit', 'icache_geometry', 'dcache_unit', 'dcache_victim', 'mmio_decode', 'mmio_read_mux'
+)
+
+function Get-ExpectedWaveformPath {
     param([string]$Name)
 
+    if ($testsWithoutWaveforms -contains $Name) { return $null }
     if ($Name -eq "main") {
-        return "wave/dump.vcd"
+        return "results/waveforms/dump.vcd"
     }
 
-    return "wave/tb_$Name.vcd"
+    return "results/waveforms/tb_$Name.vcd"
 }
 
-function Write-SummaryJson {
-    if ($SummaryJson -eq "") {
-        return
-    }
+# A short end-to-end sample for everyday edits. Full uses the entire manifest.
+$quickTests = @('main', 'rv32m_multicycle_unit', 'pipeline_invariants',
+    'mmio_decode', 'program_matvec_scratchpad', 'program_matvec_dma_demo')
 
+function Write-SummaryJson {
     $summaryPath = if ([System.IO.Path]::IsPathRooted($SummaryJson)) {
         $SummaryJson
     } else {
@@ -224,94 +235,177 @@ function Write-SummaryJson {
     }
 
     $summary = [ordered]@{
+        status = $runStatus
+        error_message = $runError
         requested_test = $Test
+        requested_total = $tests.Count
+        started_at_utc = $runStarted
         generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
+        timeout_seconds = $TimeoutSeconds
+        tools = $toolInfo
         total = $results.Count
         passed = @($results | Where-Object { $_.status -eq "passed" }).Count
         failed = @($results | Where-Object { $_.status -ne "passed" }).Count
         tests = $results
     }
-    Add-VerificationIdentityFields -Summary $summary | Out-Null
+    if ($startingIdentity) { Add-VerificationIdentityFields -Summary $summary -Identity $startingIdentity | Out-Null }
 
-    $summary | ConvertTo-Json -Depth 4 | Set-Content -Path $summaryPath -Encoding Ascii
+    $summary['artifact_directory'] = $artifactDirectory
+    Write-ResultJson $summary $summaryPath
+    if ($artifactDirectory) { Write-ResultJson $summary "$artifactDirectory/summary.json" }
     Write-Host "Regression summary written to $summaryPath"
 }
 
-if ($Test -ne "all" -and -not $testSources.Contains($Test)) {
-    throw "Unknown test '$Test'. Choose 'all' or a name from the run.ps1 test manifest."
-}
-
-if ($Test -eq "all") {
-    $tests = @($testSources.Keys)
-} else {
-    $tests = @($Test)
-}
-
+$tests = @()
 $results = @()
-
-foreach ($name in $tests) {
-    Write-Host "========================================"
-    Write-Host "Running test: $name"
-
-    $simulation = "wave/$name.vvp"
-    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-
-    iverilog -g2012 -Wall -I tb/common -o $simulation -f rtl/rtl_sources.f $testSources[$name]
-
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "Compile failed: $name"
-        $stopwatch.Stop()
-        $results += [pscustomobject]@{
-            name = $name
-            source = $testSources[$name]
-            waveform = Get-WaveformPath $name
-            status = "compile_failed"
-            duration_ms = $stopwatch.ElapsedMilliseconds
-        }
-        Write-SummaryJson
-        exit $LASTEXITCODE
-    }
-
-    $vvpArgs = @($simulation)
-    if (-not [string]::IsNullOrWhiteSpace($PlusArgs)) {
-        $vvpArgs += @($PlusArgs -split '\s+')
-    }
-    vvp @vvpArgs
-
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "Simulation failed: $name"
-        $stopwatch.Stop()
-        $results += [pscustomobject]@{
-            name = $name
-            source = $testSources[$name]
-            waveform = Get-WaveformPath $name
-            status = "simulation_failed"
-            duration_ms = $stopwatch.ElapsedMilliseconds
-        }
-        Write-SummaryJson
-        exit $LASTEXITCODE
-    }
-
-    $stopwatch.Stop()
-    $results += [pscustomobject]@{
-        name = $name
-        source = $testSources[$name]
-        waveform = Get-WaveformPath $name
-        status = "passed"
-        duration_ms = $stopwatch.ElapsedMilliseconds
+$runStatus = 'running'
+$runError = $null
+$runStarted = (Get-Date).ToUniversalTime().ToString('o')
+$toolInfo = [ordered]@{}
+$artifactDirectory = $null
+$runLock = $null
+$startingIdentity = $null
+if ([string]::IsNullOrWhiteSpace($SummaryJson)) {
+    $SummaryJson = switch ($Test) {
+        'all' { 'results/regression-summary.json' }
+        'quick' { 'results/quick-regression-summary.json' }
+        default { 'results/test-summary.json' }
     }
 }
 
-Write-Host "========================================"
-Write-Host "PASS: requested CPU regression tests passed"
-Write-SummaryJson
+try {
+    # Testbenches use fixed staging VCD paths. Serialize runners until these
+    # files have been moved to their result context.
+    $runLock = [IO.File]::Open((Join-Path $repoRoot 'build/sim/runner.lock'), 'OpenOrCreate', 'ReadWrite', 'None')
+    $contextName = [IO.Path]::GetFileNameWithoutExtension($SummaryJson) -replace '[^a-zA-Z0-9_-]', '_'
+    $hash = [Security.Cryptography.SHA256]::Create()
+    try {
+        $key = [BitConverter]::ToString($hash.ComputeHash([Text.Encoding]::UTF8.GetBytes("$SummaryJson|$Test|$PlusArgs"))).Replace('-', '').Substring(0,12).ToLowerInvariant()
+    } finally { $hash.Dispose() }
+    $artifactDirectory = "results/runs/$contextName/$Test-$key"
+    New-Item -ItemType Directory -Force -Path "$artifactDirectory/logs" | Out-Null
+    # Replace any old PASS summary before setup or tool execution can fail.
+    Write-SummaryJson
+    $startingIdentity = Get-VerificationSourceIdentity
+    if ($Test -notin @('all', 'quick') -and -not $testSources.Contains($Test)) {
+        throw "Unknown test '$Test'. Choose 'all', 'quick', or a name from the run.ps1 test manifest."
+    }
+    $tests = switch ($Test) {
+        'all' { @($testSources.Keys) }
+        'quick' { $quickTests }
+        default { @($Test) }
+    }
+    $tests = @($tests)
+    foreach ($name in $tests) {
+        if (-not $testSources.Contains($name)) { throw "Unknown test in selected group: $name" }
+    }
+    foreach ($tool in @('iverilog', 'vvp')) {
+        $resolved = Get-Command $tool -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+        $toolInfo[$tool] = [ordered]@{ path = $null; version = $null; version_log = $null }
+        if ($null -ne $resolved) {
+            $toolInfo[$tool].path = $resolved.Source
+            $probe = Invoke-LoggedProcess -FilePath $resolved.Source -Arguments @('-V') `
+                -LogPath "$artifactDirectory/logs/$tool-version.log" -WorkingDirectory $repoRoot -TimeoutSeconds 10 -Quiet
+            $toolInfo[$tool].version_log = $probe.log
+            $versionLine = Get-Content -LiteralPath $probe.log |
+                Where-Object { $_ -match '^Icarus Verilog.*version' } | Select-Object -First 1
+            # Strip Get-Content's provider metadata before PS 5.1 JSON serialization.
+            $toolInfo[$tool].version = if ($null -eq $versionLine) { $null } else { "$versionLine" }
+        }
+    }
+    if (-not $SkipAssemble) {
+        & (Join-Path $PSScriptRoot 'assemble.ps1')
+    }
 
-if ($OpenWave -and ($Test -eq "all")) {
+    foreach ($name in $tests) {
+        Write-Host "Running test: $name"
+        $simulation = "build/sim/$name.vvp"
+        $expectedWaveform = Get-ExpectedWaveformPath $name
+        $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+        $result = [pscustomobject][ordered]@{
+            name = $name
+            source = $testSources[$name]
+            expected_waveform = if ($expectedWaveform) { "$artifactDirectory/waveforms/$([IO.Path]::GetFileName($expectedWaveform))" } else { $null }
+            waveform = $null
+            waveform_status = 'not_generated'
+            status = 'running'
+            started_at_utc = (Get-Date).ToUniversalTime().ToString('o')
+            finished_at_utc = $null
+            duration_ms = 0
+            compile = $null
+            simulation = $null
+        }
+        $results += $result
+        try {
+            # Only this test's generated outputs are replaced. An old VCD/VVP
+            # must never be attributed to a new failed run.
+            foreach ($path in @($simulation, $expectedWaveform)) {
+                if ($path -and (Test-Path -LiteralPath $path)) { Remove-Item -LiteralPath $path -Force }
+            }
+            $compiler = if ($toolInfo.iverilog.path) { $toolInfo.iverilog.path } else { 'iverilog' }
+            $result.compile = Invoke-LoggedProcess -FilePath $compiler `
+                -Arguments @('-g2012', '-Wall', '-I', 'tb/common', '-o', $simulation, '-f', 'rtl/rtl_sources.f', $testSources[$name]) `
+                -LogPath "$artifactDirectory/logs/$name-compile.log" -Label "$name / compile / $PlusArgs" -WorkingDirectory $repoRoot -TimeoutSeconds $TimeoutSeconds
+            if ($result.compile.status -ne 'passed') {
+                $result.status = "compile_$($result.compile.status)"
+                throw "Compile $($result.compile.status): $name (see $($result.compile.log))"
+            }
+            $vvpArgs = @($simulation)
+            if (-not [string]::IsNullOrWhiteSpace($PlusArgs)) {
+                if (($PlusArgs.ToCharArray() | Where-Object { $_ -eq '"' }).Count % 2) { throw 'Unmatched quote in PlusArgs' }
+                $vvpArgs += @([regex]::Matches($PlusArgs, '(?:[^\s"]+|"[^"]*")+') | ForEach-Object { $_.Value.Replace('"', '') })
+            }
+            $simulator = if ($toolInfo.vvp.path) { $toolInfo.vvp.path } else { 'vvp' }
+            $result.simulation = Invoke-LoggedProcess -FilePath $simulator -Arguments $vvpArgs `
+                -LogPath "$artifactDirectory/logs/$name-simulation.log" -Label "$name / simulation / $PlusArgs" -WorkingDirectory $repoRoot -TimeoutSeconds $TimeoutSeconds
+            if ($result.simulation.status -ne 'passed') {
+                $result.status = "simulation_$($result.simulation.status)"
+                throw "Simulation $($result.simulation.status): $name (see $($result.simulation.log))"
+            }
+            if ($expectedWaveform -and -not (Test-Path -LiteralPath $expectedWaveform -PathType Leaf)) {
+                $result.status = 'waveform_missing'
+                throw "Test $name did not produce its declared waveform: $expectedWaveform"
+            }
+            $result.status = 'passed'
+        } catch {
+            if ($result.status -eq 'running') { $result.status = 'runner_failed' }
+            throw
+        } finally {
+            if ($expectedWaveform -and (Test-Path -LiteralPath $expectedWaveform -PathType Leaf)) {
+                $result.waveform = "$artifactDirectory/waveforms/$([IO.Path]::GetFileName($expectedWaveform))"
+                New-Item -ItemType Directory -Force -Path "$artifactDirectory/waveforms" | Out-Null
+                Move-Item -LiteralPath $expectedWaveform -Destination $result.waveform -Force
+                $result.waveform_status = if ($result.status -eq 'passed') { 'generated' } else { 'partial' }
+            }
+            $stopwatch.Stop()
+            $result.duration_ms = $stopwatch.ElapsedMilliseconds
+            $result.finished_at_utc = (Get-Date).ToUniversalTime().ToString('o')
+        }
+    }
+    Assert-VerificationInputsUnchanged $startingIdentity
+    $runStatus = 'passed'
+} catch {
+    $runStatus = 'failed'
+    $runError = $_.Exception.Message
+    $global:LASTEXITCODE = 1
+    throw
+} finally {
+    if ($runLock) {
+        try { Write-SummaryJson } finally { $runLock.Dispose() }
+    }
+}
+
+$global:LASTEXITCODE = 0
+Write-Host 'PASS: requested CPU regression tests passed'
+
+if ($OpenWave -and ($Test -in @('all', 'quick'))) {
     Write-Host "Use -Test <name> -OpenWave to open one test waveform."
+} elseif ($Test -notin @('all', 'quick') -and $null -eq $results[0].waveform) {
+    Write-Host "No waveform is generated by test '$Test'."
 } elseif ($OpenWave -and (Get-Command gtkwave -ErrorAction SilentlyContinue)) {
-    gtkwave (Get-WaveformPath $Test) wave/pipeline.gtkw
+    gtkwave $results[0].waveform
 } elseif ($OpenWave) {
-    Write-Host "GTKWave is not installed or not in PATH. Open $(Get-WaveformPath $Test) manually after installing GTKWave."
-} elseif ($Test -ne "all") {
-    Write-Host "Waveform written to $(Get-WaveformPath $Test). Re-run with -OpenWave to launch GTKWave."
+    Write-Host "GTKWave is not installed or not in PATH. Waveform: $($results[0].waveform)"
+} elseif ($Test -notin @('all', 'quick')) {
+    Write-Host "Waveform written to $($results[0].waveform). Re-run with -OpenWave to launch GTKWave."
 }

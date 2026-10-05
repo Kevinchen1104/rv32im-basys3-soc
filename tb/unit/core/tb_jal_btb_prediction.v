@@ -53,7 +53,7 @@ module tb_jal_btb_prediction;
     end
 
     initial begin
-        $dumpfile("wave/tb_jal_btb_prediction.vcd");
+        $dumpfile("results/waveforms/tb_jal_btb_prediction.vcd");
         $dumpvars(0, tb_jal_btb_prediction);
         call_resolutions = 0;
         cold_call_mispredicts = 0;

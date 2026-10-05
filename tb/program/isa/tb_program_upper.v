@@ -1,11 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_program_upper
-// Purpose: Runs CPU firmware as selected local ISA/compliance-style directed simulation evidence.
 // Checks: Upper-immediate constants and signed branch selections in an assembled program.
-// Pass condition: Firmware-visible register, memory, debug_status, I/O, or transcript signatures match expected
-//   values before timeout.
-// Does not prove: Directed upper/immediate slice only.
 // Firmware: firmware/hex/examples/upper_branch.hex
 
 module tb_program_upper;
@@ -13,7 +8,7 @@ module tb_program_upper;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_program_upper.vcd");
+        $dumpfile("results/waveforms/tb_program_upper.vcd");
         $dumpvars(0, tb_program_upper);
         reset_cpu();
 

@@ -176,7 +176,7 @@ module tb_external_dmem_bram_sync;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_external_dmem_bram_sync.vcd");
+        $dumpfile("results/waveforms/tb_external_dmem_bram_sync.vcd");
         $dumpvars(0, tb_external_dmem_bram_sync);
 
         reset_interface();

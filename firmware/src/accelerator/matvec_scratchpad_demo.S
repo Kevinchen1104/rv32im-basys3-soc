@@ -4,7 +4,6 @@
 # Observable result: Public debug_status pass/fail signature and exact signed int32 results are checked by the program
 #   testbench.
 # Used by: tb_program_matvec_scratchpad
-#   speedup claim.
 
 # Drive the MATVEC Scratchpad accelerator from CPU load/store MMIO.
 # x = [1, -2, 3, -4]

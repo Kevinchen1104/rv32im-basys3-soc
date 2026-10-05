@@ -3,9 +3,8 @@
 // Testbench: tb_performance_counter_unit
 // Purpose: Checks a focused CPU core unit or core-level smoke path.
 // Checks: Standalone performance counter unit increments cycle, retired, miss, stall, and MATVEC event counters from
-//   explicit event inputs; branch misses use a one-cycle registered capture with back-to-back, reset, and rollover checks.
+//   explicit event inputs, including back-to-back branch events, reset, and rollover.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   behavior, or accelerator behavior.
 
 module tb_performance_counter_unit;
 
@@ -133,7 +132,7 @@ module tb_performance_counter_unit;
         clear_events();
         check_all(32'd3, 32'd1, 32'd1, 32'd0, 32'd0, 32'd0, 32'd0, 32'd0, 32'd0);
         if (dut.branch_mispredict_event_capture !== 1'b1) begin
-            $display("FAIL: accepted branch miss was not captured for the next counter cycle");
+            $display("FAIL: assertion mirror did not capture the counted branch event");
             $fatal;
         end
 
@@ -198,7 +197,7 @@ module tb_performance_counter_unit;
         tick();
         check_word("back_to_back drained", branch_miss_count, 32'd4);
 
-        // The registered event preserves ordinary 32-bit rollover semantics.
+        // Counting an event preserves ordinary 32-bit rollover semantics.
         dut.branch_miss_count = 32'hffff_ffff;
         branch_mispredict_event = 1'b1;
         tick();

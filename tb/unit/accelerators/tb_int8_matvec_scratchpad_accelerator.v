@@ -8,6 +8,11 @@
 // Pass condition: All stage, result, status, interrupt, counter, and reset checks complete without $fatal.
 
 module tb_int8_matvec_scratchpad_accelerator;
+    initial begin
+        #1000000;
+        $fatal(1, "scratchpad test watchdog expired");
+    end
+
     reg clock;
     reg reset;
     reg ctrl_write;
@@ -18,6 +23,7 @@ module tb_int8_matvec_scratchpad_accelerator;
     reg result_index_write;
     reg clear_done;
     reg [31:0] write_data;
+    reg [3:0] write_byte_enable;
 
     wire [31:0] status_read_data;
     wire [31:0] config_read_data;
@@ -73,6 +79,7 @@ module tb_int8_matvec_scratchpad_accelerator;
         .result_index_write(result_index_write),
         .clear_done(clear_done),
         .write_data(write_data),
+        .write_byte_enable(write_byte_enable),
         .status_read_data(status_read_data),
         .config_read_data(config_read_data),
         .vector_read_data(vector_read_data),
@@ -169,6 +176,7 @@ module tb_int8_matvec_scratchpad_accelerator;
 
     task reset_dut;
         begin
+            write_byte_enable = 4'b1111;
             monitor_job = 1'b0;
             clear_write_strobes();
             clear_done = 1'b0;
@@ -474,7 +482,7 @@ module tb_int8_matvec_scratchpad_accelerator;
     end
 
     initial begin
-        $dumpfile("wave/tb_int8_matvec_scratchpad_accelerator.vcd");
+        $dumpfile("results/waveforms/tb_int8_matvec_scratchpad_accelerator.vcd");
         $dumpvars(0, tb_int8_matvec_scratchpad_accelerator);
 
         monitor_job = 1'b0;
@@ -748,6 +756,24 @@ module tb_int8_matvec_scratchpad_accelerator;
         expected_completed_ops = 12;
         check_equal("back-to-back completed_ops", {24'h0, perf_read_data[7:0]}, expected_completed_ops);
         stop_job_monitor();
+
+        reset_dut();
+        write_reg(PORT_VECTOR, 32'h1234_5678);
+        write_byte_enable = 4'b0100;
+        write_reg(PORT_VECTOR, 32'h00aa_0000);
+        check_equal("vector byte lane preserves other bytes", vector_read_data, 32'h12aa_5678);
+        write_byte_enable = 4'b1111;
+        write_row(4'd3, 32'h1234_5678);
+        write_byte_enable = 4'b1100;
+        write_reg(PORT_ROW_DATA, 32'hbeef_0000);
+        check_equal("row halfword merge", row_data_read_data, 32'hbeef_5678);
+        write_byte_enable = 4'b0010;
+        write_reg(PORT_ROW_INDEX, 32'h0000_0900);
+        check_equal("upper index byte preserves index", row_index_read_data, 32'd3);
+        check_equal("upper index byte preserves readback", row_data_read_data, 32'hbeef_5678);
+        write_reg(PORT_CTRL, 32'h0000_0100);
+        check_equal("upper control byte cannot start job", status_read_data, 32'h0);
+        write_byte_enable = 4'b1111;
 
         $display("PASS: MATVEC Scratchpad pipeline latency rows1=4 rows4=16 rows16=64 busy cycles");
         $display("PASS: tb_int8_matvec_scratchpad_accelerator passed");

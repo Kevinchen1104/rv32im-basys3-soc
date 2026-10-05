@@ -4,11 +4,9 @@ Purpose: Validates and optionally programs the canonical direct-100-MHz Basys3 b
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\vivado-basys3-program.ps1 -DryRun
 Outputs:
-  A JSON summary under wave\ and, only in physical mode, a Vivado programming log/result file.
+  A JSON summary under results\ and, only in physical mode, a Vivado programming log/result file.
 Scope:
   One-shot JTAG programming helper; DryRun never opens hardware, and programming alone is not physical validation.
-Audience:
-  Basys3 operator after explicit authorization to program the connected board.
 #>
 param(
     [string] $BitstreamPath = "",
@@ -16,59 +14,25 @@ param(
     [long] $ExpectedSizeBytes = 0,
     [string] $DeviceSelector = "*xc7a35t*",
     [switch] $DryRun,
-    [string] $SummaryPath = "wave\vivado-basys3-program-summary.json",
-    [string] $LogPath = "wave\vivado-basys3-program.log"
+    [string] $SummaryPath = "results\vivado-basys3-program-summary.json",
+    [string] $LogPath = "results\vivado-basys3-program.log"
 )
 
+. "$PSScriptRoot/script-common.ps1"
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
+. "$PSScriptRoot/process-runner.ps1"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
-
-function Resolve-RepoPath {
-    param([string] $Path)
-
-    if ([System.IO.Path]::IsPathRooted($Path)) {
-        return [System.IO.Path]::GetFullPath($Path)
-    }
-    return [System.IO.Path]::GetFullPath((Join-Path $repoRoot $Path))
-}
-
-function Ensure-ParentDirectory {
-    param([string] $Path)
-
-    $parent = Split-Path -Parent $Path
-    if ([string]::IsNullOrWhiteSpace($parent)) {
-        throw "Output path has no parent directory: $Path"
-    }
-    New-Item -ItemType Directory -Force -Path $parent | Out-Null
-}
-
-function Read-JsonFile {
-    param([string] $Path)
-
-    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
-        throw "Required JSON metadata not found: $Path"
-    }
-    return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
-}
-
-function Normalize-Hash {
-    param([string] $Hash)
-
-    if ([string]::IsNullOrWhiteSpace($Hash) -or $Hash -notmatch '^[0-9A-Fa-f]{64}$') {
-        throw "ExpectedSha256 must contain exactly 64 hexadecimal characters."
-    }
-    return $Hash.ToLowerInvariant()
-}
 
 . (Join-Path $PSScriptRoot "canonical-basys3-evidence.ps1")
 
 $resolvedSummaryPath = Resolve-RepoPath $SummaryPath
 $resolvedLogPath = Resolve-RepoPath $LogPath
 $resolvedBitstreamPath = $null
-$tclResultPath = Resolve-RepoPath "wave\vivado-basys3-program-hardware-result.json"
-$detectPath = Resolve-RepoPath "wave\vivado-basys3-program-vivado-detect.json"
+$tclResultPath = [IO.Path]::ChangeExtension($resolvedSummaryPath, 'hardware.json')
+$detectPath = [IO.Path]::ChangeExtension($resolvedSummaryPath, 'detect.json')
 Ensure-ParentDirectory $resolvedSummaryPath
 
 $summary = [ordered]@{
@@ -98,12 +62,13 @@ $summary = [ordered]@{
     device_programmed = $false
     retry_count = 0
     log_path = $LogPath
-    tcl_result_path = if ($DryRun) { $null } else { "wave\vivado-basys3-program-hardware-result.json" }
+    tcl_result_path = if ($DryRun) { $null } else { $tclResultPath }
     physical_validation_status = "not_run"
     physical_validation_scope = "needs_revalidation"
     error = $null
-    claim_boundary = "DryRun validates the canonical bitstream and Vivado availability without opening hardware. Programming success alone does not establish UART, LED, reset/reboot, every-instruction, official-compliance, performance, or power evidence."
+    claim_boundary = "Programming verifies configuration only; UART, LED and reset behavior require a separate board test. DryRun does not open hardware."
 }
+Write-ResultJson $summary $resolvedSummaryPath
 
 $failureMessage = $null
 
@@ -162,8 +127,12 @@ try {
         }
 
         $tclPath = (Resolve-Path -LiteralPath "fpga\vivado\basys3_program.tcl").Path
+        $workDir = Resolve-RepoPath 'build/vivado/program'
+        New-Item -ItemType Directory -Force -Path $workDir | Out-Null
         $vivadoArgs = @(
             "-mode", "batch",
+            "-log", (Join-Path $workDir 'vivado.log'),
+            "-journal", (Join-Path $workDir 'vivado.jou'),
             "-source", $tclPath.Replace("\", "/"),
             "-tclargs",
             "-bitstream", $resolvedBitstreamPath.Replace("\", "/"),
@@ -171,15 +140,8 @@ try {
             "-result_path", $tclResultPath.Replace("\", "/")
         )
 
-        $previousErrorActionPreference = $ErrorActionPreference
-        $ErrorActionPreference = "Continue"
-        try {
-            $vivadoOutput = & $summary.vivado_path @vivadoArgs 2>&1
-            $vivadoExitCode = $LASTEXITCODE
-        } finally {
-            $ErrorActionPreference = $previousErrorActionPreference
-        }
-        $vivadoOutput | Set-Content -LiteralPath $resolvedLogPath -Encoding Ascii
+        $programming = Invoke-LoggedVendorTool -FilePath $summary.vivado_path -Arguments $vivadoArgs `
+            -WorkingDirectory $workDir -LogPath $resolvedLogPath
 
         if (Test-Path -LiteralPath $tclResultPath -PathType Leaf) {
             $hardwareResult = Read-JsonFile $tclResultPath
@@ -192,8 +154,8 @@ try {
             }
         }
 
-        if ($vivadoExitCode -ne 0) {
-            throw "Vivado Hardware Manager programming failed; see $LogPath."
+        if ($programming.status -ne 'passed') {
+            throw "Vivado Hardware Manager programming $($programming.status); see $LogPath."
         }
         if (-not $summary.hardware_opened -or -not $summary.device_found -or -not $summary.device_programmed) {
             throw "Vivado returned without complete one-shot programming confirmation."
@@ -208,13 +170,13 @@ try {
     }
 } finally {
     $summary.generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-    $summary | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath $resolvedSummaryPath -Encoding Ascii
+    Write-ResultJson $summary $resolvedSummaryPath
 }
 
 Write-Host "========================================"
 Write-Host "Basys3 direct-100-MHz JTAG programming flow"
 Write-Host ("Status: {0}" -f $summary.status)
-Write-Host ("Vivado: {0}" -f ($(if ($null -eq $summary.vivado_version) { "unavailable" } else { ($summary.vivado_version -split "`n")[0] })))
+Write-Host ("Vivado: {0}" -f ($(if ($null -eq $summary.vivado_version) { "not determined" } else { ($summary.vivado_version -split "`n")[0] })))
 Write-Host ("Top/device: {0} / {1}" -f $summary.top, $summary.device_selector)
 Write-Host ("Bitstream: {0}" -f $summary.bitstream_path)
 Write-Host ("Size/SHA256: {0} / {1}" -f $summary.bitstream_size_bytes, $summary.bitstream_sha256)

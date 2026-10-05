@@ -1,6 +1,6 @@
 # Program: csr_trap
 # Purpose: Records selected synchronous trap causes and trap PCs.
-# Exercises: mtvec, mcause, mepc, trap redirect, and mret return flow in the local machine-mode subset.
+# Exercises: mtvec, mcause, mepc, trap redirect, and software PC skipping with JALR.
 # Observable result: DMemory cause/PC records are checked by the program testbench.
 # Used by: tb_program_csr_trap
 

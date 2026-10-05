@@ -5,10 +5,6 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\trace-lockstep-reference.ps1 -Check -SkipSimulation
 Outputs:
   fixtures\generated\reference\trace_lockstep_reference* artifacts or freshness diagnostics.
-Scope:
-  Trace-reference regression evidence only; not complete ISA proof or official compliance.
-Audience:
-  Internal helper used by scripts\check.ps1.
 #>
 param(
     [int]$Seed = 6061,
@@ -20,6 +16,7 @@ param(
     [string]$ExpectedJsonPath = "fixtures/generated/reference/trace_lockstep_expected.json"
 )
 
+. "$PSScriptRoot/reference-common.ps1"
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
@@ -39,36 +36,12 @@ $expectedJsonPathResolved = Resolve-ArtifactPath $ExpectedJsonPath
 $script:UInt32SignBit = [uint32]2147483648
 $script:UInt32AllOnes = [uint32]4294967295
 
-function To-UInt32 {
-    param([int64]$Value)
-    return [uint32]($Value -band 0xffffffffL)
-}
-
 function To-SInt32 {
     param([uint32]$Value)
     if (($Value -band $script:UInt32SignBit) -ne 0) {
         return [int64]$Value - 4294967296L
     }
     return [int64]$Value
-}
-
-function Format-HexWord {
-    param([uint32]$Value)
-    return "{0:x8}" -f $Value
-}
-
-function Format-TraceRow {
-    param([uint32]$Pc, [uint32]$Instruction, [int]$Rd, [bool]$RegWrite, [uint32]$Value)
-
-    $meta = [uint32]($Rd -band 0x1f)
-    if ($RegWrite) {
-        $meta = $meta -bor [uint32]0x20
-    }
-
-    return "{0}{1}{2}{3}" -f (Format-HexWord $Pc),
-                              (Format-HexWord $Instruction),
-                              (Format-HexWord $meta),
-                              (Format-HexWord $Value)
 }
 
 function Sign-Extend {
@@ -98,38 +71,6 @@ function Encode-IType {
                     ([uint64]($Rs1 -band 0x1f) -shl 15) -bor
                     ([uint64]($Funct3 -band 0x7) -shl 12) -bor
                     ([uint64]($Rd -band 0x1f) -shl 7) -bor [uint64]($Opcode -band 0x7f))
-}
-
-function Encode-SType {
-    param([int]$Immediate, [int]$Rs2, [int]$Rs1, [int]$Funct3)
-    $imm = [int64]$Immediate -band 0xfff
-    return [uint32](([uint64](($imm -shr 5) -band 0x7f) -shl 25) -bor
-                    ([uint64]($Rs2 -band 0x1f) -shl 20) -bor
-                    ([uint64]($Rs1 -band 0x1f) -shl 15) -bor
-                    ([uint64]($Funct3 -band 0x7) -shl 12) -bor
-                    ([uint64]($imm -band 0x1f) -shl 7) -bor [uint64]0x23)
-}
-
-function Encode-BType {
-    param([int]$Immediate, [int]$Rs2, [int]$Rs1, [int]$Funct3)
-    $imm = [int64]$Immediate -band 0x1fff
-    return [uint32](([uint64](($imm -shr 12) -band 0x1) -shl 31) -bor
-                    ([uint64](($imm -shr 5) -band 0x3f) -shl 25) -bor
-                    ([uint64]($Rs2 -band 0x1f) -shl 20) -bor
-                    ([uint64]($Rs1 -band 0x1f) -shl 15) -bor
-                    ([uint64]($Funct3 -band 0x7) -shl 12) -bor
-                    ([uint64](($imm -shr 1) -band 0xf) -shl 8) -bor
-                    ([uint64](($imm -shr 11) -band 0x1) -shl 7) -bor [uint64]0x63)
-}
-
-function Encode-JType {
-    param([int]$Immediate, [int]$Rd)
-    $imm = [int64]$Immediate -band 0x1fffff
-    return [uint32](([uint64](($imm -shr 20) -band 0x1) -shl 31) -bor
-                    ([uint64](($imm -shr 1) -band 0x3ff) -shl 21) -bor
-                    ([uint64](($imm -shr 11) -band 0x1) -shl 20) -bor
-                    ([uint64](($imm -shr 12) -band 0xff) -shl 12) -bor
-                    ([uint64]($Rd -band 0x1f) -shl 7) -bor [uint64]0x6f)
 }
 
 function Encode-UType {
@@ -214,11 +155,9 @@ function Add-LoadImmediate {
         return
     }
 
-    $upper = [int]((($signedValue + 0x800) -shr 12) -band 0xfffff)
-    $base = To-SInt32 (To-UInt32 ([int64]$upper -shl 12))
-    $lower = [int]($signedValue - $base)
-    if ($lower -gt 2047) { $lower -= 4096 }
-    if ($lower -lt -2048) { $lower += 4096 }
+    $parts = Split-LoadImmediate $Value
+    $upper = $parts.Upper
+    $lower = $parts.Lower
 
     Add-Lui $Rd $upper $Note
     if ($lower -ne 0) {

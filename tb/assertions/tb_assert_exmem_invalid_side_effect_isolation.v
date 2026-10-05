@@ -1,14 +1,11 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_exmem_invalid_side_effect_isolation
-// Purpose: Proves EX/MEM validity, not payload contents, authorizes memory-stage effects.
+// Purpose: Checks that EX/MEM validity, not payload contents, authorizes memory-stage effects.
 // Checks: Nonzero invalid load/store/ALU payload cannot request D-cache/external memory, write normal memory,
 //   debug status, GPIO, UART, timer, MATVEC, or DMA descriptors, retire, trace, or write a register. Directed
 //   exception, interrupt, redirect, and RV32M bubbles clear validity while stale payload/write metadata remain
 //   side-effect isolated.
 // Pass condition: Every invalid-payload and bubble check completes without an architectural side effect.
-// Does not prove: Directed hierarchical assertion evidence only; not a complete pipeline formal proof, timing
-//   closure result, cache-protocol proof, or physical-board validation.
 
 module tb_assert_exmem_invalid_side_effect_isolation;
     reg clock = 1'b0;
@@ -228,7 +225,7 @@ module tb_assert_exmem_invalid_side_effect_isolation;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_exmem_invalid_side_effect_isolation.vcd");
+        $dumpfile("results/waveforms/tb_assert_exmem_invalid_side_effect_isolation.vcd");
         $dumpvars(0, tb_assert_exmem_invalid_side_effect_isolation);
 
         reset_core();

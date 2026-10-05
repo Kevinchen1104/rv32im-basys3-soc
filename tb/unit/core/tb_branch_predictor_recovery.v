@@ -78,7 +78,7 @@ module tb_branch_predictor_recovery;
     end
 
     initial begin
-        $dumpfile("wave/tb_branch_predictor_recovery.vcd");
+        $dumpfile("results/waveforms/tb_branch_predictor_recovery.vcd");
         $dumpvars(0, tb_branch_predictor_recovery);
         saw_not_taken_recovery = 1'b0;
         saw_target_recovery = 1'b0;

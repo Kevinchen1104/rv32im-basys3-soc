@@ -1,15 +1,12 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_idex_invalid_side_effect_isolation
-// Purpose: Proves ID/EX validity, not stale payload contents, authorizes execute-stage work.
+// Purpose: Checks that ID/EX validity, not stale payload contents, authorizes execute-stage work.
 // Checks: Nonzero invalid ALU, memory, control, CSR/trap, RV32M, and MMIO-like payload cannot
 //   raise an exception/redirect, update predictor/RAS/CSR state, start RV32M, create a load-use
 //   interlock, enter EX/MEM as valid, retire, trace, write a register, or commit memory/MMIO.
 //   Directed bubbles clear only validity, real D-cache/RV32M holds preserve the transaction,
 //   MEM/WB repair remains active during hold, reset clears ID/EX state, and a valid instruction retires.
 // Pass condition: Every invalid-payload, bubble, hold, reset, and valid-control check passes.
-// Does not prove: Directed hierarchical assertion evidence only; not complete pipeline formal proof,
-//   timing closure, cache-protocol proof, or physical-board validation.
 
 module tb_assert_idex_invalid_side_effect_isolation;
     localparam NOP = 32'h0000_0013;
@@ -246,7 +243,10 @@ module tb_assert_idex_invalid_side_effect_isolation;
             reset_core();
             prepare_bubble_payload();
             case (kind)
-                2'd0: force dut.exception_taken = 1'b1;
+                2'd0: begin
+                    force dut.exception_pending = 1'b1;
+                    force dut.exception_taken = 1'b1;
+                end
                 2'd1: begin
                     force dut.interrupt_eligible = 1'b1;
                     force dut.interrupt_taken = 1'b1;
@@ -264,7 +264,10 @@ module tb_assert_idex_invalid_side_effect_isolation;
             #1;
             check_captured_bubble_payload(label);
             case (kind)
-                2'd0: release dut.exception_taken;
+                2'd0: begin
+                    release dut.exception_pending;
+                    release dut.exception_taken;
+                end
                 2'd1: begin
                     release dut.interrupt_eligible;
                     release dut.interrupt_taken;
@@ -409,7 +412,7 @@ module tb_assert_idex_invalid_side_effect_isolation;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_idex_invalid_side_effect_isolation.vcd");
+        $dumpfile("results/waveforms/tb_assert_idex_invalid_side_effect_isolation.vcd");
         $dumpvars(0, tb_assert_idex_invalid_side_effect_isolation);
 
         reset_core();

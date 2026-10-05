@@ -1,130 +1,65 @@
-<#
-Script: scripts\arch-test-setup.ps1
-Purpose: Prepares or validates local paths used by the optional architectural-test integration.
-Common usage:
-  powershell -ExecutionPolicy Bypass -File scripts\arch-test-setup.ps1
-Outputs:
-  Console setup report and any local arch-test staging files requested by the user.
-Scope:
-  Local setup helper only; not hardware evidence or compliance certification.
-Audience:
-  Internal helper for optional arch-test workflows.
-#>
+# Prepare the pinned, minimal upstream checkout used by the selected test profile.
 param(
-    [string]$RepoUrl = "https://github.com/riscv-non-isa/riscv-arch-test.git",
-    [string]$CheckoutPath = "external\riscv-arch-test",
-    [string]$OutputPath = "wave\arch-test-setup.json",
+    [string]$ProfilePath = 'tools/arch-test/rv32im-selected.json',
+    [string]$RepoUrl = '',
+    [string]$CheckoutPath = '',
+    [string]$OutputPath = 'results/arch-test-setup.json',
     [switch]$NoUpdate
 )
-
-$ErrorActionPreference = "Stop"
-
-$repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
-Set-Location $repoRoot
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
-New-Item -ItemType Directory -Force -Path "external" | Out-Null
-
-function Write-SetupSummary {
-    param(
-        [string]$Status,
-        [string]$Reason,
-        [string]$Commit = $null,
-        [bool]$CheckoutPresent = $false,
-        [bool]$Updated = $false
-    )
-
-    $summary = [ordered]@{
-        generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-        status = $Status
-        reason = $Reason
-        repo_url = $RepoUrl
-        checkout_path = $CheckoutPath
-        checkout_present = $CheckoutPresent
-        updated = $Updated
-        upstream_commit = $Commit
-        external_policy = "external/ is gitignored; upstream riscv-arch-test is not vendored into this repository"
-    }
-
-    $summary | ConvertTo-Json -Depth 6 | Set-Content -Path $OutputPath -Encoding Ascii
-
-    Write-Host "========================================"
-    Write-Host "RISC-V arch-test setup"
-    Write-Host ("Status: {0}" -f $Status)
-    if (-not [string]::IsNullOrWhiteSpace($Reason)) {
-        Write-Host ("Reason: {0}" -f $Reason)
-    }
-    if (-not [string]::IsNullOrWhiteSpace($Commit)) {
-        Write-Host ("Upstream commit: {0}" -f $Commit)
-    }
-    Write-Host ("Setup summary written to {0}" -f $OutputPath)
+$ErrorActionPreference = 'Stop'
+$root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+Set-Location $root
+. "$PSScriptRoot/result-format.ps1"
+. "$PSScriptRoot/artifact-paths.ps1"
+$summary = [ordered]@{
+    generated_at_utc=(Get-Date).ToUniversalTime().ToString('o')
+    status='starting'; reason=$null; repo_url=$null; checkout_path=$null
+    checkout_present=$false; updated=$false; upstream_commit=$null
+    pinned_revision=$null; sparse_paths=@()
 }
-
-function Get-UpstreamCommit {
-    param([string]$Path)
-
-    try {
-        $commit = & git -C $Path rev-parse HEAD 2>$null
-        if ($LASTEXITCODE -eq 0) {
-            return ($commit | Select-Object -First 1).ToString().Trim()
-        }
-    } catch {
-        return $null
-    }
-
-    return $null
+Write-ResultJson $summary $OutputPath
+function Invoke-SetupGit([string[]]$GitArgs) {
+    & git @GitArgs
+    if ($LASTEXITCODE -ne 0) { throw "Git setup failed: git $($GitArgs -join ' ')" }
 }
-
-$gitCommand = Get-Command git -ErrorAction SilentlyContinue
-if ($null -eq $gitCommand) {
-    Write-SetupSummary -Status "blocked_no_tool" -Reason "git is required to clone or update riscv-arch-test"
-    exit 0
-}
-
-$checkoutFullPath = Join-Path $repoRoot $CheckoutPath
-$gitDir = Join-Path $checkoutFullPath ".git"
-
-if (Test-Path -LiteralPath $gitDir) {
-    $updated = $false
-    $updateReason = "existing checkout reused"
-
-    if (-not $NoUpdate) {
-        try {
-            & git -C $checkoutFullPath fetch --all --tags --prune
-            if ($LASTEXITCODE -eq 0) {
-                $updated = $true
-                $updateReason = "existing checkout fetched"
-            } else {
-                $updateReason = "fetch failed; existing checkout reused"
-            }
-        } catch {
-            $updateReason = "fetch failed; existing checkout reused: $($_.Exception.Message)"
-        }
-    }
-
-    $commit = Get-UpstreamCommit -Path $checkoutFullPath
-    if ([string]::IsNullOrWhiteSpace($commit)) {
-        Write-SetupSummary -Status "blocked_no_tool" -Reason "existing checkout is present but git commit could not be read" -CheckoutPresent $true -Updated $updated
-    } else {
-        Write-SetupSummary -Status "ready" -Reason $updateReason -Commit $commit -CheckoutPresent $true -Updated $updated
-    }
-    exit 0
-}
-
 try {
-    & git clone --depth 1 $RepoUrl $checkoutFullPath
-    if ($LASTEXITCODE -ne 0) {
-        Write-SetupSummary -Status "blocked_no_tool" -Reason "git clone failed; check network access or repository URL"
-        exit 0
+    $profile = Get-Content -LiteralPath $ProfilePath -Raw | ConvertFrom-Json
+    if (-not $RepoUrl) { $RepoUrl = $profile.upstream.repo }
+    if (-not $CheckoutPath) { $CheckoutPath = $profile.upstream.checkout }
+    $revision = [string]$profile.upstream.revision
+    if ($revision -notmatch '^[0-9a-f]{40}$') { throw 'The profile must pin a full upstream commit.' }
+    $summary.repo_url = $RepoUrl
+    $summary.checkout_path = $CheckoutPath
+    $summary.pinned_revision = $revision
+    $summary.sparse_paths = @($profile.upstream.sparse_paths)
+    $checkout = [IO.Path]::GetFullPath((Join-Path $root $CheckoutPath))
+    if (-not $checkout.StartsWith($root + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) { throw 'Checkout must be inside the repository.' }
+    if (Test-Path -LiteralPath $checkout) { $null = Assert-ArtifactPath $root $checkout }
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) { throw 'Git is required.' }
+    if (-not (Test-Path -LiteralPath (Join-Path $checkout '.git'))) {
+        if (Test-Path -LiteralPath $checkout) { throw 'Checkout directory exists without Git metadata; preserve it before setup.' }
+        New-Item -ItemType Directory -Force -Path (Split-Path -Parent $checkout) | Out-Null
+        Invoke-SetupGit @('clone','--depth','1','--filter=blob:none','--no-checkout',$RepoUrl,$checkout)
+        & git -C $checkout cat-file -e "$revision^{commit}" 2>$null
+        if ($LASTEXITCODE -ne 0) { Invoke-SetupGit @('-C',$checkout,'fetch','--depth','1','origin',$revision) }
+        Invoke-SetupGit (@('-C',$checkout,'sparse-checkout','set','--cone') + $summary.sparse_paths)
+        Invoke-SetupGit @('-C',$checkout,'checkout','--detach',$revision)
+        $summary.updated = $true
+    } else {
+        $dirty = @(& git -C $checkout status --porcelain)
+        if ($LASTEXITCODE -ne 0 -or $dirty.Count) { throw 'Existing upstream checkout has local changes; no files were removed.' }
+        $head = (& git -C $checkout rev-parse HEAD).Trim()
+        if ($head -ne $revision) { throw "Existing checkout is $head, but the profile requires $revision. Keep this checkout or use a separate CheckoutPath." }
+        # No fetch is needed when the pinned commit is already present.
+        Invoke-SetupGit (@('-C',$checkout,'sparse-checkout','set','--cone') + $summary.sparse_paths)
     }
+    $summary.upstream_commit = (& git -C $checkout rev-parse HEAD).Trim()
+    $summary.checkout_present = $true
+    $summary.status = 'ready'
+    $summary.reason = 'Pinned revision and selected test directories are ready.'
 } catch {
-    Write-SetupSummary -Status "blocked_no_tool" -Reason "git clone failed: $($_.Exception.Message)"
-    exit 0
-}
-
-$commitAfterClone = Get-UpstreamCommit -Path $checkoutFullPath
-if ([string]::IsNullOrWhiteSpace($commitAfterClone)) {
-    Write-SetupSummary -Status "blocked_no_tool" -Reason "clone completed but upstream commit could not be read" -CheckoutPresent $true
-    exit 0
-}
-
-Write-SetupSummary -Status "ready" -Reason "fresh checkout cloned" -Commit $commitAfterClone -CheckoutPresent $true -Updated $true
+    $summary.status = 'failed'
+    $summary.reason = $_.Exception.Message
+    throw
+} finally { Write-ResultJson $summary $OutputPath }
+Write-Host "Arch-test ready: $($summary.upstream_commit); $($summary.sparse_paths -join ', ')"

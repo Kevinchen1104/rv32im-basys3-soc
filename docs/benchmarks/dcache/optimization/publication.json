@@ -1,0 +1,208 @@
+{
+  "status": "passed",
+  "normalization": "UTF-8/LF; local paths and host headers removed; long numeric arrays grouped eight per line; original run hashes preserved",
+  "records": [
+    {
+      "source": "results/architecture/dcache-complete-external/summary.json",
+      "original_sha256": "2bfab168e1de3e38bf245cd653af453a3a488fc8c9db43f9ddcca2e5564915dc",
+      "published": "docs/benchmarks/dcache/optimization/latency-0.json",
+      "published_sha256": "c6ae5764c9cb3c2cce2aa309e7877d009af780309e69a5775d76fe5e25317fa0"
+    },
+    {
+      "source": "results/architecture/dcache-latency4-complete-external/summary.json",
+      "original_sha256": "cf1ae3d272f845d29286107d2dfd6b98f9292700bcc3a544cbfec311c67f913d",
+      "published": "docs/benchmarks/dcache/optimization/latency-4.json",
+      "published_sha256": "bd6237b57d8b52cf39602e066f868e3fb813d25878df75bd875162de60433a62"
+    },
+    {
+      "source": "results/architecture/dcache-latency12-complete-external/summary.json",
+      "original_sha256": "c89816d52769b1ea67b0a8302c1d8b0ac9ced020e605016597ed4b3204ff4a8b",
+      "published": "docs/benchmarks/dcache/optimization/latency-12.json",
+      "published_sha256": "83a13a13760278d61c983ac2b87213aff3392b54d488cabea7c960cd77bac245"
+    },
+    {
+      "source": "results/timing/dcache-victim4-optimized.json",
+      "original_sha256": "590b0fbf412cab8e0c2e8bda75f57728ee4bd4c53926b353b42549c6170b8f5e",
+      "published": "docs/benchmarks/dcache/optimization/implementation/indexed-writes/metadata.json",
+      "published_sha256": "9a8796bff36e210881fbf502f11c750cbd1e7f975f1a1fffba1cead9f38081b3"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-optimized/reports/post_route_critical_paths.rpt",
+      "original_sha256": "3ab85d050b4aea5ab30bc0c8d9464973ce5c91cbdc45a98c92b922932ecf9b79",
+      "published": "docs/benchmarks/dcache/optimization/implementation/indexed-writes/post_route_critical_paths.rpt",
+      "published_sha256": "6fc82199fee6134aaf5041a93dcd61917e5abbe6708a121070a3392d71b43892"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-optimized/reports/post_route_drc.rpt",
+      "original_sha256": "8a1383cf6b4c8452b769500828f4566ef81bf0617684624e25cb58a88d1114bd",
+      "published": "docs/benchmarks/dcache/optimization/implementation/indexed-writes/post_route_drc.rpt",
+      "published_sha256": "58e97ddea9bc54d5678b503f7dcb1238f4903d64ae88948275e4929ee35230b1"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-optimized/reports/post_route_hierarchy.rpt",
+      "original_sha256": "43da2c20545702defecc4346bae2385bbe4e9c23b8ad20f765e80bc63205680a",
+      "published": "docs/benchmarks/dcache/optimization/implementation/indexed-writes/post_route_hierarchy.rpt",
+      "published_sha256": "9a6fe87e31cb4d27c21fd777bc57fa7ba529c01960d9b21aad4d28ea0dcdcb6d"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-optimized/reports/post_route_timing_summary.rpt",
+      "original_sha256": "13af3a048aa6ab4d750b8684e0f8317e72bfc6f4feb0dd5cdc1c78ca52dad4be",
+      "published": "docs/benchmarks/dcache/optimization/implementation/indexed-writes/post_route_timing_summary.rpt",
+      "published_sha256": "84afb92815aa65dfaf2b5e1e7ca128919db635d7474e992ce4ac196dafabcbfe"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-optimized/reports/post_route_utilization.rpt",
+      "original_sha256": "2cf276f119b6486e2d9ba68757952507ff0637f4069fb8897d038aa61a137ac1",
+      "published": "docs/benchmarks/dcache/optimization/implementation/indexed-writes/post_route_utilization.rpt",
+      "published_sha256": "f78b259ef0db72762fac4eb825386bd978b79c7d66d62817ae3a88a275d5bf68"
+    },
+    {
+      "source": "results/timing/dcache-victim4-compact.json",
+      "original_sha256": "25471949d4f5e7ec7b5a97f11c98bbf7a0b7366f2d887a820564bea63ce76872",
+      "published": "docs/benchmarks/dcache/optimization/implementation/decoded-writes/metadata.json",
+      "published_sha256": "e7ca4f24c48c33e63c2e7c2a36a354b0d0c3e1a33acf72567b3463fc1cb703d1"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-compact/reports/post_route_critical_paths.rpt",
+      "original_sha256": "0724a9fb654b9e32156a2520c9f88d90a3d3b4631d168ee49c539c4c3183e429",
+      "published": "docs/benchmarks/dcache/optimization/implementation/decoded-writes/post_route_critical_paths.rpt",
+      "published_sha256": "449f36e3e6f1a9f435a1b8b6b6d53c7d5c61a6c978db000ba6c276a14cec8d39"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-compact/reports/post_route_drc.rpt",
+      "original_sha256": "01217fa8fc6cdd85995e6b2d30285985a7c2c11e33e8cdd4d7c6ea720c58f12f",
+      "published": "docs/benchmarks/dcache/optimization/implementation/decoded-writes/post_route_drc.rpt",
+      "published_sha256": "9dea2f0f6cb430b3cfc0808fec9d9d36a3e60f341f7ba9599638585d19e78ee1"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-compact/reports/post_route_hierarchy.rpt",
+      "original_sha256": "78e3c548ffbdd0274ff328785be75a0b6b58a90ea67acdd30d3bcf71f302bfeb",
+      "published": "docs/benchmarks/dcache/optimization/implementation/decoded-writes/post_route_hierarchy.rpt",
+      "published_sha256": "b891f7624cdec2b122d4f5329e1bc5d23e5db6199b897d2c6fdf4d03e5f5d7e8"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-compact/reports/post_route_timing_summary.rpt",
+      "original_sha256": "da9a3c3ab2d0c1544941c7255d7f392847f0f1280d503315faf22fb94ba1004e",
+      "published": "docs/benchmarks/dcache/optimization/implementation/decoded-writes/post_route_timing_summary.rpt",
+      "published_sha256": "bc4fea8245718587c1809bdab693eccf73b497f5a93ec12b085406f22a792e8b"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-compact/reports/post_route_utilization.rpt",
+      "original_sha256": "b1652540d9acc606ce0c127b3a31cb6d0ee66639aecbc80bc04b28555e6c56d9",
+      "published": "docs/benchmarks/dcache/optimization/implementation/decoded-writes/post_route_utilization.rpt",
+      "published_sha256": "839e71b6d28f3e72ab04ccbafb3e2b563f839e03a4ee38613f31f2c2a960c8d1"
+    },
+    {
+      "source": "results/timing/dcache-victim4-word-writes.json",
+      "original_sha256": "715d3a819d07177d7af81959a8b54e101f79c81b9054219400b8eb62bb935fee",
+      "published": "docs/benchmarks/dcache/optimization/implementation/shared-primary-writes/metadata.json",
+      "published_sha256": "969faf8009387a932f3f80ed09f1dd1aa2e0635e7616aad3ddecc420e26c69db"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-word-writes/reports/post_route_critical_paths.rpt",
+      "original_sha256": "db615515ba58ccb9267df39de9c4e8fa79919f7c782d0f6527778609103e3ad8",
+      "published": "docs/benchmarks/dcache/optimization/implementation/shared-primary-writes/post_route_critical_paths.rpt",
+      "published_sha256": "2f1f562f58e6cc615812c8e3dc07e189a2dcf0c36f930728c5ab73af340346d7"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-word-writes/reports/post_route_drc.rpt",
+      "original_sha256": "61960c4357b841b0a6109129f28c31738885875be14de72326015e262e56c8e1",
+      "published": "docs/benchmarks/dcache/optimization/implementation/shared-primary-writes/post_route_drc.rpt",
+      "published_sha256": "df2eb6ad2a5af40cb296390fb8388711b52d82322beaf2b028a808aa44e7eef7"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-word-writes/reports/post_route_hierarchy.rpt",
+      "original_sha256": "9d4b843f0a25a7076f84633cceb0d32fec1cf1fbde55132312f21c34ed59a526",
+      "published": "docs/benchmarks/dcache/optimization/implementation/shared-primary-writes/post_route_hierarchy.rpt",
+      "published_sha256": "9633833b20f02cfb94a576e4f4142d90c65f9e42afd68cae7a2b971afe874e1d"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-word-writes/reports/post_route_timing_summary.rpt",
+      "original_sha256": "4ce45d9978025b90c9d50addaeb7fac9abe5e6cde4f73e8ef299edb562097b4a",
+      "published": "docs/benchmarks/dcache/optimization/implementation/shared-primary-writes/post_route_timing_summary.rpt",
+      "published_sha256": "9aac457dcfed31d138cc4310db8ce8a4efdb3bcdab47568842d006141065b19d"
+    },
+    {
+      "source": "build/vivado/dcache-victim4-word-writes/reports/post_route_utilization.rpt",
+      "original_sha256": "35db6c33958b7fc8bf0a78b5027f94890028a1e5ba09f5f2199748c42a01bd3e",
+      "published": "docs/benchmarks/dcache/optimization/implementation/shared-primary-writes/post_route_utilization.rpt",
+      "published_sha256": "dec26a3c1aea18e62cb9b0a8271b565a712d062232686ff939bbd53d108945c1"
+    },
+    {
+      "source": "results/timing/signal-console-summary.json",
+      "original_sha256": "77bf82e8fc333f8f22a88b9455c1c1d1085d00b2ab2490b41ffe8031bf34b9a9",
+      "published": "docs/benchmarks/dcache/optimization/implementation/default-application/metadata.json",
+      "published_sha256": "148602f811543dc820ceaa2846e4bcfb6e568f93b3d5db875dee2f881bb0e550"
+    },
+    {
+      "source": "build/vivado/signal_console/reports/post_route_critical_paths.rpt",
+      "original_sha256": "092415b9583bde0fe025315575d39a804114178f9547ed1f52d0047ae8176eb2",
+      "published": "docs/benchmarks/dcache/optimization/implementation/default-application/post_route_critical_paths.rpt",
+      "published_sha256": "e48e8693a7cfdfb8d3d1bc5b4d8ce8faa62dba08f35aa3a024cb6c1ddd7797cd"
+    },
+    {
+      "source": "build/vivado/signal_console/reports/post_route_drc.rpt",
+      "original_sha256": "1e87277ad07dfaabbc7c10f808a259e0d080c19101f8e464dff3d3b89708e38d",
+      "published": "docs/benchmarks/dcache/optimization/implementation/default-application/post_route_drc.rpt",
+      "published_sha256": "2f32825de04fc218b06309e9fff91ebee3cd39e137896c250f0eca13a1cc8cd2"
+    },
+    {
+      "source": "build/vivado/signal_console/reports/post_route_hierarchy.rpt",
+      "original_sha256": "dcb4537d60828c5844fd7674be6f59b157528d2278a2ad2d531aaf7a629d30d7",
+      "published": "docs/benchmarks/dcache/optimization/implementation/default-application/post_route_hierarchy.rpt",
+      "published_sha256": "62461f31a71cdaa6f9182e915836a4db1a45b47f44366b778b0fcdf4f444fbe2"
+    },
+    {
+      "source": "build/vivado/signal_console/reports/post_route_timing_summary.rpt",
+      "original_sha256": "3d41c420f6bc4b4044a740968388329fa0846397f872ec7099d1912231caa4e0",
+      "published": "docs/benchmarks/dcache/optimization/implementation/default-application/post_route_timing_summary.rpt",
+      "published_sha256": "558e683841d1bff7fc8f543bcf2a7643bedf2d65bcbbb3780ac5754a70c36212"
+    },
+    {
+      "source": "build/vivado/signal_console/reports/post_route_utilization.rpt",
+      "original_sha256": "c57bc631aad9e09cbf91b6b7fcf447e8fdd89de4a41563937cadf23d26125961",
+      "published": "docs/benchmarks/dcache/optimization/implementation/default-application/post_route_utilization.rpt",
+      "published_sha256": "1a7fe0520e36b6272dad2f2c1316727a1fcea4935dab9cb8d5088d646a6ecfd9"
+    },
+    {
+      "source": "results/signal-console/board-burst/compact.json",
+      "original_sha256": "dd168654d3704cb9868db053c6b202b4e96ef8e10a1b77146aec6e2b9f294492",
+      "published": "docs/benchmarks/dcache/optimization/board/compact.json",
+      "published_sha256": "2872f8b3972486274a327e06cb2a05ab9db3a8990113ee28a717ec4d19020e99"
+    },
+    {
+      "source": "results/architecture/dcache-board/compact-programming.json",
+      "original_sha256": "0a03b3a66f0bbf839956ba11602a021ece06e78a8591a3b25a2c70c2b719c48a",
+      "published": "docs/benchmarks/dcache/optimization/board/compact-programming.json",
+      "published_sha256": "87607b230e6494c755baed8ac2b7ef0d1e9e62f91001ffd355d8117d84c52728"
+    },
+    {
+      "source": "results/architecture/dcache-board/compact-programming.log",
+      "original_sha256": "06ece4f06a9abd5f0382ff6a49a82aa95eb606037b2829a9f41aaa5991983762",
+      "published": "docs/benchmarks/dcache/optimization/board/compact-programming.log",
+      "published_sha256": "42eaa66be12bcaee843e24ee20597371dcb32f05495eb7bd0dd03cf9fb9e7851"
+    },
+    {
+      "source": "results/signal-console/board-burst/compact-reload.json",
+      "original_sha256": "bd5f59c1edae5b4c79b8a22df8a91ada7fde3ae4b3338a0f1ae5cf459e6bb54d",
+      "published": "docs/benchmarks/dcache/optimization/board/compact-reload.json",
+      "published_sha256": "79146ff8e0430115229ae6eaa54327c1a7b2d2a079c1787ecf8f27b2222fa01a"
+    },
+    {
+      "source": "results/architecture/dcache-board/compact-reload-programming.json",
+      "original_sha256": "71c135b797ffa139bd8a57f39c41e0ab7e5a68da471f1b7f55a44b4e2c507df2",
+      "published": "docs/benchmarks/dcache/optimization/board/compact-reload-programming.json",
+      "published_sha256": "a358f0b2945c3759889d1da885ba5035958b6277ac24c7b5a212fbfbdb350116"
+    },
+    {
+      "source": "results/architecture/dcache-board/compact-reload-programming.log",
+      "original_sha256": "22452f79c4a3c02db996222610ac7b65fbbb739304c6b5cac870922a77e0f3cc",
+      "published": "docs/benchmarks/dcache/optimization/board/compact-reload-programming.log",
+      "published_sha256": "7d84d236509e73cef95eb5b5bf6cb6b12302cdd059ed54585d84899a6089c4ca"
+    },
+    {
+      "published": "docs/benchmarks/dcache/optimization/comparison.json",
+      "published_sha256": "f70ed4867ff258ebb508c4c345c649ad355e592839398f4e45bcb566deb42067"
+    }
+  ]
+}

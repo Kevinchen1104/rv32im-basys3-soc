@@ -25,7 +25,7 @@ module tb_program_mret_trap;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_program_mret_trap.vcd");
+        $dumpfile("results/waveforms/tb_program_mret_trap.vcd");
         $dumpvars(0, tb_program_mret_trap);
 
         reset_cpu();

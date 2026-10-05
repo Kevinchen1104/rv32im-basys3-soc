@@ -57,7 +57,7 @@ module tb_boot_reset_controller;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_boot_reset_controller.vcd");
+        $dumpfile("results/waveforms/tb_boot_reset_controller.vcd");
         $dumpvars(0, tb_boot_reset_controller);
 
         external_reset = 1'b1;

@@ -7,6 +7,10 @@
 // Firmware: firmware/hex/showcase/hardware_validation_suite.hex
 
 module tb_program_hardware_validation_suite;
+    initial begin : watchdog
+        repeat (2000000) @(posedge clock);
+        $fatal(1, "Testbench watchdog expired");
+    end
 
     localparam integer UART_CLKS_PER_BIT = 4;
     localparam integer PROGRAM_WORD_COUNT = 508;
@@ -161,7 +165,7 @@ module tb_program_hardware_validation_suite;
 
     initial begin
         expected_message = "RV32IM HW VALIDATION\nRV32M PASS\nTIMER IRQ PASS\nMATVEC DMA PASS\nHW VALIDATION PASS\n";
-        $dumpfile("wave/tb_program_hardware_validation_suite.vcd");
+        $dumpfile("results/waveforms/tb_program_hardware_validation_suite.vcd");
         $dumpvars(0, tb_program_hardware_validation_suite);
 
         reset = 1'b1;
@@ -200,11 +204,11 @@ module tb_program_hardware_validation_suite;
         end
 
         check_word(80, 32'h8000_0007);
-        if (dut.DMemory[81] === 32'h0 || dut.DMemory[81][1:0] !== 2'b00) begin
+        if (^dut.DMemory[81] === 1'bx || dut.DMemory[81] === 32'h0 || dut.DMemory[81][1:0] !== 2'b00) begin
             $display("FAIL: timer mepc snapshot invalid %h", dut.DMemory[81]);
             $fatal;
         end
-        if (!dut.DMemory[82][7] || dut.DMemory[83] !== 32'h1 ||
+        if (dut.DMemory[82][7] !== 1'b1 || dut.DMemory[83] !== 32'h1 ||
             (dut.DMemory[84] & 32'h88) !== 32'h88) begin
             $display("FAIL: timer snapshots mip=%h flag=%h mstatus=%h",
                      dut.DMemory[82], dut.DMemory[83], dut.DMemory[84]);

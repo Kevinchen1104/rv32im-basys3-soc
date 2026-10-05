@@ -1,0 +1,113 @@
+{
+  "generated_at_utc": "2026-10-06T03:18:37.5150068Z",
+  "status": "pass",
+  "checked_tops": [
+    "RISCVCPU", "RISCVCPU_fpga_top", "RISCVCPU_uart_boot_fpga_top", "RISCVCPU_uart_boot_bram_soc_top",
+    "RISCVCPU_uart_boot_runtime_soc_top", "RISCVCPU_fpga_debug_led_top", "RISCVCPU_basys3_top",
+    "RISCVCPU_basys3_board_smoke_top", "RISCVCPU_basys3_full_lowfreq_top"
+  ],
+  "checked_configurations": [
+    {
+      "name": "RISCVCPU",
+      "top": "RISCVCPU",
+      "parameters": []
+    },
+    {
+      "name": "RISCVCPU_fpga_top",
+      "top": "RISCVCPU_fpga_top",
+      "parameters": []
+    },
+    {
+      "name": "RISCVCPU_uart_boot_fpga_top",
+      "top": "RISCVCPU_uart_boot_fpga_top",
+      "parameters": []
+    },
+    {
+      "name": "RISCVCPU_uart_boot_bram_soc_top",
+      "top": "RISCVCPU_uart_boot_bram_soc_top",
+      "parameters": []
+    },
+    {
+      "name": "RISCVCPU_uart_boot_runtime_soc_top",
+      "top": "RISCVCPU_uart_boot_runtime_soc_top",
+      "parameters": []
+    },
+    {
+      "name": "RISCVCPU_fpga_debug_led_top",
+      "top": "RISCVCPU_fpga_debug_led_top",
+      "parameters": []
+    },
+    {
+      "name": "RISCVCPU_basys3_top",
+      "top": "RISCVCPU_basys3_top",
+      "parameters": []
+    },
+    {
+      "name": "RISCVCPU_basys3_board_smoke_top",
+      "top": "RISCVCPU_basys3_board_smoke_top",
+      "parameters": []
+    },
+    {
+      "name": "RISCVCPU_basys3_full_lowfreq_top",
+      "top": "RISCVCPU_basys3_full_lowfreq_top",
+      "parameters": []
+    },
+    {
+      "name": "RISCVCPU_dcache64_victim0",
+      "top": "RISCVCPU",
+      "parameters": ["-GDCACHE_BYTES=64", "-GDCACHE_VICTIM_LINES=0"]
+    },
+    {
+      "name": "RISCVCPU_dcache64_victim1",
+      "top": "RISCVCPU",
+      "parameters": ["-GDCACHE_BYTES=64", "-GDCACHE_VICTIM_LINES=1"]
+    },
+    {
+      "name": "RISCVCPU_dcache64_victim2",
+      "top": "RISCVCPU",
+      "parameters": ["-GDCACHE_BYTES=64", "-GDCACHE_VICTIM_LINES=2"]
+    },
+    {
+      "name": "RISCVCPU_dcache64_victim4",
+      "top": "RISCVCPU",
+      "parameters": ["-GDCACHE_BYTES=64", "-GDCACHE_VICTIM_LINES=4"]
+    },
+    {
+      "name": "RISCVCPU_dcache64_victim8",
+      "top": "RISCVCPU",
+      "parameters": ["-GDCACHE_BYTES=64", "-GDCACHE_VICTIM_LINES=8"]
+    },
+    {
+      "name": "RISCVCPU_dcache128_victim0",
+      "top": "RISCVCPU",
+      "parameters": ["-GDCACHE_BYTES=128", "-GDCACHE_VICTIM_LINES=0"]
+    },
+    {
+      "name": "RISCVCPU_dcache128_victim1",
+      "top": "RISCVCPU",
+      "parameters": ["-GDCACHE_BYTES=128", "-GDCACHE_VICTIM_LINES=1"]
+    },
+    {
+      "name": "RISCVCPU_dcache128_victim2",
+      "top": "RISCVCPU",
+      "parameters": ["-GDCACHE_BYTES=128", "-GDCACHE_VICTIM_LINES=2"]
+    },
+    {
+      "name": "RISCVCPU_dcache128_victim4",
+      "top": "RISCVCPU",
+      "parameters": ["-GDCACHE_BYTES=128", "-GDCACHE_VICTIM_LINES=4"]
+    },
+    {
+      "name": "RISCVCPU_dcache128_victim8",
+      "top": "RISCVCPU",
+      "parameters": ["-GDCACHE_BYTES=128", "-GDCACHE_VICTIM_LINES=8"]
+    }
+  ],
+  "source_count": 37,
+  "method": "Verilator --lint-only",
+  "log_directory": "results/logs/lint",
+  "source_commit": "ddfce23cef5c1bbf05b6830b51f1385610f57f30",
+  "verification_input_fingerprint": "97e1e9af9dc4f540b15cf9ef6ceb694f491ede314665ee0895937a91c68aad60",
+  "verification_input_count": 507,
+  "verification_working_tree_dirty": false
+}

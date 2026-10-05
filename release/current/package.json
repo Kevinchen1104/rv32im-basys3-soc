@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "kind": "portable",
+  "status": "pass",
+  "generated_at_utc": "2026-10-06T03:38:10.6079305Z",
+  "source_commit": "ddfce23cef5c1bbf05b6830b51f1385610f57f30",
+  "source_fingerprint": "97e1e9af9dc4f540b15cf9ef6ceb694f491ede314665ee0895937a91c68aad60",
+  "input_count": 507,
+  "gates": [
+    {
+      "path": "evidence/check-summary.json",
+      "required": true
+    },
+    {
+      "path": "evidence/regression-summary.json",
+      "required": true
+    },
+    {
+      "path": "evidence/test-catalog-summary.json",
+      "required": true
+    },
+    {
+      "path": "evidence/regression-evidence-summary.json",
+      "required": true
+    },
+    {
+      "path": "evidence/verilator-lint-summary.json",
+      "required": false
+    },
+    {
+      "path": "evidence/synth-smoke-summary.json",
+      "required": false
+    },
+    {
+      "path": "evidence/formal-smoke-summary.json",
+      "required": false
+    },
+    {
+      "path": "evidence/formal-matvec-smoke-summary.json",
+      "required": false
+    },
+    {
+      "path": "evidence/arch-test-results.json",
+      "required": false
+    },
+    {
+      "path": "evidence/arch-test/sail/summary.json",
+      "required": false
+    }
+  ],
+  "omitted_optional": []
+}

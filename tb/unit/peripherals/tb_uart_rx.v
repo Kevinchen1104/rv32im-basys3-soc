@@ -96,7 +96,7 @@ module tb_uart_rx;
 
     initial begin
         integer framing_wait_cycles;
-        $dumpfile("wave/tb_uart_rx.vcd");
+        $dumpfile("results/waveforms/tb_uart_rx.vcd");
         $dumpvars(0, tb_uart_rx);
 
         reset = 1'b1;

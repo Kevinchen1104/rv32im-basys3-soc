@@ -1,13 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_illegal_csr
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Invalid CSR access traps with mcause/mepc state and suppresses destination writeback and wrong-path
 //   execution.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Invalid CSR negative test only; not all CSR privilege rules are implemented.
-// Assertion focus: Directed check for illegal csr behavior or side-effect suppression.
 
 module tb_assert_illegal_csr;
 
@@ -30,7 +24,7 @@ module tb_assert_illegal_csr;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_illegal_csr.vcd");
+        $dumpfile("results/waveforms/tb_assert_illegal_csr.vcd");
         $dumpvars(0, tb_assert_illegal_csr);
         reset_cpu();
 

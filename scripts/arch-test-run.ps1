@@ -4,18 +4,14 @@ Purpose: Builds and runs selected upstream-source architectural tests against th
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\arch-test-run.ps1
 Outputs:
-  Generated images, simulation logs, and signature comparison artifacts under wave\arch-test.
-Scope:
-  Selected local arch-test integration only; not official RISC-V compliance or complete ISA proof.
-Audience:
-  Public optional arch-test integration entrypoint.
+  Compiled programs under build/arch-test; logs and signatures under results/arch-test.
 #>
 param(
     [ValidateSet("rv32im-selected")]
     [string]$Profile = "rv32im-selected",
     [string]$ProfilePath = "",
     [int]$TimeoutCycles = 250000,
-    [string]$OutputPath = "wave\arch-test-results.json",
+    [string]$OutputPath = "results\arch-test-results.json",
     [string]$ToolchainBin = "",
     [string]$Prefix = "",
     [switch]$UseCachedPrograms
@@ -25,20 +21,17 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+. "$PSScriptRoot/verification-source-identity.ps1"
+. "$PSScriptRoot/result-format.ps1"
+. "$PSScriptRoot/process-runner.ps1"
+. "$PSScriptRoot/script-common.ps1"
+New-Item -ItemType Directory -Force -Path 'build/arch-test' | Out-Null
+$archLock = [IO.File]::Open((Join-Path $repoRoot 'build/arch-test/runner.lock'), 'OpenOrCreate', 'ReadWrite', 'None')
+Write-ResultJson ([ordered]@{ status='running'; generated_at_utc=(Get-Date).ToUniversalTime().ToString('o') }) $OutputPath
+New-Item -ItemType Directory -Force -Path 'results/waveforms' | Out-Null
 
 if ([string]::IsNullOrWhiteSpace($ProfilePath)) {
     $ProfilePath = "tools\arch-test\$Profile.json"
-}
-
-function Read-JsonIfPresent {
-    param([string]$Path)
-
-    if (-not (Test-Path -LiteralPath $Path)) {
-        return $null
-    }
-
-    return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
 }
 
 function Invoke-Captured {
@@ -47,15 +40,13 @@ function Invoke-Captured {
         [string]$File,
         [Parameter(Mandatory = $true)]
         [string[]]$Arguments,
-        [string]$WorkingDirectory = ""
+        [string]$WorkingDirectory = "",
+        [string]$LogPath = "build/arch-test/tool-probe.log"
     )
 
-    $originalLocation = (Get-Location).Path
+    $originalPath = $env:PATH
     try {
-        if (-not [string]::IsNullOrWhiteSpace($WorkingDirectory)) {
-            Set-Location $WorkingDirectory
-        }
-
+        if (-not $WorkingDirectory) { $WorkingDirectory = $repoRoot.Path }
         $toolDir = Split-Path -Parent $File
         $pathParts = @(
             $toolDir,
@@ -65,41 +56,17 @@ function Invoke-Captured {
             "C:\Windows\System32",
             "C:\Windows"
         ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
-        $cleanPath = ($pathParts -join ";")
-        $quotedFile = Convert-ToCmdArgument -Value $File
-        $quotedArgs = @($Arguments | ForEach-Object { Convert-ToCmdArgument -Value $_ })
-        $commandLine = "set ""PATH=$cleanPath"" && $quotedFile $($quotedArgs -join ' ')"
-
-        $oldErrorActionPreference = $ErrorActionPreference
-        $ErrorActionPreference = "Continue"
-        try {
-            $output = & cmd.exe /d /s /c $commandLine 2>&1
-            $exitCode = $LASTEXITCODE
-        } finally {
-            $ErrorActionPreference = $oldErrorActionPreference
-        }
+        $env:PATH = ($pathParts -join ";")
+        $result = Invoke-LoggedProcess -FilePath $File -Arguments $Arguments `
+            -WorkingDirectory $WorkingDirectory -LogPath $LogPath `
+            -TimeoutSeconds 180 -CaptureOutput -Quiet
         return [pscustomobject]@{
-            exit_code = $exitCode
-            output = (($output | ForEach-Object { $_.ToString() }) -join "`n")
-        }
-    } catch {
-        return [pscustomobject]@{
-            exit_code = 1
-            output = $_.Exception.Message
+            exit_code = if ($null -eq $result.exit_code) { -1 } else { $result.exit_code }
+            output = (@($result.output) -join "`n") + "`n" + $result.error_message
         }
     } finally {
-        Set-Location $originalLocation
+        $env:PATH = $originalPath
     }
-}
-
-function Convert-ToCmdArgument {
-    param([string]$Value)
-
-    if ($null -eq $Value) {
-        return '""'
-    }
-
-    return '"' + ($Value.Replace('"', '\"')) + '"'
 }
 
 function Convert-ToToolPath {
@@ -109,7 +76,12 @@ function Convert-ToToolPath {
         return $Path
     }
 
-    return $Path.Replace("\", "/")
+    $full = [IO.Path]::GetFullPath($Path)
+    $prefix = $repoRoot.Path + [IO.Path]::DirectorySeparatorChar
+    if (-not $full.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Simulator file must be inside the checkout: $Path"
+    }
+    return $full.Substring($prefix.Length).Replace("\", "/")
 }
 
 function Add-TestResult {
@@ -148,8 +120,10 @@ function Add-TestResult {
         program_hex_path = $ProgramHexPath
         program_image_mode = if ($UseCachedPrograms) { "cached_prebuilt" } else { "rebuilt" }
         program_hex_sha256 = if (-not [string]::IsNullOrWhiteSpace($ProgramHexPath) -and (Test-Path -LiteralPath $ProgramHexPath)) { (Get-FileHash -Algorithm SHA256 -LiteralPath $ProgramHexPath).Hash.ToLowerInvariant() } else { $null }
+        program_elf_sha256 = if ($ProgramHexPath -and (Test-Path -LiteralPath ([IO.Path]::ChangeExtension($ProgramHexPath, '.elf')))) { (Get-FileHash -Algorithm SHA256 -LiteralPath ([IO.Path]::ChangeExtension($ProgramHexPath, '.elf'))).Hash.ToLowerInvariant() } else { $null }
         dut_termination_status = $DutTerminationStatus
         dut_signature_path = $SignaturePath
+        dut_signature_sha256 = if ($SignaturePath -and (Test-Path -LiteralPath $SignaturePath)) { (Get-FileHash -Algorithm SHA256 -LiteralPath $SignaturePath).Hash.ToLowerInvariant() } else { $null }
         signature_start_word = $SignatureStartWord
         signature_words = $SignatureWords
         tohost_word = $TohostWord
@@ -251,7 +225,7 @@ function Get-ExecutableWordRanges {
     $ranges = [System.Collections.Generic.List[object]]::new()
     $dump = Invoke-Captured -File $ObjdumpPath -Arguments @("-h", $ElfPath)
     if ($dump.exit_code -ne 0) {
-        return $ranges.ToArray()
+        throw "Cannot read executable sections from $ElfPath"
     }
 
     foreach ($line in ($dump.output -split "`n")) {
@@ -304,38 +278,6 @@ function Get-SymbolAddress {
     return $null
 }
 
-function Find-ExpectedSignature {
-    param([string]$SourcePath)
-
-    $sourceDir = Split-Path -Parent $SourcePath
-    $baseName = [System.IO.Path]::GetFileNameWithoutExtension($SourcePath)
-    $candidateNames = @(
-        "$baseName.reference_output",
-        "$baseName.signature",
-        "$baseName.sig",
-        "$baseName.ref"
-    )
-
-    foreach ($name in $candidateNames) {
-        $candidate = Join-Path $sourceDir $name
-        if (Test-Path -LiteralPath $candidate) {
-            return $candidate
-        }
-    }
-
-    $referenceDir = Join-Path (Split-Path -Parent $sourceDir) "references"
-    if (Test-Path -LiteralPath $referenceDir) {
-        foreach ($name in $candidateNames) {
-            $candidate = Join-Path $referenceDir $name
-            if (Test-Path -LiteralPath $candidate) {
-                return $candidate
-            }
-        }
-    }
-
-    return $null
-}
-
 function Get-OfficialReferenceSummary {
     param([object]$DetectJson)
 
@@ -366,7 +308,7 @@ function Get-OfficialReferenceSummary {
         reason = if (@($missing).Count -eq 0) {
             "official reference tools detected; this harness still records generated local references unless an official signature flow is configured"
         } else {
-            "official reference tools unavailable; falling back to the local independent RV32IM signature reference"
+            "Native reference tools were not detected. This runner uses the local signature reference; scripts/sail_reference.py performs the separate official-model comparison, including WSL."
         }
     }
 }
@@ -399,6 +341,10 @@ function Compare-Signatures {
 
     $expectedLines = @(Get-Content -LiteralPath $ExpectedPath | ForEach-Object { $_.Trim().ToLowerInvariant() })
     $actualLines = @(Get-Content -LiteralPath $ActualPath | ForEach-Object { $_.Trim().ToLowerInvariant() })
+    if ($expectedLines.Count -eq 0 -or $actualLines.Count -eq 0 -or
+        @($expectedLines + $actualLines | Where-Object { $_ -notmatch '^[0-9a-f]{8}$' }).Count) {
+        return [ordered]@{ matched=$false; first_mismatch_index=0; expected_word=$null; actual_word=$null; reason='empty or malformed signature' }
+    }
     $limit = [Math]::Min($expectedLines.Count, $actualLines.Count)
 
     for ($i = 0; $i -lt $limit; $i++) {
@@ -438,7 +384,7 @@ function Get-DutTerminationStatus {
     if ($SimulationOutput -match "tohost pass observed") {
         return "pass_tohost"
     }
-    if ($SimulationOutput -match "tohost pass loop observed") {
+    if ($SimulationOutput -match "tohost pass loop (observed|retired)") {
         return "pass_pc"
     }
     if ($SimulationOutput -match "reported fail status") {
@@ -447,7 +393,7 @@ function Get-DutTerminationStatus {
     if ($SimulationOutput -match "TIMEOUT") {
         return "timeout"
     }
-    return "pass"
+    return "unknown"
 }
 
 function Get-ArchTestIncludeArgs {
@@ -484,41 +430,7 @@ function Get-ArchTestIncludeArgs {
 }
 
 function Get-RtlSources {
-    return @(
-        "rtl/core/execute/riscv_alu.v",
-        "rtl/core/execute/rv32m_multicycle_unit.v",
-        "rtl/core/frontend/branch_predictor.v",
-        "rtl/core/pipeline/hazard_unit.v",
-        "rtl/core/pipeline/forwarding_unit.v",
-        "rtl/core/execute/branch_jump_unit.v",
-        "rtl/memory/load_store_format_unit.v",
-        "rtl/core/pipeline/pipeline_control_unit.v",
-        "rtl/core/csr/csr_unit.v",
-        "rtl/core/csr/exception_decode_unit.v",
-        "rtl/core/csr/trap_redirect_control_unit.v",
-        "rtl/soc/perf/performance_counter_unit.v",
-        "rtl/core/frontend/ras_unit.v",
-        "rtl/memory/cache/icache_unit.v",
-        "rtl/memory/cache/dcache_unit.v",
-        "rtl/soc/mmio/mmio_decode.v",
-        "rtl/soc/mmio/mmio_read_mux.v",
-        "rtl/accelerators/matvec/int8_matvec_scratchpad_accelerator.v",
-        "rtl/accelerators/matvec/int8_matvec_dma_lite.v",
-        "rtl/peripherals/timer/machine_timer.v",
-        "rtl/core/riscv_cpu_core.v",
-        "rtl/memory/bram/external_dmem_bram.v",
-        "rtl/boot/uart/boot_reset_controller.v",
-        "rtl/peripherals/uart/uart_tx.v",
-        "rtl/peripherals/uart/uart_rx.v",
-        "rtl/peripherals/uart/uart_rx_mmio_buffer.v",
-        "rtl/boot/uart/uart_packet_boot_imem.v",
-        "rtl/boot/uart/uart_serial_packet_boot_imem.v",
-        "rtl/top/generic/riscv_cpu_fpga_top.v",
-        "rtl/top/soc/riscv_cpu_uart_boot_fpga_top.v",
-        "rtl/top/soc/riscv_cpu_uart_boot_bram_soc_top.v",
-        "rtl/top/soc/riscv_cpu_uart_boot_runtime_soc_top.v",
-        "rtl/top/generic/riscv_cpu_fpga_debug_led_top.v"
-    )
+    return @(Get-Content -LiteralPath 'rtl/rtl_sources.f' | Where-Object { $_.Trim() -and -not $_.StartsWith('#') })
 }
 
 function Write-Results {
@@ -553,13 +465,15 @@ function Write-Results {
     $officialReference = Get-OfficialReferenceSummary -DetectJson $DetectJson
     $localReferenceRows = @($Rows | Where-Object { $_.reference_kind -eq "local" })
 
-    $overallStatus = "complete"
+    $overallStatus = "incomplete"
     if ($totals.failed_signature -ne 0 -or $totals.failed -ne 0 -or $totals.timeout -ne 0 -or $totals.build_failed -ne 0) {
-        $overallStatus = "issues"
+        $overallStatus = "fail"
     } elseif ($totals.blocked_no_tool -ne 0 -and $attempted -eq 0) {
-        $overallStatus = "blocked_no_tool"
+        $overallStatus = "blocked"
     } elseif ($totals.blocked_no_reference -ne 0 -and $passedCount -eq 0) {
-        $overallStatus = "blocked_no_reference"
+        $overallStatus = "blocked"
+    } elseif ($passedCount -gt 0 -and $passedCount -eq @($ProfileJson.tests).Count) {
+        $overallStatus = "pass"
     }
 
     $summary = [ordered]@{
@@ -572,8 +486,8 @@ function Write-Results {
         detection_status = if ($null -eq $DetectJson) { $null } else { $DetectJson.status }
         setup_status = if ($null -eq $SetupJson) { $null } else { $SetupJson.status }
         program_image_mode = if ($UseCachedPrograms) { "cached_prebuilt" } else { "rebuilt" }
-        program_image_claim_boundary = if ($UseCachedPrograms) {
-            "Prebuilt ELF/BIN/HEX images from the pinned upstream checkout were reused because local policy blocked GCC; the current RTL and arch-test harness were still recompiled and every DUT simulation and local-reference comparison was rerun."
+        program_image_method = if ($UseCachedPrograms) {
+            "Reused cached program images; rebuilt the current RTL and harness and reran signature comparisons."
         } else {
             "Program images, the current RTL, and the arch-test harness were rebuilt for this run."
         }
@@ -592,17 +506,27 @@ function Write-Results {
                 script = "tools/arch-test/rv32im_signature_ref.py"
                 used_tests = @($localReferenceRows).Count
                 passed_tests = $totals.passed_local_reference
-                claim_boundary = "local independent RV32IM signature reference only; not an official compliance result"
+                method = "local independent RV32IM signature reference"
             }
         }
         selected_tests = @($ProfileJson.tests).Count
         attempted_tests = $attempted
         totals = $totals
-        claim_boundary = "selected official RISC-V arch-test sources; PASS is split by official or local reference kind and is not an official compliance result unless passed_official_reference is nonzero"
+        method = "Selected upstream RISC-V tests with per-test signature reference kinds recorded below."
         tests = @($Rows)
     }
 
-    $summary | ConvertTo-Json -Depth 8 | Set-Content -Path $OutputPath -Encoding Ascii
+    Add-VerificationIdentityFields $summary -Identity $startingIdentity | Out-Null
+    Assert-VerificationInputsUnchanged $startingIdentity
+    foreach ($row in $Rows) {
+        foreach ($field in @('source_path','work_dir','program_hex_path','dut_signature_path','reference_signature_path','reference_status_path')) {
+            $value = [string]$row.$field
+            if ($value.StartsWith($repoRoot.Path + '\', [StringComparison]::OrdinalIgnoreCase)) {
+                $row.$field = $value.Substring($repoRoot.Path.Length + 1).Replace('\','/')
+            }
+        }
+    }
+    Write-ResultJson $summary $OutputPath
 
     Write-Host "========================================"
     Write-Host "RISC-V arch-test selected profile run"
@@ -613,18 +537,21 @@ function Write-Results {
         Write-Host ("{0}: {1}" -f $statusName, $totals[$statusName])
     }
     Write-Host ("Results written to {0}" -f $OutputPath)
+    return $summary.status
 }
 
+try {
+$startingIdentity = Get-VerificationSourceIdentity
 if (-not (Test-Path -LiteralPath $ProfilePath)) {
     throw "Arch-test profile not found: $ProfilePath"
 }
 
 $profileJson = Read-JsonIfPresent $ProfilePath
-$detectJson = Read-JsonIfPresent "wave\arch-test-detect.json"
-$setupJson = Read-JsonIfPresent "wave\arch-test-setup.json"
+$detectJson = Read-JsonIfPresent "results\arch-test-detect.json"
+$setupJson = Read-JsonIfPresent "results\arch-test-setup.json"
 $rows = [System.Collections.Generic.List[object]]::new()
 
-if ($null -eq $detectJson -or -not [string]::IsNullOrWhiteSpace($ToolchainBin) -or -not [string]::IsNullOrWhiteSpace($Prefix)) {
+# Refresh tool discovery; a previous PATH is not the current toolchain.
     $detectArgs = @{}
     if (-not [string]::IsNullOrWhiteSpace($ToolchainBin)) {
         $detectArgs.ToolchainBin = $ToolchainBin
@@ -633,8 +560,7 @@ if ($null -eq $detectJson -or -not [string]::IsNullOrWhiteSpace($ToolchainBin) -
         $detectArgs.Prefix = $Prefix
     }
     & (Join-Path $PSScriptRoot "arch-test-detect.ps1") @detectArgs | Out-Host
-    $detectJson = Read-JsonIfPresent "wave\arch-test-detect.json"
-}
+    $detectJson = Read-JsonIfPresent "results\arch-test-detect.json"
 
 $requiredMissing = if ($null -eq $detectJson) { @("arch-test-detect failed") } else { @($detectJson.required_missing) }
 
@@ -642,8 +568,8 @@ if (@($requiredMissing).Count -ne 0) {
     foreach ($entry in @($profileJson.tests)) {
         Add-TestResult -List $rows -Entry $entry -Status "blocked_no_tool" -Reason ("missing required tools: " + (@($requiredMissing) -join ", "))
     }
-    Write-Results -ProfileJson $profileJson -DetectJson $detectJson -SetupJson $setupJson -Rows $rows
-    exit 0
+    Write-Results -ProfileJson $profileJson -DetectJson $detectJson -SetupJson $setupJson -Rows $rows | Out-Null
+    exit 1
 }
 
 if ($null -eq $setupJson -or $setupJson.status -ne "ready") {
@@ -656,8 +582,8 @@ if ($null -eq $setupJson -or $setupJson.status -ne "ready") {
     foreach ($entry in @($profileJson.tests)) {
         Add-TestResult -List $rows -Entry $entry -Status "blocked_no_tool" -Reason $reason
     }
-    Write-Results -ProfileJson $profileJson -DetectJson $detectJson -SetupJson $setupJson -Rows $rows
-    exit 0
+    Write-Results -ProfileJson $profileJson -DetectJson $detectJson -SetupJson $setupJson -Rows $rows | Out-Null
+    exit 1
 }
 
 $toolPaths = [ordered]@{
@@ -670,10 +596,22 @@ $toolPaths = [ordered]@{
 }
 
 $checkoutPath = Join-Path $repoRoot $profileJson.upstream.checkout
+$actualUpstream = (& git -C $checkoutPath rev-parse HEAD).Trim()
+if ($LASTEXITCODE -ne 0 -or $actualUpstream -ne $profileJson.upstream.revision) {
+    throw 'Architectural-test checkout does not match the profile pin; run arch-test-setup.ps1.'
+}
+if (@(& git -C $checkoutPath status --porcelain).Count) { throw 'Architectural-test checkout has local changes.' }
+$setupJson.upstream_commit = $actualUpstream
 $linkerScript = Join-Path $repoRoot "tools\arch-test\arch-test.ld"
 $localReferenceScript = Join-Path $repoRoot "tools\arch-test\rv32im_signature_ref.py"
-$profileWorkRoot = Join-Path $repoRoot ("wave\arch-test\" + $profileJson.name)
+$profileWorkRoot = Join-Path $repoRoot ("build\arch-test\" + $profileJson.name)
 New-Item -ItemType Directory -Force -Path $profileWorkRoot | Out-Null
+$vvpPath = Join-Path $profileWorkRoot 'arch-test.vvp'
+if (Test-Path -LiteralPath $vvpPath) { Remove-Item -LiteralPath $vvpPath }
+$compileLog = "results/arch-test/$($profileJson.name)/iverilog.log"
+$compileArgs = @('-g2012', '-Wall', '-I', 'tb', '-o', $vvpPath) + @(Get-RtlSources) + @('tb/reference/tb_arch_test_signature.v')
+$compile = Invoke-Captured -File $toolPaths.iverilog -Arguments $compileArgs -LogPath $compileLog
+if ($compile.exit_code -ne 0) { throw "Icarus compile failed; see $compileLog" }
 
 foreach ($entry in @($profileJson.tests)) {
     Write-Host "========================================"
@@ -688,18 +626,57 @@ foreach ($entry in @($profileJson.tests)) {
     $caseWorkDir = Join-Path $profileWorkRoot $entry.id
     New-Item -ItemType Directory -Force -Path $caseWorkDir | Out-Null
 
+    $caseResultDir = Join-Path $repoRoot ("results/arch-test/" + $profileJson.name + "/" + $entry.id)
+    New-Item -ItemType Directory -Force -Path $caseResultDir | Out-Null
     $elfPath = Join-Path $caseWorkDir "$($entry.id).elf"
     $binPath = Join-Path $caseWorkDir "$($entry.id).bin"
     $hexPath = Join-Path $caseWorkDir "$($entry.id).hex"
-    $signaturePath = Join-Path $caseWorkDir "$($entry.id).dut_signature.hex"
-    $referenceSignaturePath = Join-Path $caseWorkDir "$($entry.id).local_reference.hex"
-    $referenceStatusPath = Join-Path $caseWorkDir "$($entry.id).local_reference.json"
-    $vvpPath = Join-Path $caseWorkDir "$($entry.id).vvp"
+    $signaturePath = Join-Path $caseResultDir "$($entry.id).dut_signature.hex"
+    $referenceSignaturePath = Join-Path $caseResultDir "$($entry.id).local_reference.hex"
+    $referenceStatusPath = Join-Path $caseResultDir "$($entry.id).local_reference.json"
+    foreach ($oldOutput in @($signaturePath, $referenceSignaturePath, $referenceStatusPath)) {
+        if (Test-Path -LiteralPath $oldOutput) { Remove-Item -LiteralPath $oldOutput }
+    }
+
+    $gccArgs = @("-march=$($profileJson.target.march)", "-mabi=$($profileJson.target.mabi)",
+        '-nostdlib', '-nostartfiles', '-Wl,--no-relax', '-Wl,--build-id=none',
+        '-T', $linkerScript, '-DXLEN=32') +
+        @(Get-ArchTestIncludeArgs -CheckoutPath $checkoutPath -SourcePath $sourcePath) +
+        @($sourcePath, '-o', $elfPath)
+    $cachePath = Join-Path $caseWorkDir 'program-cache.json'
+    $cacheInputs = [ordered]@{
+        upstream_commit = $actualUpstream
+        source_sha256 = Get-NormalizedTextSha256 $sourcePath
+        profile_sha256 = Get-NormalizedTextSha256 $ProfilePath
+        runner_sha256 = Get-NormalizedTextSha256 $PSCommandPath
+        command = $gccArgs
+        adapters = [ordered]@{}
+        tools = [ordered]@{}
+    }
+    foreach ($file in Get-ChildItem "$repoRoot/tools/arch-test" -Recurse -File | Where-Object { $_.Extension -in '.h','.ld' } | Sort-Object FullName) {
+        $cacheInputs.adapters[$file.FullName.Substring($repoRoot.Path.Length + 1)] = Get-NormalizedTextSha256 $file.FullName
+    }
+    foreach ($tool in @('gcc','objcopy','objdump')) {
+        $cacheInputs.tools[$tool] = (Get-FileHash -LiteralPath $toolPaths[$tool] -Algorithm SHA256).Hash
+    }
 
     if ($UseCachedPrograms) {
         $missingCachedArtifacts = @($elfPath, $binPath, $hexPath) | Where-Object { -not (Test-Path -LiteralPath $_) }
         if ($missingCachedArtifacts.Count -ne 0) {
-            Add-TestResult -List $rows -Entry $entry -Status "build_failed" -Reason ("cached program artifacts missing: " + ($missingCachedArtifacts -join ", ")) -SourcePath $sourcePath -WorkDir $caseWorkDir
+            Add-TestResult -List $rows -Entry $entry -Status "build_failed" -Reason ("cached program artifacts missing: " + ($missingCachedArtifacts -join ", ")) -SourcePath $sourcePath -WorkDir $caseResultDir
+            continue
+        }
+
+        $cache = Read-JsonIfPresent $cachePath
+        if ($null -eq $cache -or (ConvertTo-ResultJson $cache.inputs) -ne (ConvertTo-ResultJson $cacheInputs)) {
+            Add-TestResult -List $rows -Entry $entry -Status 'build_failed' -Reason 'cached program inputs changed or manifest is missing; rerun without -UseCachedPrograms' -SourcePath $sourcePath -WorkDir $caseResultDir
+            continue
+        }
+        $damaged = @($elfPath, $binPath, $hexPath) | Where-Object {
+            (Get-FileHash -LiteralPath $_ -Algorithm SHA256).Hash -ne $cache.outputs.([IO.Path]::GetFileName($_))
+        }
+        if ($damaged) {
+            Add-TestResult -List $rows -Entry $entry -Status 'build_failed' -Reason 'cached program output hash mismatch; rerun without -UseCachedPrograms' -SourcePath $sourcePath -WorkDir $caseResultDir
             continue
         }
 
@@ -707,43 +684,28 @@ foreach ($entry in @($profileJson.tests)) {
             words = @(Get-Content -LiteralPath $hexPath).Count
         }
     } else {
-        $gccArgs = New-Object System.Collections.Generic.List[string]
-        $gccArgs.Add("-march=$($profileJson.target.march)") | Out-Null
-        $gccArgs.Add("-mabi=$($profileJson.target.mabi)") | Out-Null
-        $gccArgs.Add("-nostdlib") | Out-Null
-        $gccArgs.Add("-nostartfiles") | Out-Null
-        $gccArgs.Add("-Wl,--no-relax") | Out-Null
-        $gccArgs.Add("-Wl,--build-id=none") | Out-Null
-        $gccArgs.Add("-T") | Out-Null
-        $gccArgs.Add($linkerScript) | Out-Null
-        $gccArgs.Add("-DXLEN=32") | Out-Null
-        foreach ($includeArg in Get-ArchTestIncludeArgs -CheckoutPath $checkoutPath -SourcePath $sourcePath) {
-            $gccArgs.Add($includeArg) | Out-Null
-        }
-        $gccArgs.Add($sourcePath) | Out-Null
-        $gccArgs.Add("-o") | Out-Null
-        $gccArgs.Add($elfPath) | Out-Null
-
-        $build = Invoke-Captured -File $toolPaths.gcc -Arguments ($gccArgs.ToArray())
+        $build = Invoke-Captured -File $toolPaths.gcc -Arguments $gccArgs -LogPath (Join-Path $caseResultDir 'build.log')
         if ($build.exit_code -ne 0) {
-            $buildLog = Join-Path $caseWorkDir "build.log"
-            $build.output | Set-Content -Path $buildLog -Encoding Ascii
-            Add-TestResult -List $rows -Entry $entry -Status "build_failed" -Reason "riscv gcc build failed; see build.log" -SourcePath $sourcePath -WorkDir $caseWorkDir
+            Add-TestResult -List $rows -Entry $entry -Status "build_failed" -Reason "riscv gcc build failed; see build.log" -SourcePath $sourcePath -WorkDir $caseResultDir
             continue
         }
 
-        $objcopy = Invoke-Captured -File $toolPaths.objcopy -Arguments @("-O", "binary", $elfPath, $binPath)
+        $objcopy = Invoke-Captured -File $toolPaths.objcopy -Arguments @("-O", "binary", $elfPath, $binPath) -LogPath (Join-Path $caseResultDir 'objcopy.log')
         if ($objcopy.exit_code -ne 0) {
-            $objcopy.output | Set-Content -Path (Join-Path $caseWorkDir "objcopy.log") -Encoding Ascii
-            Add-TestResult -List $rows -Entry $entry -Status "build_failed" -Reason "objcopy to binary failed; see objcopy.log" -SourcePath $sourcePath -WorkDir $caseWorkDir
+            Add-TestResult -List $rows -Entry $entry -Status "build_failed" -Reason "objcopy to binary failed; see objcopy.log" -SourcePath $sourcePath -WorkDir $caseResultDir
             continue
         }
 
         $executableWordRanges = Get-ExecutableWordRanges -ObjdumpPath $toolPaths.objdump -ElfPath $elfPath
         $imageInfo = Convert-BinaryToHexWords -BinaryPath $binPath -HexPath $hexPath -ExecutableWordRanges $executableWordRanges
+        $outputHashes = @{}
+        foreach ($path in @($elfPath, $binPath, $hexPath)) {
+            $outputHashes[[IO.Path]::GetFileName($path)] = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash
+        }
+        Write-ResultJson ([ordered]@{ inputs=$cacheInputs; outputs=$outputHashes }) $cachePath
     }
     if ($imageInfo.words -le 0 -or $imageInfo.words -gt [int]$profileJson.target.memory_words) {
-        Add-TestResult -List $rows -Entry $entry -Status "unsupported" -Reason ("program image uses {0} words, beyond current {1}-word CPU harness memory" -f $imageInfo.words, $profileJson.target.memory_words) -SourcePath $sourcePath -WorkDir $caseWorkDir
+        Add-TestResult -List $rows -Entry $entry -Status "unsupported" -Reason ("program image uses {0} words, beyond current {1}-word CPU harness memory" -f $imageInfo.words, $profileJson.target.memory_words) -SourcePath $sourcePath -WorkDir $caseResultDir
         continue
     }
 
@@ -773,31 +735,12 @@ foreach ($entry in @($profileJson.tests)) {
     }
 
     if ($signatureStartWord -lt 0 -or ($signatureStartWord + $signatureWords) -gt [int]$profileJson.target.memory_words) {
-        Add-TestResult -List $rows -Entry $entry -Status "unsupported" -Reason "signature range is outside the current CPU harness memory" -SourcePath $sourcePath -WorkDir $caseWorkDir -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc
+        Add-TestResult -List $rows -Entry $entry -Status "unsupported" -Reason "signature range is outside the current CPU harness memory" -SourcePath $sourcePath -WorkDir $caseResultDir -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc
         continue
     }
 
     if ($tohostWord -ge [int]$profileJson.target.memory_words) {
-        Add-TestResult -List $rows -Entry $entry -Status "unsupported" -Reason "tohost termination word is outside the current CPU harness memory" -SourcePath $sourcePath -WorkDir $caseWorkDir -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc
-        continue
-    }
-
-    $compileArgs = New-Object System.Collections.Generic.List[string]
-    $compileArgs.Add("-g2012") | Out-Null
-    $compileArgs.Add("-Wall") | Out-Null
-    $compileArgs.Add("-I") | Out-Null
-    $compileArgs.Add("tb") | Out-Null
-    $compileArgs.Add("-o") | Out-Null
-    $compileArgs.Add($vvpPath) | Out-Null
-    foreach ($source in Get-RtlSources) {
-        $compileArgs.Add($source) | Out-Null
-    }
-    $compileArgs.Add("tb/reference/tb_arch_test_signature.v") | Out-Null
-
-    $compile = Invoke-Captured -File $toolPaths.iverilog -Arguments ($compileArgs.ToArray()) -WorkingDirectory $repoRoot
-    if ($compile.exit_code -ne 0) {
-        $compile.output | Set-Content -Path (Join-Path $caseWorkDir "iverilog.log") -Encoding Ascii
-        Add-TestResult -List $rows -Entry $entry -Status "build_failed" -Reason "Icarus compile failed; see iverilog.log" -SourcePath $sourcePath -WorkDir $caseWorkDir -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords
+        Add-TestResult -List $rows -Entry $entry -Status "unsupported" -Reason "tohost termination word is outside the current CPU harness memory" -SourcePath $sourcePath -WorkDir $caseResultDir -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc
         continue
     }
 
@@ -818,19 +761,22 @@ foreach ($entry in @($profileJson.tests)) {
     }
     $vvpArgs.Add("+dut_signature=$(Convert-ToToolPath $signaturePath)") | Out-Null
     $vvpArgs.Add("+timeout_cycles=$TimeoutCycles") | Out-Null
-    $simulation = Invoke-Captured -File $toolPaths.vvp -Arguments ($vvpArgs.ToArray()) -WorkingDirectory $repoRoot
-    $simulation.output | Set-Content -Path (Join-Path $caseWorkDir "simulation.log") -Encoding Ascii
+    $simulation = Invoke-Captured -File $toolPaths.vvp -Arguments ($vvpArgs.ToArray()) -WorkingDirectory $repoRoot -LogPath (Join-Path $caseResultDir 'simulation.log')
 
     if ($simulation.exit_code -ne 0) {
         $status = if ($simulation.output -match "timeout|TIMEOUT") { "timeout" } else { "failed" }
-        Add-TestResult -List $rows -Entry $entry -Status $status -Reason "DUT signature simulation failed; see simulation.log" -SourcePath $sourcePath -WorkDir $caseWorkDir -ProgramHexPath $hexPath -SignaturePath $signaturePath -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc -DutTerminationStatus (Get-DutTerminationStatus -SimulationOutput $simulation.output)
+        Add-TestResult -List $rows -Entry $entry -Status $status -Reason "DUT signature simulation failed; see simulation.log" -SourcePath $sourcePath -WorkDir $caseResultDir -ProgramHexPath $hexPath -SignaturePath $signaturePath -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc -DutTerminationStatus (Get-DutTerminationStatus -SimulationOutput $simulation.output)
         continue
     }
 
     $dutTerminationStatus = Get-DutTerminationStatus -SimulationOutput $simulation.output
+    if ($dutTerminationStatus -notin @('pass_tohost', 'pass_pc')) {
+        Add-TestResult -List $rows -Entry $entry -Status 'failed_signature' -Reason 'Simulation did not report an explicit successful termination' -DutTerminationStatus $dutTerminationStatus -WorkDir $caseResultDir
+        continue
+    }
 
     if (-not (Test-Path -LiteralPath $localReferenceScript)) {
-        Add-TestResult -List $rows -Entry $entry -Status "blocked_no_reference" -Reason "local RV32IM signature reference script is missing" -SourcePath $sourcePath -WorkDir $caseWorkDir -ProgramHexPath $hexPath -SignaturePath $signaturePath -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc -DutTerminationStatus $dutTerminationStatus
+        Add-TestResult -List $rows -Entry $entry -Status "blocked_no_reference" -Reason "local RV32IM signature reference script is missing" -SourcePath $sourcePath -WorkDir $caseResultDir -ProgramHexPath $hexPath -SignaturePath $signaturePath -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc -DutTerminationStatus $dutTerminationStatus
         continue
     }
 
@@ -848,8 +794,7 @@ foreach ($entry in @($profileJson.tests)) {
         "--output-json", $referenceStatusPath
     )
 
-    $reference = Invoke-Captured -File $toolPaths.python -Arguments $referenceArgs -WorkingDirectory $repoRoot
-    $reference.output | Set-Content -Path (Join-Path $caseWorkDir "local_reference.log") -Encoding Ascii
+    $reference = Invoke-Captured -File $toolPaths.python -Arguments $referenceArgs -WorkingDirectory $repoRoot -LogPath (Join-Path $caseResultDir 'local_reference.log')
     $referenceJson = Read-JsonIfPresent $referenceStatusPath
 
     if ($reference.exit_code -ne 0) {
@@ -860,16 +805,23 @@ foreach ($entry in @($profileJson.tests)) {
             "timeout" { "timeout" }
             default { "failed_signature" }
         }
-        Add-TestResult -List $rows -Entry $entry -Status $status -Reason ("local reference did not produce a pass signature: {0}" -f $referenceReason) -SourcePath $sourcePath -WorkDir $caseWorkDir -ProgramHexPath $hexPath -SignaturePath $signaturePath -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc -DutTerminationStatus $dutTerminationStatus -ReferenceKind "local" -ReferenceSignaturePath $referenceSignaturePath -ReferenceStatusPath $referenceStatusPath
+        Add-TestResult -List $rows -Entry $entry -Status $status -Reason ("local reference did not produce a pass signature: {0}" -f $referenceReason) -SourcePath $sourcePath -WorkDir $caseResultDir -ProgramHexPath $hexPath -SignaturePath $signaturePath -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc -DutTerminationStatus $dutTerminationStatus -ReferenceKind "local" -ReferenceSignaturePath $referenceSignaturePath -ReferenceStatusPath $referenceStatusPath
         continue
     }
 
     $comparison = Compare-Signatures -ExpectedPath $referenceSignaturePath -ActualPath $signaturePath
     if ($comparison.matched) {
-        Add-TestResult -List $rows -Entry $entry -Status "passed_local_reference" -Reason "DUT signature matched the local independent RV32IM reference signature" -SourcePath $sourcePath -WorkDir $caseWorkDir -ProgramHexPath $hexPath -SignaturePath $signaturePath -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc -DutTerminationStatus $dutTerminationStatus -ReferenceKind "local" -ReferenceSignaturePath $referenceSignaturePath -ReferenceStatusPath $referenceStatusPath
+        Add-TestResult -List $rows -Entry $entry -Status "passed_local_reference" -Reason "DUT signature matched the local independent RV32IM reference signature" -SourcePath $sourcePath -WorkDir $caseResultDir -ProgramHexPath $hexPath -SignaturePath $signaturePath -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc -DutTerminationStatus $dutTerminationStatus -ReferenceKind "local" -ReferenceSignaturePath $referenceSignaturePath -ReferenceStatusPath $referenceStatusPath
     } else {
-        Add-TestResult -List $rows -Entry $entry -Status "failed_signature" -Reason $comparison.reason -SourcePath $sourcePath -WorkDir $caseWorkDir -ProgramHexPath $hexPath -SignaturePath $signaturePath -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc -DutTerminationStatus $dutTerminationStatus -ReferenceKind "local" -ReferenceSignaturePath $referenceSignaturePath -ReferenceStatusPath $referenceStatusPath -FirstMismatchIndex $comparison.first_mismatch_index -ExpectedWord $comparison.expected_word -ActualWord $comparison.actual_word
+        Add-TestResult -List $rows -Entry $entry -Status "failed_signature" -Reason $comparison.reason -SourcePath $sourcePath -WorkDir $caseResultDir -ProgramHexPath $hexPath -SignaturePath $signaturePath -SignatureStartWord $signatureStartWord -SignatureWords $signatureWords -TohostWord $tohostWord -TohostPassPc $tohostPassPc -TohostFailPc $tohostFailPc -DutTerminationStatus $dutTerminationStatus -ReferenceKind "local" -ReferenceSignaturePath $referenceSignaturePath -ReferenceStatusPath $referenceStatusPath -FirstMismatchIndex $comparison.first_mismatch_index -ExpectedWord $comparison.expected_word -ActualWord $comparison.actual_word
     }
 }
 
-Write-Results -ProfileJson $profileJson -DetectJson $detectJson -SetupJson $setupJson -Rows $rows
+$runStatus = Write-Results -ProfileJson $profileJson -DetectJson $detectJson -SetupJson $setupJson -Rows $rows
+if ($runStatus -ne 'pass') { exit 1 }
+} catch {
+    $failure = [ordered]@{ status='fail'; generated_at_utc=(Get-Date).ToUniversalTime().ToString('o'); error_message=$_.Exception.Message }
+    if ($startingIdentity) { Add-VerificationIdentityFields $failure -Identity $startingIdentity | Out-Null }
+    Write-ResultJson $failure $OutputPath
+    throw
+} finally { $archLock.Dispose() }

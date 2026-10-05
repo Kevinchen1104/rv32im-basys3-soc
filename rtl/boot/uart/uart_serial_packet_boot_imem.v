@@ -63,6 +63,6 @@ module uart_serial_packet_boot_imem #(
         .imem_ready(imem_ready)
     );
 
-    assign boot_error = packet_boot_error || (UART_CLKS_PER_BIT < 1);
+    assign boot_error = packet_boot_error || (UART_CLKS_PER_BIT < 3);
 
 endmodule

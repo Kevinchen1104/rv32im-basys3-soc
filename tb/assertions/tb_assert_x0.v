@@ -1,12 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_x0
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
-// Checks: Attempted writes through several paths do not change architectural x0.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Focused invariant check; not a full register-file formal proof.
-// Assertion focus: Directed check for x0 behavior or side-effect suppression.
+// Checks: Attempted writes through several paths neither change architectural
+// x0 nor create a forwarding producer for it.
 
 module tb_assert_x0;
 
@@ -28,10 +23,21 @@ module tb_assert_x0;
             $display("FAIL: x0 changed to %h", dut.Regs[0]);
             $fatal;
         end
+        if (checking_enabled &&
+            ((dut.EXMEMForwardRegWrite || dut.EXMEMWritebackRegWrite) &&
+             dut.EXMEMForwardRd == 5'd0)) begin
+            $display("FAIL: attempted x0 write entered EX/MEM write metadata");
+            $fatal;
+        end
+        if (checking_enabled && dut.MEMWBForwardRegWrite &&
+            (!dut.MEMWBValid || dut.MEMWBForwardRd == 5'd0)) begin
+            $display("FAIL: attempted x0/invalid write entered MEM/WB write metadata");
+            $fatal;
+        end
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_x0.vcd");
+        $dumpfile("results/waveforms/tb_assert_x0.vcd");
         $dumpvars(0, tb_assert_x0);
         reset_cpu();
         checking_enabled = 1'b1;

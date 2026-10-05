@@ -4,17 +4,19 @@ Purpose: Runs Verilator lint over the RTL source manifest when Verilator is avai
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\verilator-lint.ps1
 Outputs:
-  Console lint report and optional logs under wave\verilator-lint.
-Scope:
-  Lint evidence only; not synthesis, timing closure, or hardware proof.
-Audience:
-  Public optional lint check.
+  Command logs under results/logs/lint; JSON summary under results/.
 #>
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 . "$PSScriptRoot\verification-source-identity.ps1"
+. "$PSScriptRoot/process-runner.ps1"
+$summaryPath = 'results/verilator-lint-summary.json'
+$summary = [ordered]@{ status='running'; started_at_utc=(Get-Date).ToUniversalTime().ToString('o'); checked_tops=@(); error_message=$null }
+Write-ResultJson $summary $summaryPath
+try {
+$startingIdentity = Add-VerificationIdentityFields $summary
 
 $verilatorCommand = Get-Command verilator -ErrorAction SilentlyContinue
 if ($null -eq $verilatorCommand) {
@@ -28,22 +30,25 @@ foreach ($source in $sources) {
     }
 }
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
 $sourceArgs = ($sources | ForEach-Object { $_ -replace "\\", "/" }) -join " "
 $verilatorIsMsysLauncher =
+    ($env:OS -eq 'Windows_NT') -and
     $verilatorCommand.Source -and
     ([System.IO.Path]::GetExtension($verilatorCommand.Source) -eq "")
-$bashPath = "C:\msys64\usr\bin\bash.exe"
-$cygpathPath = "C:\msys64\usr\bin\cygpath.exe"
 $repoRootMsys = ""
 
 if ($verilatorIsMsysLauncher) {
+    $msysRoot = Split-Path (Split-Path (Split-Path $verilatorCommand.Source -Parent) -Parent) -Parent
+    $bashPath = Join-Path $msysRoot 'usr/bin/bash.exe'
+    $cygpathPath = Join-Path $msysRoot 'usr/bin/cygpath.exe'
     if (-not (Test-Path $bashPath) -or -not (Test-Path $cygpathPath)) {
         throw "MSYS2 Verilator launcher found, but bash/cygpath is missing."
     }
 
-    $repoRootMsys = (& $cygpathPath -u $repoRoot.Path).Trim()
+    $repoRootMsys = (& $cygpathPath -u $repoRoot.Path).Trim().Replace("'", "'\''")
+    $toolBinMsys = (& $cygpathPath -u (Split-Path $verilatorCommand.Source -Parent)).Trim().Replace("'", "'\''")
 }
 
 $tops = @(
@@ -58,39 +63,61 @@ $tops = @(
     "RISCVCPU_basys3_full_lowfreq_top"
 )
 $checkedTops = [System.Collections.Generic.List[string]]::new()
+$cases = @($tops | ForEach-Object { [pscustomobject]@{ name=$_; top=$_; parameters=@() } })
+foreach ($bytes in @(64, 128)) {
+    foreach ($victims in @(0, 1, 2, 4, 8)) {
+        $cases += [pscustomobject]@{
+            name = "RISCVCPU_dcache${bytes}_victim${victims}"
+            top = 'RISCVCPU'
+            parameters = @("-GDCACHE_BYTES=$bytes", "-GDCACHE_VICTIM_LINES=$victims")
+        }
+    }
+}
+$checkedConfigurations = [System.Collections.Generic.List[object]]::new()
 
-foreach ($top in $tops) {
-    $buildDir = "wave\verilator-lint-$top"
-
-    New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
+foreach ($case in $cases) {
+    $top = $case.top
+    $name = $case.name
+    $parameterArgs = $case.parameters -join ' '
+    $buildDir = "build/verilator/$name"
 
     Write-Host "========================================"
-    Write-Host "Running optional Verilator lint: $top"
+    Write-Host "Running optional Verilator lint: $name"
 
     if ($verilatorIsMsysLauncher) {
         $buildDirArg = $buildDir -replace "\\", "/"
-        $bashScript = "cd '$repoRootMsys' && PATH=/ucrt64/bin:/usr/bin:`$PATH verilator --lint-only -I. -Irtl --top-module $top --Mdir $buildDirArg $sourceArgs"
-        & $bashPath -lc $bashScript
+        $bashScript = "cd '$repoRootMsys' && PATH='$toolBinMsys':/usr/bin:`$PATH verilator --lint-only -I. -Irtl --top-module $top --Mdir $buildDirArg $parameterArgs $sourceArgs"
+        $result = Invoke-LoggedProcess -FilePath $bashPath -Arguments @('-lc', $bashScript) -LogPath "results/logs/lint/$name.log" -WorkingDirectory $repoRoot -TimeoutSeconds 180
     } else {
-        verilator --lint-only -I. -Irtl --top-module $top --Mdir $buildDir $sources
+        $result = Invoke-LoggedProcess -FilePath $verilatorCommand.Source -Arguments (@('--lint-only', '-I.', '-Irtl', '--top-module', $top, '--Mdir', $buildDir) + @($case.parameters) + @($sources)) -LogPath "results/logs/lint/$name.log" -WorkingDirectory $repoRoot -TimeoutSeconds 180
     }
 
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "Verilator lint failed: $top"
-        exit $LASTEXITCODE
+    if ($result.status -ne 'passed') {
+        throw "Verilator lint failed: $name. See $($result.log)"
     }
-    $checkedTops.Add($top) | Out-Null
+    if (-not $checkedTops.Contains($top)) { $checkedTops.Add($top) }
+    $checkedConfigurations.Add($case)
 }
 
 $summary = [ordered]@{
     generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
     status = "pass"
     checked_tops = $checkedTops.ToArray()
+    checked_configurations = $checkedConfigurations.ToArray()
     source_count = $sources.Count
-    claim_boundary = "Verilator lint only; not simulation, synthesis, timing closure, or physical validation."
+    method = 'Verilator --lint-only'
+    log_directory = 'results/logs/lint'
 }
-Add-VerificationIdentityFields -Summary $summary | Out-Null
-$summary | ConvertTo-Json -Depth 4 | Set-Content -Path "wave\verilator-lint-summary.json" -Encoding Ascii
+Assert-VerificationInputsUnchanged $startingIdentity
+Add-VerificationIdentityFields -Summary $summary -Identity $startingIdentity | Out-Null
+} catch {
+    $summary.status = 'fail'
+    $summary['error_message'] = $_.Exception.Message
+    throw
+} finally {
+    $summary['generated_at_utc'] = (Get-Date).ToUniversalTime().ToString('o')
+    Write-ResultJson $summary $summaryPath
+}
 
 Write-Host "========================================"
 Write-Host "PASS: optional Verilator lint checks passed"

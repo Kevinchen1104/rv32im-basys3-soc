@@ -20,7 +20,7 @@ module tb_program_strcmp;
     end
 
     initial begin
-        $dumpfile("wave/tb_program_strcmp.vcd");
+        $dumpfile("results/waveforms/tb_program_strcmp.vcd");
         $dumpvars(0, tb_program_strcmp);
         reset_cpu();
         max_ras_count = 0;

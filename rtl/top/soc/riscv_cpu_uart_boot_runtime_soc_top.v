@@ -8,6 +8,13 @@
 
 module RISCVCPU_uart_boot_runtime_soc_top #(
     parameter MEMORY_WORD_COUNT = 1024,
+    parameter FAST_MULTIPLY = 0,
+    parameter ICACHE_BYTES = 64,
+    parameter ICACHE_PARALLEL_LOOKUP = 1,
+    parameter DCACHE_BYTES = 64,
+    parameter DCACHE_VICTIM_LINES = 0,
+    parameter ENABLE_MATVEC_SCRATCHPAD = 1,
+    parameter ENABLE_MATVEC_DMA = 1,
     parameter RESET_ACTIVE_LOW = 0,
     parameter LEDS_ACTIVE_LOW = 0,
     parameter LEDS_SHOW_DEBUG_FLAGS = 1,
@@ -50,7 +57,7 @@ module RISCVCPU_uart_boot_runtime_soc_top #(
     localparam SAFE_HEARTBEAT_COUNTER_BIT =
         HEARTBEAT_CONFIG_VALID ? HEARTBEAT_COUNTER_BIT : 0;
     localparam UART_CONFIG_VALID =
-        (UART_RX_CLKS_PER_BIT >= 1) && (UART_TX_CLKS_PER_BIT >= 1);
+        (UART_RX_CLKS_PER_BIT >= 3) && (UART_TX_CLKS_PER_BIT >= 1);
 
     wire reset_asserted = RESET_ACTIVE_LOW ? ~reset : reset;
     wire packet_cpu_reset;
@@ -141,7 +148,7 @@ module RISCVCPU_uart_boot_runtime_soc_top #(
         .imem_ready(imem_ready)
     );
 
-    uart_rx_mmio_buffer runtime_rx_buffer (
+    uart_rx_mmio_buffer #(.DEPTH(64)) runtime_rx_buffer (
         .clock(clock),
         .reset(reset_sync),
         .rx_data_in(serial_rx_data),
@@ -172,7 +179,14 @@ module RISCVCPU_uart_boot_runtime_soc_top #(
     RISCVCPU #(
         .MEMORY_WORD_COUNT(MEMORY_WORD_COUNT),
         .USE_EXTERNAL_IMEM(1),
-        .USE_EXTERNAL_DMEM(1)
+        .USE_EXTERNAL_DMEM(1),
+        .FAST_MULTIPLY(FAST_MULTIPLY),
+        .ICACHE_BYTES(ICACHE_BYTES),
+        .ICACHE_PARALLEL_LOOKUP(ICACHE_PARALLEL_LOOKUP),
+        .DCACHE_BYTES(DCACHE_BYTES),
+        .DCACHE_VICTIM_LINES(DCACHE_VICTIM_LINES),
+        .ENABLE_MATVEC_SCRATCHPAD(ENABLE_MATVEC_SCRATCHPAD),
+        .ENABLE_MATVEC_DMA(ENABLE_MATVEC_DMA)
     ) cpu (
         .clock(clock),
         .reset(soc_cpu_reset),

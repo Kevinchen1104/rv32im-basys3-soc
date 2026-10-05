@@ -5,7 +5,6 @@
 # Observable result: Public debug_status pass/fail signature and four DMemory output words are checked by
 #   program/integration testbenches.
 # Used by: tb_external_dmem_matvec_dma, tb_program_matvec_dma_demo
-#   speedup claim.
 
 # Drive the DMEM-backed MATVEC DMA-lite accelerator from CPU software.
 # x = [1, -2, 3, -4]

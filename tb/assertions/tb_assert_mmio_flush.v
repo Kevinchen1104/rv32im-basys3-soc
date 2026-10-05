@@ -1,12 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_mmio_flush
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: A branch-flushed wrong-path GPIO MMIO store does not reach MEM and does not change external GPIO state.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Directed branch MMIO side-effect case only.
-// Assertion focus: Directed check for mmio flush behavior or side-effect suppression.
 
 module tb_assert_mmio_flush;
 
@@ -25,7 +19,7 @@ module tb_assert_mmio_flush;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_mmio_flush.vcd");
+        $dumpfile("results/waveforms/tb_assert_mmio_flush.vcd");
         $dumpvars(0, tb_assert_mmio_flush);
         reset_cpu();
 

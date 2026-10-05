@@ -1,12 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_top_leds_debug_flags
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: FPGA top maps debug flags onto LED outputs.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Wrapper LED debug mapping only.
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_top_leds_debug_flags;
 
@@ -71,7 +65,7 @@ module tb_fpga_top_leds_debug_flags;
     always #5 clock = ~clock;
 
     initial begin
-        $dumpfile("wave/tb_fpga_top_leds_debug_flags.vcd");
+        $dumpfile("results/waveforms/tb_fpga_top_leds_debug_flags.vcd");
         $dumpvars(0, tb_fpga_top_leds_debug_flags);
 
         reset = 1'b1;
@@ -82,7 +76,7 @@ module tb_fpga_top_leds_debug_flags;
             $fatal;
         end
 
-        repeat (2) @(posedge clock);
+        repeat (2) @(negedge clock);
         reset = 1'b0;
 
         repeat (260) @(posedge clock);

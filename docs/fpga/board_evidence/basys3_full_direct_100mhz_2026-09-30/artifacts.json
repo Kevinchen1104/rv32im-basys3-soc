@@ -1,0 +1,147 @@
+[
+  {
+    "path": "build.json",
+    "bytes": 14047,
+    "sha256": "ab0f4ec4adf3f9f15007a82a55ee9df7d1b730f730bd7687728c2f93653137f0"
+  },
+  {
+    "path": "captures/HardwareValidation/program.hardware.json",
+    "bytes": 403,
+    "sha256": "13070b4617acf4473ff03723a6ea6f6594ee81d27f3ee4139cae83a66138c0e2"
+  },
+  {
+    "path": "captures/HardwareValidation/program.json",
+    "bytes": 1803,
+    "sha256": "b8de0202bb8be3a83de90e6da4016eb0849046902f3b63d37f476674cd660a77"
+  },
+  {
+    "path": "captures/HardwareValidation/program.log",
+    "bytes": 854,
+    "sha256": "3bd71c4d5a5463c71f7f39038372189aa2574057a35429f9881ca6f5015d6bec"
+  },
+  {
+    "path": "captures/HardwareValidation/summary.json",
+    "bytes": 2749,
+    "sha256": "03e728461a15493ff4f7d4891d408bd16a7366fae6ce3c71186ec90d39530f09"
+  },
+  {
+    "path": "captures/HardwareValidation/uart.txt",
+    "bytes": 82,
+    "sha256": "e79c0a5cf34d98c178a4f4fe0a6f0cd65472daf786f0d523c2e97338725e6282"
+  },
+  {
+    "path": "captures/Interactive/program.hardware.json",
+    "bytes": 403,
+    "sha256": "c43de0bd58bfe4f09fb37310ee787abacaac4cac153ffdfcba339802f2c7dcf6"
+  },
+  {
+    "path": "captures/Interactive/program.json",
+    "bytes": 1789,
+    "sha256": "b557ac0290fffaa7bc2473383400c2f1bc815493d27fd82cfdc1f51ffd36b9c6"
+  },
+  {
+    "path": "captures/Interactive/program.log",
+    "bytes": 928,
+    "sha256": "02559a4644599f12691b6f9c66277530c605da50fb9dffe328274edd5368a0c7"
+  },
+  {
+    "path": "captures/Interactive/summary.json",
+    "bytes": 2791,
+    "sha256": "d8441065a812fe2dc7322ba0fde3af41a2e14ebe1ca6d11257ed6b1c310041bc"
+  },
+  {
+    "path": "captures/Interactive/uart.txt",
+    "bytes": 74,
+    "sha256": "3640188d8d3f56b1a613d7cb900d04798814d4654f50f48d738a66f11ef33736"
+  },
+  {
+    "path": "captures/Matvec/comparison.json",
+    "bytes": 1555,
+    "sha256": "8315f44df5d252857610bf56a499c37a6cda08d0026d3c666ff85f2758dcf045"
+  },
+  {
+    "path": "captures/Matvec/measurements.csv",
+    "bytes": 2983,
+    "sha256": "16553e1cf78b2b93e627adbaa51b318331e864e28de342fb78c6143aa61c5577"
+  },
+  {
+    "path": "captures/Matvec/program.hardware.json",
+    "bytes": 403,
+    "sha256": "5f75893ed309a1c76f4f9b152fa479a32ebd0bb443b66e3bde98e3b53a92e42f"
+  },
+  {
+    "path": "captures/Matvec/program.json",
+    "bytes": 1779,
+    "sha256": "eab24d5822324d37fd56ea3fb2b34f8218906e9ba1e4884025abde43e945c344"
+  },
+  {
+    "path": "captures/Matvec/program.log",
+    "bytes": 928,
+    "sha256": "c60e6b76f67c0157187e7b1f63c0e642a4d5b1a02fafded03a7a2657175be36f"
+  },
+  {
+    "path": "captures/Matvec/summary.json",
+    "bytes": 28572,
+    "sha256": "e4fbb8cdd6b47a9260a0bcb57092a9c36031d84f27f061d60887f42bbe5bc700"
+  },
+  {
+    "path": "captures/Matvec/uart.txt",
+    "bytes": 26014,
+    "sha256": "77113bf1dd8c8d2815c12a2aed1e949ac9917ec3021ad51ac216845d73d9f2ac"
+  },
+  {
+    "path": "captures/MatvecReset/comparison.json",
+    "bytes": 1555,
+    "sha256": "6f94574bc7f2861bab0bd0124ac8c77bf0fbd949bbe8ba1b1caf934a364aa7b6"
+  },
+  {
+    "path": "captures/MatvecReset/measurements.csv",
+    "bytes": 2983,
+    "sha256": "16553e1cf78b2b93e627adbaa51b318331e864e28de342fb78c6143aa61c5577"
+  },
+  {
+    "path": "captures/MatvecReset/summary.json",
+    "bytes": 28582,
+    "sha256": "583efb158c21b04400760079760ee507ba7f2d9233c82cf21d31bd14ea247fe8"
+  },
+  {
+    "path": "captures/MatvecReset/uart.txt",
+    "bytes": 26014,
+    "sha256": "77113bf1dd8c8d2815c12a2aed1e949ac9917ec3021ad51ac216845d73d9f2ac"
+  },
+  {
+    "path": "captures/Showcase/program.hardware.json",
+    "bytes": 403,
+    "sha256": "5bdb74ca09942e679f1294ed12a10e88d29e52c564bf6cf575bf4469f19335cb"
+  },
+  {
+    "path": "captures/Showcase/program.json",
+    "bytes": 1783,
+    "sha256": "65745cd69c377e7b817b06320f6719608335844d3a8e389fcc69f7a66f6ee99b"
+  },
+  {
+    "path": "captures/Showcase/program.log",
+    "bytes": 928,
+    "sha256": "888350d775f37991ee51193fe50d804af4eacf5d1531abe56eb09740c421997c"
+  },
+  {
+    "path": "captures/Showcase/summary.json",
+    "bytes": 2634,
+    "sha256": "9868b3c51206e1ded9339b412fc4660e830f3983f5c5b111cc3d9fb2e33e3dc8"
+  },
+  {
+    "path": "captures/Showcase/uart.txt",
+    "bytes": 64,
+    "sha256": "983a592b146062541104b69e82c2abe463b498d70c659545141f05fa8d73ef9a"
+  },
+  {
+    "path": "README.md",
+    "bytes": 1130,
+    "sha256": "ca2e5498245ad318ce57ab9b2aa5ea883305f506ee783208aaf97812f00c149f"
+  },
+  {
+    "path": "summary.json",
+    "bytes": 2268,
+    "sha256": "2ef7c7ea205e1db7886809bcacfe83b2cb38a5d79540185e058c62539fc55442"
+  }
+]

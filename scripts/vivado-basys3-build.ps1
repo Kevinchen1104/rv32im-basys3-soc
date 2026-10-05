@@ -4,11 +4,7 @@ Purpose: Runs the Basys3 Vivado synthesis/implementation wrapper when Vivado is 
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\vivado-basys3-build.ps1 -SynthOnly
 Outputs:
-  Vivado project, logs, reports, and optional bitstream artifacts under release or wave build paths.
-Scope:
-  Vivado build flow evidence only; not physical board validation, and timing depends on generated reports.
-Audience:
-  Public optional FPGA build helper.
+  Vivado work files under the selected build directory and a summary under results/.
 #>
 param(
     [switch] $SynthOnly,
@@ -21,27 +17,34 @@ param(
     [string] $OptDirective = "ExploreWithRemap",
     [string] $PlaceDirective = "Explore",
     [string] $PhysOptDirective = "Explore",
-    [string] $RouteDirective = "NoTimingRelaxation"
+    [string] $RouteDirective = "NoTimingRelaxation",
+    [ValidateSet('default','iterative_cpu','fast_cpu','fast_scratchpad','fast_dma')]
+    [string] $ArchitectureProfile = 'default',
+    [ValidateSet(64, 128, 256, 512, 1024, 2048, 4096)]
+    [int] $ICacheBytes = 64,
+    [ValidateSet(0, 1)]
+    [int] $ICacheParallelLookup = 1,
+    [ValidateSet(64, 128)]
+    [int] $DCacheBytes = 64,
+    [ValidateSet(0, 1, 2, 4, 8)]
+    [int] $DCacheVictimLines = 0,
+    [ValidateRange(1.0, 100.0)]
+    [double] $TimingPeriodNs = 10.0
 )
 
+. "$PSScriptRoot/script-common.ps1"
 $ErrorActionPreference = "Stop"
+
+$periodArgument = $TimingPeriodNs.ToString("0.######", [System.Globalization.CultureInfo]::InvariantCulture)
+$clockProfile = if ($TimingPeriodNs -eq 10.0) { "board_100mhz" } else { "timing_experiment" }
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 . "$PSScriptRoot\vivado-drc-report.ps1"
 . "$PSScriptRoot\verification-source-identity.ps1"
+. "$PSScriptRoot/result-format.ps1"
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
-
-function Read-JsonIfPresent {
-    param([string] $Path)
-
-    if (-not (Test-Path -LiteralPath $Path)) {
-        return $null
-    }
-
-    return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
-}
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
 function Get-RepoRelativePathIfPresent {
     param([string] $Path)
@@ -87,9 +90,17 @@ function Get-BuildInputIdentity {
 
     foreach ($supportPath in @(
         "fpga\vivado\basys3_build.tcl",
-        "fpga\boards\basys3\basys3.xdc"
+        "fpga\boards\basys3\basys3.xdc",
+        "scripts\vivado-basys3-build.ps1",
+        "scripts\vivado-drc-report.ps1",
+        "scripts\script-common.ps1",
+        "scripts\verification-source-identity.ps1",
+        "scripts\result-format.ps1"
     )) {
         $inputPaths.Add($supportPath) | Out-Null
+    }
+    if ($Top -eq 'RISCVCPU_basys3_board_smoke_top') {
+        $inputPaths.Add('firmware\hex\showcase\board_smoke.hex') | Out-Null
     }
 
     $records = @(
@@ -147,22 +158,11 @@ function Read-TimingReportSummary {
         [System.Text.RegularExpressions.RegexOptions]::Singleline
     )
     if ($match.Success) {
-        $wns = 0.0
-        $tns = 0.0
-        if ([double]::TryParse($match.Groups[1].Value, [ref] $wns)) {
-            $result.wns_ns = $wns
-        }
-        if ([double]::TryParse($match.Groups[2].Value, [ref] $tns)) {
-            $result.tns_ns = $tns
-        }
-        $whs = 0.0
-        $ths = 0.0
-        if ([double]::TryParse($match.Groups[3].Value, [ref] $whs)) {
-            $result.whs_ns = $whs
-        }
-        if ([double]::TryParse($match.Groups[4].Value, [ref] $ths)) {
-            $result.ths_ns = $ths
-        }
+        # PowerShell numeric casts use invariant culture; Vivado reports use decimal points.
+        $result.wns_ns = [double]$match.Groups[1].Value
+        $result.tns_ns = [double]$match.Groups[2].Value
+        $result.whs_ns = [double]$match.Groups[3].Value
+        $result.ths_ns = [double]$match.Groups[4].Value
     }
 
     $checkNames = [ordered]@{
@@ -272,6 +272,8 @@ function Read-ClockReport {
     param([string] $Path)
 
     $clocks = [System.Collections.Generic.List[object]]::new()
+    $numberStyle = [Globalization.NumberStyles]::Float
+    $culture = [Globalization.CultureInfo]::InvariantCulture
     if (-not (Test-Path -LiteralPath $Path)) {
         return @()
     }
@@ -282,8 +284,8 @@ function Read-ClockReport {
             $frequency = 0.0
             $clocks.Add([ordered]@{
                 name = $parts[0]
-                period_ns = if ([double]::TryParse($parts[1], [ref] $period)) { $period } else { $parts[1] }
-                frequency_mhz = if ([double]::TryParse($parts[2], [ref] $frequency)) { $frequency } else { $parts[2] }
+                period_ns = if ([double]::TryParse($parts[1], $numberStyle, $culture, [ref] $period)) { $period } else { $parts[1] }
+                frequency_mhz = if ([double]::TryParse($parts[2], $numberStyle, $culture, [ref] $frequency)) { $frequency } else { $parts[2] }
                 generated = $parts[3]
                 source_pin = if ($parts.Count -ge 5) { ($parts[4..($parts.Count - 1)] -join " ") } else { $null }
             }) | Out-Null
@@ -316,16 +318,38 @@ if ($Implementation) {
     $SynthOnly = $false
 }
 
+$summaryPath = if ([string]::IsNullOrWhiteSpace($SummaryPath)) { 'results/vivado-basys3-build-summary.json' } else { $SummaryPath }
+$summary = [ordered]@{ status='running'; started_at_utc=(Get-Date).ToUniversalTime().ToString('o'); execution_status='running'; timing_status='not_run'; top=$Top; timing_period_ns=$TimingPeriodNs; architecture_profile=$ArchitectureProfile; icache_bytes=$ICacheBytes; icache_parallel_lookup=$ICacheParallelLookup; dcache_bytes=$DCacheBytes; dcache_victim_lines=$DCacheVictimLines }
+Write-ResultJson $summary $summaryPath
+try {
+if ($ArchitectureProfile -ne 'default' -and $Top -ne 'RISCVCPU_basys3_top') {
+    throw 'Architecture profiles require RISCVCPU_basys3_top.'
+}
+if (($ICacheBytes -ne 64 -or $ICacheParallelLookup -ne 1) -and $Top -ne 'RISCVCPU_basys3_top') {
+    throw 'I-cache experiments require RISCVCPU_basys3_top.'
+}
+if ($ICacheParallelLookup -eq 1 -and $ICacheBytes -ne 64) {
+    throw 'Parallel lookup supports only the 64-byte reference.'
+}
+if (($DCacheBytes -ne 64 -or $DCacheVictimLines -ne 0) -and $Top -ne 'RISCVCPU_basys3_top') {
+    throw 'D-cache geometry requires RISCVCPU_basys3_top.'
+}
+if ($Bitstream -and $ArchitectureProfile -notin @('default', 'fast_cpu')) {
+    throw 'Board bitstreams support the default SoC and the fast_cpu application profile.'
+}
+if ($TimingPeriodNs -ne 10.0 -and ($Bitstream -or $Top -ne "RISCVCPU_basys3_top")) {
+    throw "TimingPeriodNs overrides are for direct-clock implementation experiments only; use 10 ns for board bitstreams and alternate tops."
+}
 $detectScript = Join-Path $PSScriptRoot "vivado-detect.ps1"
 & powershell -NoProfile -ExecutionPolicy Bypass -File $detectScript
-$detectSummary = Read-JsonIfPresent "wave\vivado-detect-summary.json"
+$detectSummary = Read-JsonIfPresent "results\vivado-detect-summary.json"
 $buildInputIdentity = Get-BuildInputIdentity
 $verificationIdentity = Get-VerificationSourceIdentity
 $sourceCommit = (& git rev-parse HEAD 2>$null).Trim()
 $workingTreeDirty = (@(& git status --porcelain 2>$null)).Count -ne 0
 
-$summaryPath = if ([string]::IsNullOrWhiteSpace($SummaryPath)) { "wave\vivado-basys3-build-summary.json" } else { $SummaryPath }
-$logPath = if ([string]::IsNullOrWhiteSpace($LogPath)) { "wave\vivado-basys3-build.log" } else { $LogPath }
+$summaryPath = if ([string]::IsNullOrWhiteSpace($SummaryPath)) { "results\vivado-basys3-build-summary.json" } else { $SummaryPath }
+$logPath = if ([string]::IsNullOrWhiteSpace($LogPath)) { "results\vivado-basys3-build.log" } else { $LogPath }
 $mode = if ($Bitstream) { "bitstream" } elseif ($Implementation) { "implementation" } else { "synth_only" }
 Ensure-ParentDirectory $summaryPath
 Ensure-ParentDirectory $logPath
@@ -338,6 +362,8 @@ if ($null -eq $detectSummary -or $detectSummary.status -ne "available") {
         vivado = if ($null -eq $detectSummary) { $null } else { $detectSummary.tool }
         part = "xc7a35tcpg236-1"
         top = $Top
+        timing_period_ns = $TimingPeriodNs
+        clock_profile = $clockProfile
         source_commit = $sourceCommit
         working_tree_dirty = $workingTreeDirty
         source_fingerprint = $buildInputIdentity.fingerprint
@@ -364,13 +390,13 @@ if ($null -eq $detectSummary -or $detectSummary.status -ne "available") {
     }
 
     "Vivado not found; Basys3 build blocked_no_vivado." | Set-Content -Path $logPath -Encoding Ascii
-    $summary | ConvertTo-Json -Depth 7 | Set-Content -Path $summaryPath -Encoding Ascii
+    Write-ResultJson $summary $summaryPath
 
     Write-Host "========================================"
     Write-Host "Basys3 Vivado build"
     Write-Host "Status: blocked_no_vivado"
     Write-Host ("Summary: {0}" -f $summaryPath)
-    exit 0
+    throw 'Vivado is unavailable; build was not run.'
 }
 
 $vivadoPath = $detectSummary.tool.path
@@ -381,9 +407,14 @@ if ([System.IO.Path]::IsPathRooted($OutDir)) {
     $resolvedOutDir = Join-Path $repoRoot.Path $OutDir
 }
 $resolvedOutDir = (New-Item -ItemType Directory -Force -Path $resolvedOutDir).FullName
-$topLogSuffix = if ($Top -eq "RISCVCPU_basys3_top") { "basys3" } else { "basys3-$($Top -replace '[^A-Za-z0-9_-]', '_')" }
-$vivadoNativeLogPath = (Join-Path $repoRoot.Path "wave\vivado-$topLogSuffix-vivado.log")
-$vivadoJournalPath = (Join-Path $repoRoot.Path "wave\vivado-$topLogSuffix-vivado.jou")
+# The board-smoke wrapper uses this relative ROM path. Stage its tiny input so
+# Vivado can run outside the source root without changing synthesis sources.
+$smokeInput = 'firmware/hex/showcase/board_smoke.hex'
+$stagedSmokeInput = Join-Path $resolvedOutDir $smokeInput
+New-Item -ItemType Directory -Force -Path (Split-Path -Parent $stagedSmokeInput) | Out-Null
+Copy-Item -LiteralPath (Join-Path $repoRoot $smokeInput) -Destination $stagedSmokeInput
+$vivadoNativeLogPath = (Join-Path $resolvedOutDir "vivado.log")
+$vivadoJournalPath = (Join-Path $resolvedOutDir "vivado.jou")
 $vivadoTempDir = Join-Path $resolvedOutDir "tmp"
 New-Item -ItemType Directory -Force -Path $vivadoTempDir | Out-Null
 $repoRootForVivado = $repoRoot.Path.Replace("\", "/")
@@ -411,8 +442,10 @@ $generatedArtifacts = @(
     (Join-Path $reportDir "post_synth_drc.rpt"),
     (Join-Path $reportDir "post_synth_clocks.rpt"),
     (Join-Path $reportDir "post_route_utilization.rpt"),
+    (Join-Path $reportDir "post_route_hierarchy.rpt"),
     (Join-Path $reportDir "post_route_timing_summary.rpt"),
     (Join-Path $reportDir "post_route_critical_paths.rpt"),
+    (Join-Path $reportDir "post_route_top50_paths.rpt"),
     (Join-Path $reportDir "post_route_drc.rpt"),
     (Join-Path $reportDir "post_route_timing_exceptions.rpt"),
     (Join-Path $reportDir "post_route_clock_interaction.rpt"),
@@ -440,18 +473,26 @@ $vivadoArgs = @(
     "-opt_directive", $OptDirective,
     "-place_directive", $PlaceDirective,
     "-phys_opt_directive", $PhysOptDirective,
-    "-route_directive", $RouteDirective
+    "-route_directive", $RouteDirective,
+    "-timing_period_ns", $periodArgument,
+    "-architecture_profile", $ArchitectureProfile,
+    "-icache_bytes", $ICacheBytes,
+    "-icache_parallel_lookup", $ICacheParallelLookup,
+    "-dcache_bytes", $DCacheBytes,
+    "-dcache_victim_lines", $DCacheVictimLines
 )
 
 $previousErrorActionPreference = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
 try {
+    Push-Location $resolvedOutDir
     $output = & $vivadoPath @vivadoArgs 2>&1
     $exitCode = $LASTEXITCODE
 } finally {
+    Pop-Location
     $ErrorActionPreference = $previousErrorActionPreference
 }
-$output | Set-Content -Path $logPath -Encoding Ascii
+$output | Set-Content -Path $logPath -Encoding UTF8
 
 $postSynthTiming = Read-TimingReportSummary (Join-Path $reportDir "post_synth_timing_summary.rpt")
 $postRouteTiming = Read-TimingReportSummary (Join-Path $reportDir "post_route_timing_summary.rpt")
@@ -464,12 +505,31 @@ $postRouteClocks = Read-ClockReport (Join-Path $reportDir "post_route_clocks.rpt
 $postSynthDrc = Read-DrcReportSummary (Join-Path $reportDir "post_synth_drc.rpt")
 $postRouteDrc = Read-DrcReportSummary (Join-Path $reportDir "post_route_drc.rpt")
 $peakMemoryMb = Get-PeakMemoryMb (($output | Out-String))
+if ((Get-BuildInputIdentity).fingerprint -ne $buildInputIdentity.fingerprint) {
+    throw 'Vivado build inputs changed during execution; discard this run and rebuild.'
+}
+# RTL, constraints, Tcl and the report-producing scripts are checked above.
+# Editing an unrelated testbench during a long implementation must not turn
+# an unchanged netlist into a failed hardware measurement. Keep the broader
+# verification context as metadata, not as a hardware-input dependency.
+$verificationInputsChanged = (Get-VerificationSourceIdentity).verification_input_fingerprint -ne $verificationIdentity.verification_input_fingerprint
+$reportArtifacts = @(Get-ChildItem -LiteralPath $reportDir -File -Filter '*.rpt' | Sort-Object Name | ForEach-Object {
+    [ordered]@{
+        path = Get-RepoRelativePathIfPresent $_.FullName
+        size_bytes = $_.Length
+        sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+    }
+})
 
 $timingStatus = "not_run"
 $timingClosureStatus = "not_run"
 $timingConstraintStatus = "not_run"
 if ($Implementation) {
     if ($postRouteTiming.present -and
+        $null -ne $postRouteTiming.no_clock_count -and
+        $null -ne $postRouteTiming.unconstrained_internal_endpoint_count -and
+        $null -ne $postRouteTiming.no_input_delay_count -and
+        $null -ne $postRouteTiming.no_output_delay_count -and
         [int]$postRouteTiming.no_clock_count -eq 0 -and
         [int]$postRouteTiming.unconstrained_internal_endpoint_count -eq 0 -and
         [int]$postRouteTiming.no_input_delay_count -eq 0 -and
@@ -514,16 +574,27 @@ $drcStatus = if ($Implementation) {
 
 $summary = [ordered]@{
     generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-    status = if ($exitCode -eq 0) { "pass" } else { "fail" }
+    status = if ($exitCode -eq 0 -and $drcStatus -eq 'pass' -and
+        (-not $Implementation -or ($timingStatus -eq 'pass' -and $timingConstraintStatus -eq 'pass')) -and
+        (-not $Bitstream -or (Test-Path -LiteralPath $bitstreamPath))) { 'pass' } else { 'fail' }
+    execution_status = if ($exitCode -eq 0) { 'pass' } else { 'fail' }
     mode = $mode
     exit_code = $exitCode
     vivado = $detectSummary.tool
     part = "xc7a35tcpg236-1"
     top = $Top
+    architecture_profile = $ArchitectureProfile
+    icache_bytes = $ICacheBytes
+    icache_parallel_lookup = $ICacheParallelLookup
+    dcache_victim_lines = $DCacheVictimLines
+    dcache_bytes = $DCacheBytes
+    timing_period_ns = $TimingPeriodNs
+    clock_profile = $clockProfile
     source_commit = $sourceCommit
     working_tree_dirty = $workingTreeDirty
     source_fingerprint = $buildInputIdentity.fingerprint
     verification_input_fingerprint = $verificationIdentity.verification_input_fingerprint
+    verification_inputs_changed_during_run = $verificationInputsChanged
     verification_input_count = $verificationIdentity.verification_input_count
     verification_working_tree_dirty = $verificationIdentity.verification_working_tree_dirty
     source_inputs = $buildInputIdentity.inputs
@@ -533,7 +604,7 @@ $summary = [ordered]@{
     vivado_log = $vivadoNativeLogPath
     vivado_journal = $vivadoJournalPath
     vivado_temp_dir = $vivadoTempDir
-    command = "vivado -mode batch -log $vivadoNativeLogPathForVivado -journal $vivadoJournalPathForVivado -tempDir $vivadoTempDirForVivado -source $tclPathForVivado -tclargs -repo_root $repoRootForVivado -out_dir $resolvedOutDirForVivado -top $Top -run_synth_only $runSynthOnly -run_impl $runImpl -generate_bitstream $generateBitstream -opt_directive $OptDirective -place_directive $PlaceDirective -phys_opt_directive $PhysOptDirective -route_directive $RouteDirective"
+    command = "vivado -mode batch -log $vivadoNativeLogPathForVivado -journal $vivadoJournalPathForVivado -tempDir $vivadoTempDirForVivado -source $tclPathForVivado -tclargs -repo_root $repoRootForVivado -out_dir $resolvedOutDirForVivado -top $Top -run_synth_only $runSynthOnly -run_impl $runImpl -generate_bitstream $generateBitstream -opt_directive $OptDirective -place_directive $PlaceDirective -phys_opt_directive $PhysOptDirective -route_directive $RouteDirective -timing_period_ns $periodArgument -architecture_profile $ArchitectureProfile -icache_bytes $ICacheBytes -icache_parallel_lookup $ICacheParallelLookup -dcache_bytes $DCacheBytes -dcache_victim_lines $DCacheVictimLines"
     peak_memory_mb = $peakMemoryMb
     synth_status = if ($exitCode -eq 0) { "pass" } else { "fail" }
     implementation_status = if ($Implementation) { if ($exitCode -eq 0) { "pass" } else { "fail" } } else { "not_run" }
@@ -555,8 +626,18 @@ $summary = [ordered]@{
         post_synth_clocks = $postSynthClocks
         post_synth_drc = $postSynthDrc
         post_route_utilization = $postRouteUtilization
+        post_route_hierarchy = if (Test-Path -LiteralPath (Join-Path $reportDir "post_route_hierarchy.rpt")) {
+            Get-RepoRelativePathIfPresent (Join-Path $reportDir "post_route_hierarchy.rpt")
+        } else {
+            $null
+        }
         post_route_timing = $postRouteTiming
         post_route_critical_path = $postRouteCriticalPath
+        post_route_top50_paths = if (Test-Path -LiteralPath (Join-Path $reportDir "post_route_top50_paths.rpt")) {
+            Get-RepoRelativePathIfPresent (Join-Path $reportDir "post_route_top50_paths.rpt")
+        } else {
+            $null
+        }
         post_route_clocks = $postRouteClocks
         post_route_drc = $postRouteDrc
         post_route_timing_exceptions = if (Test-Path -LiteralPath (Join-Path $reportDir "post_route_timing_exceptions.rpt")) {
@@ -566,17 +647,20 @@ $summary = [ordered]@{
         }
     }
     bitstream = if ($exitCode -eq 0 -and (Test-Path -LiteralPath $bitstreamPath)) { Get-RepoRelativePathIfPresent $bitstreamPath } else { $null }
+    bitstream_sha256 = if ($exitCode -eq 0 -and (Test-Path -LiteralPath $bitstreamPath)) { (Get-FileHash -LiteralPath $bitstreamPath -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
     physical_validation_status = "not_run"
-    claim_boundary = "Timing closure is only claimed if Vivado implementation timing report passes. Bitstream generation does not equal board validation."
+    method = 'Vivado synthesis and requested implementation checks; physical runs are recorded separately'
+    report_artifacts = $reportArtifacts
 }
 
-$summary | ConvertTo-Json -Depth 8 | Set-Content -Path $summaryPath -Encoding Ascii
+Write-ResultJson $summary $summaryPath
 
 Write-Host "========================================"
 Write-Host "Basys3 Vivado build"
 Write-Host ("Status: {0}" -f $summary.status)
 Write-Host ("Mode: {0}" -f $summary.mode)
 Write-Host ("Top: {0}" -f $summary.top)
+Write-Host ("Clock constraint: {0} ns ({1})" -f $TimingPeriodNs, $clockProfile)
 Write-Host ("Timing status: {0}" -f $summary.timing_status)
 Write-Host ("Timing closure status: {0}" -f $summary.timing_closure_status)
 Write-Host ("Timing constraint status: {0}" -f $summary.timing_constraint_status)
@@ -592,6 +676,14 @@ Write-Host ("Peak Vivado memory: {0} MB" -f $summary.peak_memory_mb)
 Write-Host ("Physical validation status: {0}" -f $summary.physical_validation_status)
 Write-Host ("Summary: {0}" -f $summaryPath)
 
-if ($exitCode -ne 0) {
-    throw "Vivado Basys3 build failed; see $logPath"
+if ($summary.status -ne 'pass') {
+    throw "Vivado checks failed: execution=$($summary.execution_status), timing=$timingStatus, constraints=$timingConstraintStatus, DRC=$drcStatus. See $summaryPath"
+}
+} catch {
+    if ($summary.status -eq 'running') { $summary.status = 'fail'; $summary.execution_status = 'fail' }
+    $summary['error_message'] = $_.Exception.Message
+    throw
+} finally {
+    $summary['generated_at_utc'] = (Get-Date).ToUniversalTime().ToString('o')
+    Write-ResultJson $summary $summaryPath
 }

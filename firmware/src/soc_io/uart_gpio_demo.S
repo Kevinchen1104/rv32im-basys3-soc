@@ -4,7 +4,6 @@
 # Observable result: UART transcript "RV32IM CPU OK\n", GPIO 0xa5, and debug_status signature are checked by
 #   testbenches.
 # Used by: tb_fpga_uart_boot_top, tb_program_uart_gpio_demo
-#   board validation.
 
 # Board-facing MMIO UART TX and GPIO output demo.
 # Emits "RV32IM CPU OK\n" through UART TX and leaves GPIO output at 0xa5.

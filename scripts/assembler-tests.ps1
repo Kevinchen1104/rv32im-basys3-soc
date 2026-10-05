@@ -4,18 +4,14 @@ Purpose: Runs focused tests for the repository-local assembly parser and encoder
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\assembler-tests.ps1
 Outputs:
-  Temporary assembler test sources and hex files under wave\assembler-tests.
-Scope:
-  Assembler unit evidence only; not a complete assembler or ISA proof.
-Audience:
-  Internal helper used by scripts\check.ps1.
+  Temporary assembler test sources and hex files under build\tests\assembler.
 #>
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
-$testRoot = Join-Path $repoRoot "wave\assembler-tests"
+$testRoot = Join-Path $repoRoot "build\tests\assembler"
 New-Item -ItemType Directory -Force -Path $testRoot | Out-Null
 
 function Expect-AssemblerFailure {
@@ -102,3 +98,10 @@ Expect-AssemblerFailure `
     -ExpectedMessage "unterminated string literal"
 
 Write-Host "PASS: assembler focused tests passed"
+
+$allRoot = Join-Path $testRoot 'all-programs'
+New-Item -ItemType Directory -Force -Path $allRoot | Out-Null
+Set-Content -LiteralPath (Join-Path $allRoot 'new_name.S') -Value 'nop' -Encoding Ascii
+Set-Content -LiteralPath (Join-Path $allRoot 'new_name.hex') -Value '00000013' -Encoding Ascii
+& "$PSScriptRoot/assemble.ps1" -ProgramDirectory $allRoot -All -Check
+Write-Host 'PASS: -All discovers sources outside the default program list'

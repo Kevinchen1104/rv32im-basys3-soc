@@ -1,0 +1,318 @@
+{
+  "status": "pass",
+  "mode": "Full",
+  "failed_step": "",
+  "error_message": "",
+  "started_at_utc": "2026-10-06T03:16:59.5207783Z",
+  "finished_at_utc": "2026-10-06T03:28:25.7292132Z",
+  "duration_ms": 686303,
+  "planned_steps": 31,
+  "steps": [
+    {
+      "name": "runner-self-test",
+      "label": "runner-self-test",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 41264,
+      "log": "results/logs/check/full/01-runner-self-test.log"
+    },
+    {
+      "name": "workflow-self-test",
+      "label": "workflow-self-test",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 14919,
+      "log": "results/logs/check/full/02-workflow-self-test.log"
+    },
+    {
+      "name": "result-integrity-self-test",
+      "label": "result-integrity-self-test",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 61769,
+      "log": "results/logs/check/full/03-result-integrity-self-test.log"
+    },
+    {
+      "name": "result-format-self-test",
+      "label": "result-format-self-test",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 2823,
+      "log": "results/logs/check/full/04-result-format-self-test.log"
+    },
+    {
+      "name": "verification-edge-tests",
+      "label": "verification-edge-tests",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 5199,
+      "log": "results/logs/check/full/05-verification-edge-tests.log"
+    },
+    {
+      "name": "assembler-tests",
+      "label": "assembler-tests",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1516,
+      "log": "results/logs/check/full/06-assembler-tests.log"
+    },
+    {
+      "name": "assemble",
+      "label": "assemble",
+      "arguments": ["-Check"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 5321,
+      "log": "results/logs/check/full/07-assemble.log"
+    },
+    {
+      "name": "static-rtl-check",
+      "label": "static-rtl-check",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1566,
+      "log": "results/logs/check/full/08-static-rtl-check.log"
+    },
+    {
+      "name": "vivado-drc-parser-self-test",
+      "label": "vivado-drc-parser-self-test",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 982,
+      "log": "results/logs/check/full/09-vivado-drc-parser-self-test.log"
+    },
+    {
+      "name": "verification-source-identity-self-test",
+      "label": "verification-source-identity-self-test",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 5960,
+      "log": "results/logs/check/full/10-verification-source-identity-self-test.log"
+    },
+    {
+      "name": "release-provenance-self-test",
+      "label": "release-provenance-self-test",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 8829,
+      "log": "results/logs/check/full/11-release-provenance-self-test.log"
+    },
+    {
+      "name": "check-test-catalog",
+      "label": "check-test-catalog",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 3213,
+      "log": "results/logs/check/full/12-check-test-catalog.log"
+    },
+    {
+      "name": "random-reference",
+      "label": "random-reference",
+      "arguments": ["-Check", "-SkipSimulation"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1139,
+      "log": "results/logs/check/full/13-random-reference.log"
+    },
+    {
+      "name": "random-memory-reference",
+      "label": "random-memory-reference",
+      "arguments": ["-Check", "-SkipSimulation"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1567,
+      "log": "results/logs/check/full/14-random-memory-reference.log"
+    },
+    {
+      "name": "random-control-reference",
+      "label": "random-control-reference",
+      "arguments": ["-Check", "-SkipSimulation"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1536,
+      "log": "results/logs/check/full/15-random-control-reference.log"
+    },
+    {
+      "name": "random-hazard-reference",
+      "label": "random-hazard-reference",
+      "arguments": ["-Check", "-SkipSimulation"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1609,
+      "log": "results/logs/check/full/16-random-hazard-reference.log"
+    },
+    {
+      "name": "random-call-reference",
+      "label": "random-call-reference",
+      "arguments": ["-Check", "-SkipSimulation"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1612,
+      "log": "results/logs/check/full/17-random-call-reference.log"
+    },
+    {
+      "name": "generated-reference-seed-smoke",
+      "label": "generated-reference-seed-smoke",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 84031,
+      "log": "results/logs/check/full/18-generated-reference-seed-smoke.log"
+    },
+    {
+      "name": "uart-boot-packet",
+      "label": "UART boot: board smoke",
+      "arguments": ["-Hex", "firmware/hex/showcase/board_smoke.hex", "-DryRun", "-Check"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 959,
+      "log": "results/logs/check/full/19-uart-boot-packet.log"
+    },
+    {
+      "name": "uart-boot-packet",
+      "label": "UART boot: showcase",
+      "arguments": ["-Hex", "firmware/hex/showcase/showcase_demo.hex", "-DryRun", "-Check"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1048,
+      "log": "results/logs/check/full/20-uart-boot-packet.log"
+    },
+    {
+      "name": "uart-boot-packet",
+      "label": "UART boot: interactive showcase",
+      "arguments": ["-Hex", "firmware/hex/showcase/interactive_showcase_demo.hex", "-DryRun", "-Check"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1084,
+      "log": "results/logs/check/full/21-uart-boot-packet.log"
+    },
+    {
+      "name": "uart-boot-packet",
+      "label": "UART boot: hardware validation",
+      "arguments": ["-Hex", "firmware/hex/showcase/hardware_validation_suite.hex", "-DryRun", "-Check"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1171,
+      "log": "results/logs/check/full/22-uart-boot-packet.log"
+    },
+    {
+      "name": "trace-reference",
+      "label": "trace-reference",
+      "arguments": ["-Check", "-SkipSimulation"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1356,
+      "log": "results/logs/check/full/23-trace-reference.log"
+    },
+    {
+      "name": "trace-trap-reference",
+      "label": "trace-trap-reference",
+      "arguments": ["-Check", "-SkipSimulation"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 1070,
+      "log": "results/logs/check/full/24-trace-trap-reference.log"
+    },
+    {
+      "name": "trace-lockstep-reference",
+      "label": "trace-lockstep-reference",
+      "arguments": ["-Check", "-SkipSimulation"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 2123,
+      "log": "results/logs/check/full/25-trace-lockstep-reference.log"
+    },
+    {
+      "name": "trace-lockstep-seed-smoke",
+      "label": "trace-lockstep-seed-smoke",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 37734,
+      "log": "results/logs/check/full/26-trace-lockstep-seed-smoke.log"
+    },
+    {
+      "name": "perf-counter-export",
+      "label": "perf-counter-export",
+      "arguments": ["-SkipAssemble"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 11318,
+      "log": "results/logs/check/full/27-perf-counter-export.log"
+    },
+    {
+      "name": "perf-counter-threshold-tests",
+      "label": "perf-counter-threshold-tests",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 2036,
+      "log": "results/logs/check/full/28-perf-counter-threshold-tests.log"
+    },
+    {
+      "name": "run",
+      "label": "run",
+      "arguments": ["-Test", "all", "-SummaryJson", "results/regression-summary.json"],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 357226,
+      "log": "results/logs/check/full/29-run.log"
+    },
+    {
+      "name": "regression-evidence-report",
+      "label": "regression-evidence-report",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 5334,
+      "log": "results/logs/check/full/30-regression-evidence-report.log"
+    },
+    {
+      "name": "fpga-smoke",
+      "label": "fpga-smoke",
+      "arguments": [],
+      "status": "passed",
+      "exit_code": 0,
+      "duration_ms": 5730,
+      "log": "results/logs/check/full/31-fpga-smoke.log"
+    }
+  ],
+  "runner_self_test": true,
+  "assembler_checks": true,
+  "static_rtl_check": true,
+  "vivado_drc_parser_self_test": true,
+  "verification_source_identity_self_test": true,
+  "release_provenance_self_test": true,
+  "test_catalog_check": true,
+  "random_memory_reference_check": true,
+  "random_control_reference_check": true,
+  "random_hazard_reference_check": true,
+  "random_call_reference_check": true,
+  "generated_reference_seed_smoke_check": true,
+  "uart_boot_packet_check": true,
+  "showcase_boot_packet_check": true,
+  "interactive_boot_packet_check": true,
+  "hardware_validation_boot_packet_check": true,
+  "trace_trap_reference_check": true,
+  "trace_lockstep_reference_check": true,
+  "trace_lockstep_seed_smoke_check": true,
+  "perf_counter_snapshot_check": true,
+  "regression": true,
+  "regression_evidence_report": true,
+  "fpga_smoke": true,
+  "source_commit": "ddfce23cef5c1bbf05b6830b51f1385610f57f30",
+  "verification_input_fingerprint": "97e1e9af9dc4f540b15cf9ef6ceb694f491ede314665ee0895937a91c68aad60",
+  "verification_input_count": 507,
+  "verification_working_tree_dirty": false
+}

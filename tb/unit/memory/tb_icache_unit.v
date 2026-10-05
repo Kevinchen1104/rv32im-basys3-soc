@@ -15,6 +15,8 @@ module tb_icache_unit;
     reg [127:0] internal_line_data;
     reg cancel_refill_int;
     wire [31:0] instruction_int;
+    wire return_hint_int;
+    wire return_hint_ext;
     wire miss_int;
     wire busy_int;
     wire external_read_int;
@@ -49,6 +51,7 @@ module tb_icache_unit;
         .external_ready(1'b0),
         .cancel_refill(cancel_refill_int),
         .instruction(instruction_int),
+        .return_hint(return_hint_int),
         .miss(miss_int),
         .busy(busy_int),
         .external_read(external_read_int),
@@ -70,6 +73,7 @@ module tb_icache_unit;
         .external_ready(external_ready),
         .cancel_refill(cancel_refill_ext),
         .instruction(instruction_ext),
+        .return_hint(return_hint_ext),
         .miss(miss_ext),
         .busy(busy_ext),
         .external_read(external_read_ext),
@@ -110,6 +114,16 @@ module tb_icache_unit;
         #1;
     end
     endtask
+
+    // Check metadata against the selected instruction throughout hits,
+    // refills, replacement, redirects, and reset transitions.
+    always @(negedge clock) begin
+        if (reset === 1'b0) begin
+            if (return_hint_int !== ((instruction_int & 32'hffff_8fff) == 32'h0000_8067) ||
+                return_hint_ext !== ((instruction_ext & 32'hffff_8fff) == 32'h0000_8067))
+                $fatal(1, "return predecode differs from selected instruction");
+        end
+    end
 
     task check_bool;
         input [255:0] name;
@@ -350,6 +364,19 @@ module tb_icache_unit;
         check_bool("final reset clears set1 way0", internal_cache.valid[1][0], 1'b0);
         check_bool("final reset clears set1 way1", internal_cache.valid[1][1], 1'b0);
         check_word("final reset clears captured refill address", refill_addr_int, 32'h0);
+
+        reset = 1'b0;
+        pc_int = 32'h0;
+        internal_line_data = line(32'h0000_8067, 32'h0000_0013, 32'h0000_f067, 32'h0000_80e7);
+        #1;
+        wait_internal_refill();
+        check_bool("canonical return metadata", return_hint_int, 1'b1);
+        pc_int = 32'h4; #1;
+        check_bool("NOP metadata", return_hint_int, 1'b0);
+        pc_int = 32'h8; #1;
+        check_bool("return query preserves funct3 handling", return_hint_int, 1'b1);
+        pc_int = 32'hc; #1;
+        check_bool("JALR with link is not return", return_hint_int, 1'b0);
 
         $display("PASS: tb_icache_unit passed");
         $finish;

@@ -1,34 +1,26 @@
 {
-  "schema_version": 1,
-  "identity_mode": "content_fingerprint",
-  "release_identity": {
-    "source_fingerprint": "ac14c293a9e0cae8d27876321955f2cf950f93c333a602184f522fdb0833c724",
-    "verification_input_fingerprint": "74864f9e590c5ff6b7ee22adfe1728aacd18352c1244d960f7039f678621d683",
-    "verification_input_count": 437,
-    "documentation_input_fingerprint": "456bb369212330da62b4947df703176d1e879b4aab3a78da2a169600331c5b29",
-    "documentation_input_count": 374,
-    "bitstream_sha256": "d0243a04f7e79565ffa7ef8615e35088847311484fdea0c6ea271eb811564a70",
-    "physical_evidence_summary_sha256": "357aa598d58a025e7f6c1efdd4241d4e40e96f861e8a149d787fa84f1ba47b51"
-  },
-  "identity_projection": {
-    "files": {
-      ".github/workflows/release-consistency.yml": {
-        "recorded_sha256": "5902e4a2d490aa1dfe305a4e993cfc4be72eea0be6b6518f58487c6fd332bd09",
-        "published_sha256": "edc13b9c3e4de07de070265d17abbe45cf3f20a20e9b6769137e4e257e8b4adf"
-      },
-      "scripts/final-audit.ps1": {
-        "recorded_sha256": "9350aeb93a4cb72153b7cbfd0b2d65dfa01a493c5a89c5bb00ce98840b2c2f15",
-        "published_sha256": "9d95cf853a10c121b61e8191ebfe24ce0044315f7f5bed7ff4bac4b7ea7f86e9"
-      },
-      "scripts/verification-source-identity.ps1": {
-        "recorded_sha256": "27062a8cef2d2f73ef194d58dcfe14cddcfff552ca157fdb205c2c75a6e42ef8",
-        "published_sha256": "59e56e8e6e945243a390039f1fc53d1ee55967df2a4b09f4a3eddf685b8359e7"
-      }
-    }
-  },
-  "artifact_manifests": {
-    "release/final/artifacts.json": "8e1fa21b85a61d4194f04ff146d2a2f7239b741ea3e1273494382e91d1d4b5cd",
-    "release/fpga/basys3/artifacts.json": "60f30f161a3d9686ad6eaff867dfe6c420664cca57e67faf3b8c7662cd79a5e8",
-    "release/fpga/generic_uart_boot_runtime/artifacts.json": "bfc264b1088398612ce9e54555403cd55de2855daafa17fca5f384ee43e8078e"
-  }
+  "schema_version": 2,
+  "publication_mode": "One public update commit over the previous public release; development history is retained separately.",
+  "previous_public_revision": "acc1b89106ebd5c1210282bb5c9733bae17cbf5a",
+  "development_revision": "48ede888e6d6a6312167c57fb4beb97e545acd0c",
+  "development_tree": "390ef68a04cb6250e4dac6c0e94c3dd6bc30c5d2",
+  "publication_changes": [
+    "README.md: link to the recorded-revision explanation and clarify Python requirements",
+    "docs/evidence/README.md: explain public history and source-hash verification",
+    "docs/compiled-programs.md: distinguish standalone and viewer Python requirements",
+    "docs/signal-console.md: include the dependency installation step and Python minimum",
+    "SOURCE_IDENTITY.json: record the export origin and publication scope",
+    "scripts/matvec_benchmark.py and its tests: support report output on a different Windows drive",
+    "docs/benchmarks/matvec/run.json: refresh the 90-case benchmark provenance after the report-link fix; measured CSV values are unchanged",
+    "scripts/runner-self-test.ps1: make Unicode and legacy-encoding fixtures independent of Windows locale",
+    ".github/workflows/lint.yml: use tested Verilator 5.048 instead of the distribution's older release",
+    ".github/workflows/extended-verification.yml: use the action-reported MSYS2 location and keep native Python first on PATH",
+    "scripts/synth-smoke.ps1: build native script paths on Windows/Linux and print failed-tool diagnostics",
+    ".github/workflows/lint.yml and synth-smoke.yml: retain tool logs and summaries as CI artifacts",
+    "release/current: refresh the portable verification snapshot after the CI portability fixes"
+  ],
+  "evidence_policy": "Recorded source_commit values are original development identities and are not rewritten to the public commit. They may not be reachable in public Git history. Package source manifests and artifact hashes identify the measured inputs and preserved outputs.",
+  "integrity_check": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/final-audit.ps1 -PackagedEvidence",
+  "current_input_check": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/final-audit.ps1 -PackagedEvidence -RequireCurrent",
+  "scope_note": "Publication preparation does not claim a new FPGA implementation or physical-board run. Fresh software checks are distinct from the preserved dated hardware measurements."
 }

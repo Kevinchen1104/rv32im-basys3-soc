@@ -20,7 +20,7 @@ module tb_program_stack;
     end
 
     initial begin
-        $dumpfile("wave/tb_program_stack.vcd");
+        $dumpfile("results/waveforms/tb_program_stack.vcd");
         $dumpvars(0, tb_program_stack);
         reset_cpu();
         max_ras_count = 0;

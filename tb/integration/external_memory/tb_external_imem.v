@@ -8,7 +8,7 @@
 module tb_external_imem;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] imem_addr;
     wire imem_read;
     reg [127:0] imem_rdata = 128'h0;
@@ -106,8 +106,9 @@ module tb_external_imem;
     integer i;
 
     initial begin
-        $dumpfile("wave/tb_external_imem.vcd");
+        $dumpfile("results/waveforms/tb_external_imem.vcd");
         $dumpvars(0, tb_external_imem);
+        #1; // Initialize test memory after the DUT initial block.
 
         for (i = 0; i < 1024; i = i + 1) begin
             dut.IMemory[i] = 32'h0000_0013;

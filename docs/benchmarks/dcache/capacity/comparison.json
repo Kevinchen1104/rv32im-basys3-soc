@@ -1,0 +1,333 @@
+{
+  "status": "passed",
+  "matrices": [
+    {
+      "extra_wait": 0,
+      "cases": 204
+    },
+    {
+      "extra_wait": 4,
+      "cases": 48
+    },
+    {
+      "extra_wait": 12,
+      "cases": 48
+    }
+  ],
+  "implementations": {
+    "dm64": {
+      "status": "pass",
+      "resources": {
+        "path": ".\\build\\vivado\\dcache-capacity\\dm64\\reports\\post_route_utilization.rpt",
+        "present": true,
+        "lut": {
+          "used": 6967,
+          "available": 20800,
+          "percent": 33.5
+        },
+        "ff": {
+          "used": 4741,
+          "available": 41600,
+          "percent": 11.4
+        },
+        "bram": {
+          "used": 2,
+          "available": 50,
+          "percent": 4
+        },
+        "dsp": {
+          "used": 4,
+          "available": 90,
+          "percent": 4.44
+        },
+        "io": {
+          "used": 36,
+          "available": 106,
+          "percent": 33.96
+        }
+      },
+      "timing": {
+        "path": ".\\build\\vivado\\dcache-capacity\\dm64\\reports\\post_route_timing_summary.rpt",
+        "present": true,
+        "wns_ns": 0.116,
+        "tns_ns": 0,
+        "whs_ns": 0.039,
+        "ths_ns": 0,
+        "no_clock_count": 0,
+        "unconstrained_internal_endpoint_count": 0,
+        "no_input_delay_count": 0,
+        "no_output_delay_count": 0
+      }
+    },
+    "dm128": {
+      "status": "pass",
+      "resources": {
+        "path": ".\\build\\vivado\\dcache-capacity\\dm128\\reports\\post_route_utilization.rpt",
+        "present": true,
+        "lut": {
+          "used": 7869,
+          "available": 20800,
+          "percent": 37.83
+        },
+        "ff": {
+          "used": 5361,
+          "available": 41600,
+          "percent": 12.89
+        },
+        "bram": {
+          "used": 2,
+          "available": 50,
+          "percent": 4
+        },
+        "dsp": {
+          "used": 4,
+          "available": 90,
+          "percent": 4.44
+        },
+        "io": {
+          "used": 36,
+          "available": 106,
+          "percent": 33.96
+        }
+      },
+      "timing": {
+        "path": ".\\build\\vivado\\dcache-capacity\\dm128\\reports\\post_route_timing_summary.rpt",
+        "present": true,
+        "wns_ns": 0.158,
+        "tns_ns": 0,
+        "whs_ns": 0.023,
+        "ths_ns": 0,
+        "no_clock_count": 0,
+        "unconstrained_internal_endpoint_count": 0,
+        "no_input_delay_count": 0,
+        "no_output_delay_count": 0
+      }
+    },
+    "victim1": {
+      "status": "pass",
+      "resources": {
+        "path": ".\\build\\vivado\\dcache-capacity\\victim1\\reports\\post_route_utilization.rpt",
+        "present": true,
+        "lut": {
+          "used": 7042,
+          "available": 20800,
+          "percent": 33.86
+        },
+        "ff": {
+          "used": 4908,
+          "available": 41600,
+          "percent": 11.8
+        },
+        "bram": {
+          "used": 2,
+          "available": 50,
+          "percent": 4
+        },
+        "dsp": {
+          "used": 4,
+          "available": 90,
+          "percent": 4.44
+        },
+        "io": {
+          "used": 36,
+          "available": 106,
+          "percent": 33.96
+        }
+      },
+      "timing": {
+        "path": ".\\build\\vivado\\dcache-capacity\\victim1\\reports\\post_route_timing_summary.rpt",
+        "present": true,
+        "wns_ns": 0.095,
+        "tns_ns": 0,
+        "whs_ns": 0.037,
+        "ths_ns": 0,
+        "no_clock_count": 0,
+        "unconstrained_internal_endpoint_count": 0,
+        "no_input_delay_count": 0,
+        "no_output_delay_count": 0
+      }
+    },
+    "victim2": {
+      "status": "pass",
+      "resources": {
+        "path": ".\\build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_utilization.rpt",
+        "present": true,
+        "lut": {
+          "used": 7381,
+          "available": 20800,
+          "percent": 35.49
+        },
+        "ff": {
+          "used": 5075,
+          "available": 41600,
+          "percent": 12.2
+        },
+        "bram": {
+          "used": 2,
+          "available": 50,
+          "percent": 4
+        },
+        "dsp": {
+          "used": 4,
+          "available": 90,
+          "percent": 4.44
+        },
+        "io": {
+          "used": 36,
+          "available": 106,
+          "percent": 33.96
+        }
+      },
+      "timing": {
+        "path": ".\\build\\vivado\\dcache-capacity\\victim2\\reports\\post_route_timing_summary.rpt",
+        "present": true,
+        "wns_ns": 0.017,
+        "tns_ns": 0,
+        "whs_ns": 0.035,
+        "ths_ns": 0,
+        "no_clock_count": 0,
+        "unconstrained_internal_endpoint_count": 0,
+        "no_input_delay_count": 0,
+        "no_output_delay_count": 0
+      }
+    },
+    "victim4": {
+      "status": "pass",
+      "resources": {
+        "path": ".\\build\\vivado\\dcache-capacity\\victim4\\reports\\post_route_utilization.rpt",
+        "present": true,
+        "lut": {
+          "used": 7804,
+          "available": 20800,
+          "percent": 37.52
+        },
+        "ff": {
+          "used": 5388,
+          "available": 41600,
+          "percent": 12.95
+        },
+        "bram": {
+          "used": 2,
+          "available": 50,
+          "percent": 4
+        },
+        "dsp": {
+          "used": 4,
+          "available": 90,
+          "percent": 4.44
+        },
+        "io": {
+          "used": 36,
+          "available": 106,
+          "percent": 33.96
+        }
+      },
+      "timing": {
+        "path": ".\\build\\vivado\\dcache-capacity\\victim4\\reports\\post_route_timing_summary.rpt",
+        "present": true,
+        "wns_ns": 0.306,
+        "tns_ns": 0,
+        "whs_ns": 0.036,
+        "ths_ns": 0,
+        "no_clock_count": 0,
+        "unconstrained_internal_endpoint_count": 0,
+        "no_input_delay_count": 0,
+        "no_output_delay_count": 0
+      }
+    },
+    "victim8": {
+      "status": "pass",
+      "resources": {
+        "path": ".\\build\\vivado\\dcache-capacity\\victim8\\reports\\post_route_utilization.rpt",
+        "present": true,
+        "lut": {
+          "used": 8028,
+          "available": 20800,
+          "percent": 38.6
+        },
+        "ff": {
+          "used": 6040,
+          "available": 41600,
+          "percent": 14.52
+        },
+        "bram": {
+          "used": 2,
+          "available": 50,
+          "percent": 4
+        },
+        "dsp": {
+          "used": 4,
+          "available": 90,
+          "percent": 4.44
+        },
+        "io": {
+          "used": 36,
+          "available": 106,
+          "percent": 33.96
+        }
+      },
+      "timing": {
+        "path": ".\\build\\vivado\\dcache-capacity\\victim8\\reports\\post_route_timing_summary.rpt",
+        "present": true,
+        "wns_ns": 0.135,
+        "tns_ns": 0,
+        "whs_ns": 0.029,
+        "ths_ns": 0,
+        "no_clock_count": 0,
+        "unconstrained_internal_endpoint_count": 0,
+        "no_input_delay_count": 0,
+        "no_output_delay_count": 0
+      }
+    }
+  },
+  "board": {
+    "dm64": {
+      "status": "passed",
+      "outputs_checked": 6608,
+      "batches": 200,
+      "cycles_min": 9372,
+      "cycles_median": 9372.0,
+      "cycles_max": 9372
+    },
+    "dm128": {
+      "status": "passed",
+      "outputs_checked": 6608,
+      "batches": 200,
+      "cycles_min": 7545,
+      "cycles_median": 7545.0,
+      "cycles_max": 7545
+    },
+    "victim1": {
+      "status": "passed",
+      "outputs_checked": 6608,
+      "batches": 200,
+      "cycles_min": 8772,
+      "cycles_median": 8772.0,
+      "cycles_max": 8772
+    },
+    "victim2": {
+      "status": "passed",
+      "outputs_checked": 6608,
+      "batches": 200,
+      "cycles_min": 8486,
+      "cycles_median": 8486.0,
+      "cycles_max": 8486
+    },
+    "victim4": {
+      "status": "passed",
+      "outputs_checked": 6608,
+      "batches": 200,
+      "cycles_min": 7681,
+      "cycles_median": 7681.0,
+      "cycles_max": 7684
+    },
+    "victim8": {
+      "status": "passed",
+      "outputs_checked": 6608,
+      "batches": 200,
+      "cycles_min": 7598,
+      "cycles_median": 7609.0,
+      "cycles_max": 7609
+    }
+  }
+}

@@ -12,7 +12,7 @@ module tb_program_half_directive;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_program_half_directive.vcd");
+        $dumpfile("results/waveforms/tb_program_half_directive.vcd");
         $dumpvars(0, tb_program_half_directive);
         reset_cpu();
 

@@ -3,7 +3,6 @@
 # Exercises: mtvec, mepc, mstatus.MIE/MPIE/MPP, mie/mip masks, mtval, mcause, and mret return behavior.
 # Observable result: Public debug_status pass/fail signature is checked by the program testbench.
 # Used by: tb_program_privileged_csr_edges
-#   Linux/RTOS claim.
 
 # Selected machine-mode CSR edge checks for the local privileged subset.
 

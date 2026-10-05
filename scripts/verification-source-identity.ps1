@@ -7,8 +7,6 @@ Outputs:
   No files; exposes verification-source and documentation-input identity helpers.
 Scope:
   Separates functional verification inputs from public documentation/package inputs.
-Audience:
-  Verification, audit, and release scripts that must reject stale PASS summaries.
 #>
 
 function Get-NormalizedTextSha256 {
@@ -27,57 +25,24 @@ function Get-NormalizedTextSha256 {
     }
 }
 
-function Get-PublishedReleaseIdentityProjection {
-    if ($null -ne $script:PublishedReleaseIdentityProjection) {
-        return $script:PublishedReleaseIdentityProjection
-    }
-
-    $manifestPath = Join-Path (Resolve-Path ".") "SOURCE_IDENTITY.json"
-    if (-not (Test-Path -LiteralPath $manifestPath)) {
-        $script:PublishedReleaseIdentityProjection = $false
-        return $null
-    }
-
-    $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-    if ($manifest.identity_mode -ne "content_fingerprint" -or
-        $null -eq $manifest.identity_projection -or
-        $null -eq $manifest.identity_projection.files) {
-        throw "SOURCE_IDENTITY.json does not define a supported identity projection."
-    }
-
-    $script:PublishedReleaseIdentityProjection = $manifest.identity_projection
-    return $script:PublishedReleaseIdentityProjection
-}
-
 function Get-VerificationFileSha256 {
     param([Parameter(Mandatory = $true)][string] $Path)
 
-    $normalizedPath = $Path.Replace("\", "/")
-    $actualHash = if ([System.IO.Path]::GetExtension($Path).ToLowerInvariant() -eq ".bin") {
-        (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
-    } else {
-        Get-NormalizedTextSha256 -Path $Path
+    if ([System.IO.Path]::GetExtension($Path).ToLowerInvariant() -eq ".bin") {
+        return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
     }
+    return Get-NormalizedTextSha256 -Path $Path
+}
 
-    $projection = Get-PublishedReleaseIdentityProjection
-    if ($null -ne $projection) {
-        $property = $projection.files.PSObject.Properties[$normalizedPath]
-        if ($null -ne $property) {
-            $entry = $property.Value
-            if ([string]$entry.published_sha256 -ne $actualHash) {
-                throw "Published release file hash mismatch: $normalizedPath"
-            }
-            if ([string]$entry.recorded_sha256 -notmatch "^[0-9a-f]{64}$") {
-                throw "Recorded release hash is invalid: $normalizedPath"
-            }
-            return [string]$entry.recorded_sha256
-        }
-    }
-
-    return $actualHash
+function Get-OrdinalUniquePaths {
+    param([string[]]$Paths)
+    $sorted = [System.Collections.Generic.SortedSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($path in $Paths) { [void]$sorted.Add($path) }
+    foreach ($path in $sorted) { $path }
 }
 
 function Get-VerificationSourceIdentity {
+    param([switch]$IncludeRecords)
     $pathSpecs = @(
         ".gitattributes",
         ".github/workflows",
@@ -98,13 +63,13 @@ function Get-VerificationSourceIdentity {
     $paths = @(
         & git ls-files --cached --others --exclude-standard -- @pathSpecs 2>$null |
             ForEach-Object { $_.Trim().Replace("\", "/") } |
-            Where-Object { $_ -ne "" -and (Test-Path -LiteralPath $_ -PathType Leaf) } |
-            Sort-Object -Unique
+            Where-Object { $_ -ne "" -and (Test-Path -LiteralPath $_ -PathType Leaf) }
     )
     if ($LASTEXITCODE -ne 0 -or $paths.Count -eq 0) {
         throw "Unable to enumerate verification source inputs."
     }
 
+    $paths = @(Get-OrdinalUniquePaths $paths)
     $records = @(
         foreach ($path in $paths) {
             [ordered]@{
@@ -137,24 +102,36 @@ function Get-VerificationSourceIdentity {
         throw "Unable to inspect verification source working-tree state."
     }
 
-    return [ordered]@{
+    $identity = [ordered]@{
         algorithm = "sha256(path:content-sha256 records; text LF-normalized, .bin raw)"
         source_commit = $sourceCommit
         verification_input_fingerprint = $fingerprint
         verification_input_count = $records.Count
         verification_working_tree_dirty = $workingTreeStatus.Count -ne 0
     }
+    if ($IncludeRecords) { $identity.inputs = $records }
+    return $identity
 }
 
 function Add-VerificationIdentityFields {
-    param([Parameter(Mandatory = $true)][System.Collections.IDictionary] $Summary)
+    param(
+        [Parameter(Mandatory = $true)][System.Collections.IDictionary] $Summary,
+        [System.Collections.IDictionary] $Identity = (Get-VerificationSourceIdentity)
+    )
 
-    $identity = Get-VerificationSourceIdentity
     $Summary["source_commit"] = $identity.source_commit
     $Summary["verification_input_fingerprint"] = $identity.verification_input_fingerprint
     $Summary["verification_input_count"] = $identity.verification_input_count
     $Summary["verification_working_tree_dirty"] = $identity.verification_working_tree_dirty
     return $identity
+}
+
+function Assert-VerificationInputsUnchanged {
+    param([Parameter(Mandatory = $true)][System.Collections.IDictionary] $Identity)
+    $current = Get-VerificationSourceIdentity
+    if ($current.verification_input_fingerprint -ne $Identity.verification_input_fingerprint) {
+        throw 'Verification inputs changed during execution. Rerun with stable sources.'
+    }
 }
 
 function Get-DocumentationInputIdentity {
@@ -170,6 +147,10 @@ function Get-DocumentationInputIdentity {
         "tb"
     )
     $packagePathSpecs = @(
+        "release/README.md",
+        "release/current",
+        "release/implementation",
+        "release/configuration",
         "release/final",
         "release/fpga"
     )
@@ -208,13 +189,13 @@ function Get-DocumentationInputIdentity {
                     return $extension -in @(".ps1", ".md")
                 }
                 return $false
-            } |
-            Sort-Object -Unique
+            }
     )
     if ($LASTEXITCODE -ne 0 -or $paths.Count -eq 0) {
         throw "Unable to enumerate documentation inputs."
     }
 
+    $paths = @(Get-OrdinalUniquePaths $paths)
     $records = @(
         foreach ($path in $paths) {
             [ordered]@{

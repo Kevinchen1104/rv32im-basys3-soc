@@ -2,7 +2,7 @@
 
 // Module: uart_packet_boot_imem
 // Role: Byte-parallel packet boot path for loading instruction memory in simulation and FPGA wrappers.
-// Interface: Clock/reset, byte-valid/data stream, instruction-memory write port, and loader status outputs.
+// Interface: Clock/reset, byte-valid/data stream, 128-bit instruction-line read port, and loader status outputs.
 // Key behavior: Checks packet fields and checksum, scrubs failed payloads or stale tail words, then releases the CPU only for a clean image.
 
 module uart_packet_boot_imem #(
@@ -28,6 +28,9 @@ module uart_packet_boot_imem #(
         (MEMORY_WORD_COUNT < 1) ? 1 : MEMORY_WORD_COUNT;
     localparam ADDR_WIDTH =
         (STORAGE_WORD_COUNT <= 1) ? 1 : $clog2(STORAGE_WORD_COUNT);
+    localparam BANK_WORD_COUNT = (STORAGE_WORD_COUNT + 3) / 4;
+    localparam BANK_ADDR_WIDTH =
+        (BANK_WORD_COUNT <= 1) ? 1 : $clog2(BANK_WORD_COUNT);
     localparam [ADDR_WIDTH-1:0] LAST_WORD_ADDR =
         ADDR_WIDTH'(STORAGE_WORD_COUNT - 1);
     // A one-word memory is supported. Zero capacity uses a dummy storage word
@@ -50,7 +53,6 @@ module uart_packet_boot_imem #(
 
     // Packet words are little-endian on the byte stream:
     // magic, version, start word address, word count, checksum, payload words.
-    reg [31:0] memory[0:STORAGE_WORD_COUNT-1];
     reg [3:0] state = STATE_MAGIC;
     reg [1:0] byte_index = 2'd0;
     reg [31:0] word_buffer = 32'h0;
@@ -70,7 +72,14 @@ module uart_packet_boot_imem #(
     wire [31:0] line_word_addr = {2'b00, imem_addr[31:4], 2'b00};
     wire [31:0] payload_end_addr = start_word_addr + word_count;
 
-    integer i;
+    wire clearing_memory = (state == STATE_CLEAR_TAIL) || (state == STATE_CLEAR_ERROR);
+    wire memory_write = !external_reset &&
+        (clearing_memory || ((state == STATE_PAYLOAD) && received_word_valid));
+    wire [ADDR_WIDTH-1:0] write_word_addr = clearing_memory ? clear_addr : current_addr;
+    wire [1:0] write_bank = 2'(write_word_addr);
+    wire [BANK_ADDR_WIDTH-1:0] write_row = BANK_ADDR_WIDTH'(write_word_addr >> 2);
+    wire [31:0] write_data = clearing_memory ? NOP : received_word;
+    wire [BANK_ADDR_WIDTH-1:0] read_row = BANK_ADDR_WIDTH'(imem_addr >> 4);
 
     assign rx_ready = CONFIG_VALID && (
         (state == STATE_MAGIC) ||
@@ -82,13 +91,28 @@ module uart_packet_boot_imem #(
     assign loader_done = done_reg;
     assign loader_busy = CONFIG_VALID && !done_reg && !error_reg;
     assign boot_error = !CONFIG_VALID || error_reg;
-    assign imem_rdata = {
-        ((line_word_addr + 3) < MEMORY_WORD_COUNT) ? memory[line_word_addr+3] : NOP,
-        ((line_word_addr + 2) < MEMORY_WORD_COUNT) ? memory[line_word_addr+2] : NOP,
-        ((line_word_addr + 1) < MEMORY_WORD_COUNT) ? memory[line_word_addr+1] : NOP,
-        (line_word_addr < MEMORY_WORD_COUNT) ? memory[line_word_addr] : NOP
-    };
     assign imem_ready = loader_done && imem_read;
+
+    // A line always contains words 4*k through 4*k+3. Interleave those words
+    // across four single-read banks instead of replicating a four-read memory.
+    // A loader/scrub write updates one bank; a line read uses all four banks.
+    genvar bank;
+    generate
+        for (bank = 0; bank < 4; bank = bank + 1) begin : imem_banks
+            reg [31:0] words[0:BANK_WORD_COUNT-1];
+            integer row;
+            initial begin
+                for (row = 0; row < BANK_WORD_COUNT; row = row + 1)
+                    words[row] = NOP;
+            end
+            always @(posedge clock) begin
+                if (memory_write && (write_bank == bank))
+                    words[write_row] <= write_data;
+            end
+            assign imem_rdata[32*bank +: 32] =
+                ((line_word_addr + bank) < MEMORY_WORD_COUNT) ? words[read_row] : NOP;
+        end
+    endgenerate
 
     boot_reset_controller #(
         .BOOT_FROM_LOADER(1)
@@ -98,12 +122,6 @@ module uart_packet_boot_imem #(
         .cpu_reset(cpu_reset),
         .boot_waiting(boot_waiting)
     );
-
-    initial begin
-        for (i = 0; i < STORAGE_WORD_COUNT; i = i + 1) begin
-            memory[i] = NOP;
-        end
-    end
 
     always @(posedge clock) begin
         if (external_reset) begin
@@ -121,7 +139,6 @@ module uart_packet_boot_imem #(
             error_reg <= 1'b0;
         end else begin
             if (state == STATE_CLEAR_TAIL) begin
-                memory[clear_addr] <= NOP;
                 if (clear_addr == LAST_WORD_ADDR) begin
                     state <= STATE_DONE;
                     done_reg <= 1'b1;
@@ -129,7 +146,6 @@ module uart_packet_boot_imem #(
                     clear_addr <= clear_addr + 1'b1;
                 end
             end else if (state == STATE_CLEAR_ERROR) begin
-                memory[clear_addr] <= NOP;
                 if (clear_addr == LAST_WORD_ADDR) begin
                     state <= STATE_ERROR;
                     error_reg <= 1'b1;
@@ -211,7 +227,6 @@ module uart_packet_boot_imem #(
                         end
 
                         STATE_PAYLOAD: begin
-                            memory[current_addr] <= received_word;
                             current_addr <= current_addr + 1'b1;
                             checksum_accum <= next_checksum;
                             words_loaded <= words_loaded + 32'd1;

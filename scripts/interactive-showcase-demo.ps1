@@ -4,18 +4,16 @@ Purpose: Runs the interactive UART showcase demo flow.
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\interactive-showcase-demo.ps1
 Outputs:
-  Console transcript summary and simulation artifacts under wave\.
-Scope:
-  Simulation demo evidence only; not physical board validation or production software evidence.
-Audience:
-  Public showcase helper.
+  Console transcript summary and simulation artifacts under results\.
 #>
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
+. "$PSScriptRoot/verification-source-identity.ps1"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
 $summary = [ordered]@{
     status = "running"
@@ -35,11 +33,13 @@ $caughtError = $null
 
 function Write-InteractiveSummary {
     $summary.finished_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-    $summary | ConvertTo-Json -Depth 4 | Set-Content -Path "wave\interactive-showcase-summary.json" -Encoding Ascii
-    Write-Host "Interactive showcase summary written to wave\interactive-showcase-summary.json"
+    Write-ResultJson $summary "results\interactive-showcase-summary.json"
+    Write-Host "Interactive showcase summary written to results\interactive-showcase-summary.json"
 }
 
+Write-ResultJson $summary 'results/interactive-showcase-summary.json'
 try {
+    Add-VerificationIdentityFields -Summary $summary | Out-Null
     Write-Host "========================================"
     Write-Host "Assembling interactive showcase demo"
     & (Join-Path $PSScriptRoot "assemble.ps1")

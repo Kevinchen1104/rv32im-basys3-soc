@@ -1,0 +1,105 @@
+{
+  "status": "passed",
+  "started_at_utc": "2026-10-03T00:31:00.3160510Z",
+  "source_commit": "5c1c4c0579cf5b9c95d333cc68a8d23fa6785b4e",
+  "steps": [
+    {
+      "name": "default-Showcase",
+      "status": "passed",
+      "capture": "results/board/review-automatic/Showcase/summary.json"
+    },
+    {
+      "name": "default-Interactive",
+      "status": "passed",
+      "capture": "results/board/review-automatic/Interactive/summary.json"
+    },
+    {
+      "name": "default-HardwareValidation",
+      "status": "passed",
+      "capture": "results/board/review-automatic/HardwareValidation/summary.json"
+    },
+    {
+      "name": "program-default-Matvec",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T00:31:20.4091404Z"
+    },
+    {
+      "name": "default-Matvec",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T00:31:25.2851949Z"
+    },
+    {
+      "name": "program-default-MatvecReload",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T00:31:45.3869583Z"
+    },
+    {
+      "name": "default-MatvecReload",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T00:31:50.1358677Z"
+    },
+    {
+      "name": "physical-dm64",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T00:32:24.0375019Z"
+    },
+    {
+      "name": "physical-dm128",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T00:49:44.0694503Z"
+    },
+    {
+      "name": "reload-dm128",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T00:50:07.5132313Z"
+    },
+    {
+      "name": "physical-victim1",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T01:05:32.7094866Z"
+    },
+    {
+      "name": "physical-victim2",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T01:27:58.6600858Z"
+    },
+    {
+      "name": "physical-victim4",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T01:44:24.2194778Z"
+    },
+    {
+      "name": "reload-victim4",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T01:44:58.8866102Z"
+    },
+    {
+      "name": "physical-victim8",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T02:03:14.6186697Z"
+    },
+    {
+      "name": "default-FIR-physical",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T02:03:38.7778510Z"
+    },
+    {
+      "name": "default-viewer-physical",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T02:04:19.0565702Z"
+    },
+    {
+      "name": "startup-preflight",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T02:04:20.2471444Z"
+    },
+    {
+      "name": "startup-status",
+      "status": "passed",
+      "finished_at_utc": "2026-10-03T02:04:21.3457027Z"
+    }
+  ],
+  "error": null,
+  "active_step": "startup-status",
+  "finished_at_utc": "2026-10-03T02:04:21.4712851Z"
+}

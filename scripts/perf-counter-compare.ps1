@@ -5,10 +5,6 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\perf-counter-compare.ps1 -BaselinePath <old.json> -CurrentPath <new.json>
 Outputs:
   Console table of counter deltas and optional failure status.
-Scope:
-  Counter regression helper only; not a speedup, CPI, timing, or benchmark proof.
-Audience:
-  Internal performance-counter helper.
 #>
 param(
     [Parameter(Mandatory = $true)]
@@ -62,6 +58,22 @@ function Read-Snapshot {
         throw "$Label snapshot schema mismatch: expected $expectedSchema, got $($snapshot.Schema)"
     }
 
+    if ($snapshot.Status -notin @('pass', 'passed', 'measured', 'fixture')) {
+        throw "$Label snapshot is not successful: $($snapshot.Status)"
+    }
+    if ($snapshot.Status -eq 'fixture' -and $snapshot.Source -ne 'synthetic threshold fixture') {
+        throw "$Label snapshot has an unrecognized fixture source"
+    }
+    if (@($snapshot.Rows).Count -eq 0) { throw "$Label snapshot has no rows" }
+    foreach ($row in $snapshot.Rows) {
+        foreach ($metric in $metricNames) {
+            $value = $row.$metric
+            if ($null -eq $value -or $value -is [bool] -or
+                "$value" -notmatch '^\d+$' -or [decimal]$value -gt [uint32]::MaxValue) {
+                throw "$Label snapshot has a missing or invalid $metric in '$($row.Scenario)'"
+            }
+        }
+    }
     return $snapshot
 }
 
@@ -97,8 +109,9 @@ function Read-Thresholds {
                 throw "Threshold rule '$($rule.Scenario)' contains unknown metric '$metric'"
             }
 
-            if ($null -eq $rule.Metrics.$metric.MaxAbsDelta) {
-                throw "Threshold rule '$($rule.Scenario)' metric '$metric' is missing MaxAbsDelta"
+            $limit = $rule.Metrics.$metric.MaxAbsDelta
+            if ($null -eq $limit -or $limit -is [bool] -or "$limit" -notmatch '^\d+$' -or [decimal]$limit -gt [uint32]::MaxValue) {
+                throw "Threshold rule '$($rule.Scenario)' metric '$metric' requires a nonnegative 32-bit integer MaxAbsDelta"
             }
         }
 

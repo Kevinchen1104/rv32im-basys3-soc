@@ -5,7 +5,6 @@
 // Checks: Standalone data cache unit handles four-index full-tag lookup, read misses, hits, captured miss metadata,
 //   store merging, dirty writeback, pending-store refill, MMIO bypass, DMA snoops, and external data-memory waits.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   full memory consistency.
 
 module tb_dcache_unit;
     localparam CACHE_IDLE = 2'b00;
@@ -210,11 +209,11 @@ module tb_dcache_unit;
         integer guard;
         begin
             guard = 0;
-            while (!load_word_valid && guard < 20) begin
+            while (load_word_valid !== 1'b1 && guard < 20) begin
                 tick();
                 guard = guard + 1;
             end
-            if (!load_word_valid) begin
+            if (load_word_valid !== 1'b1) begin
                 fail("internal fill timed out");
             end
             tick();
@@ -225,11 +224,11 @@ module tb_dcache_unit;
         integer guard;
         begin
             guard = 0;
-            while (state_debug != CACHE_IDLE && guard < 20) begin
+            while (state_debug !== CACHE_IDLE && guard < 20) begin
                 tick();
                 guard = guard + 1;
             end
-            if (state_debug != CACHE_IDLE) begin
+            if (state_debug !== CACHE_IDLE) begin
                 fail("internal cache idle wait timed out");
             end
         end
@@ -240,11 +239,11 @@ module tb_dcache_unit;
         integer guard;
         begin
             guard = 0;
-            while (ext_state_debug != expected_state && guard < 20) begin
+            while (ext_state_debug !== expected_state && guard < 20) begin
                 tick();
                 guard = guard + 1;
             end
-            if (ext_state_debug != expected_state) begin
+            if (ext_state_debug !== expected_state) begin
                 fail("external state wait timed out");
             end
         end
@@ -277,7 +276,8 @@ module tb_dcache_unit;
             request_read = 1'b0;
             request_write = 1'b1;
             request_mmio = 1'b0;
-            if (!hit) begin
+            #1;
+            if (hit !== 1'b1) begin
                 fail("expected write hit");
             end
             tick();
@@ -294,7 +294,7 @@ module tb_dcache_unit;
             request_write = 1'b0;
             request_mmio = 1'b0;
             #1;
-            if (!hit || !request_complete || !load_word_valid || load_word_data !== expected_word) begin
+            if (hit !== 1'b1 || request_complete !== 1'b1 || load_word_valid !== 1'b1 || load_word_data !== expected_word) begin
                 $display("INFO: read hit addr=%h expected=%h hit=%0b valid=%0b data=%h state=%0d",
                          addr, expected_word, hit, load_word_valid, load_word_data, state_debug);
                 fail("read hit word mismatch");

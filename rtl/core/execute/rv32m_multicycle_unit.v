@@ -1,11 +1,13 @@
 `timescale 1ns / 1ps
 
 // Module: rv32m_multicycle_unit
-// Role: Iterative multiply/divide execution unit for the RV32M instruction subset.
+// Role: Selectable pipelined/iterative multiply and iterative divide for RV32M.
 // Interface: Accepts one funct3-selected operation and two operands, then reports busy, a completion pulse, and the result.
-// Key behavior: Registers an accepted request before 32 shift/add or restoring-division iterations and preserves the architectural divide edge cases.
+// Key behavior: Fast products finish three cycles after acceptance; iterative operations take 33 cycles and preserve architectural divide edge cases.
 
-module rv32m_multicycle_unit (
+module rv32m_multicycle_unit #(
+    parameter FAST_MULTIPLY = 0
+) (
     input clock,
     input reset,
     input start,
@@ -33,6 +35,30 @@ module rv32m_multicycle_unit (
     reg [63:0] multiply_accumulator;
     reg [63:0] multiply_multiplicand;
     reg [31:0] multiply_multiplier;
+
+    // Signed 17-bit limbs represent either signed or unsigned 32-bit inputs.
+    // Input, multiplier and output registers map to A/BREG, MREG and PREG.
+    reg signed [16:0] multiply_lhs_low, multiply_lhs_high;
+    reg signed [16:0] multiply_rhs_low, multiply_rhs_high;
+    (* use_dsp = "yes" *) reg [31:0] product_ll, product_hh;
+    (* use_dsp = "yes" *) reg signed [32:0] product_lh, product_hl;
+    reg [31:0] product_ll_pipe, product_hh_pipe;
+    reg signed [32:0] product_lh_pipe, product_hl_pipe;
+    wire [63:0] product_term_ll = {32'b0, product_ll_pipe};
+    wire [63:0] product_term_lh = {{15{product_lh_pipe[32]}}, product_lh_pipe, 16'b0};
+    wire [63:0] product_term_hl = {{15{product_hl_pipe[32]}}, product_hl_pipe, 16'b0};
+    wire [63:0] product_term_hh = {product_hh_pipe, 32'b0};
+    // Carry-save reduction combines four terms with one final carry chain.
+    wire [63:0] product_sum1 = product_term_ll ^ product_term_lh ^ product_term_hl;
+    wire [63:0] product_carry1 = ((product_term_ll & product_term_lh) |
+        (product_term_ll & product_term_hl) | (product_term_lh & product_term_hl)) << 1;
+    wire [63:0] product_sum2 = product_sum1 ^ product_carry1 ^ product_term_hh;
+    wire [63:0] product_carry2 = ((product_sum1 & product_carry1) |
+        (product_sum1 & product_term_hh) | (product_carry1 & product_term_hh)) << 1;
+    (* use_dsp = "no" *) wire [63:0] fast_product = product_sum2 + product_carry2;
+    wire fast_multiply_active = FAST_MULTIPLY && !operation_is_divide;
+    wire operation_complete = fast_multiply_active ? (iteration == 6'd1) :
+                                                   (iteration == 6'd31);
 
     reg [31:0] divide_divisor;
     reg [31:0] divide_quotient;
@@ -88,7 +114,7 @@ module rv32m_multicycle_unit (
                 launch_pending <= 1'b1;
             end else if (launch_pending) begin
                 launch_pending <= 1'b0;
-            end else if (busy && (iteration == 6'd31)) begin
+            end else if (busy && operation_complete) begin
                 busy <= 1'b0;
                 done <= 1'b1;
             end
@@ -102,10 +128,18 @@ module rv32m_multicycle_unit (
             launch_funct3 <= 3'b000;
             launch_lhs <= 32'h0;
             launch_rhs <= 32'h0;
+            multiply_lhs_low <= 17'b0;
+            multiply_lhs_high <= 17'b0;
+            multiply_rhs_low <= 17'b0;
+            multiply_rhs_high <= 17'b0;
         end else if (!busy) begin
             launch_funct3 <= funct3;
             launch_lhs <= lhs;
             launch_rhs <= rhs;
+            multiply_lhs_low <= {1'b0, lhs[15:0]};
+            multiply_lhs_high <= {((funct3 == 3'b001 || funct3 == 3'b010) && lhs[31]), lhs[31:16]};
+            multiply_rhs_low <= {1'b0, rhs[15:0]};
+            multiply_rhs_high <= {((funct3 == 3'b001) && rhs[31]), rhs[31:16]};
         end
     end
 
@@ -123,6 +157,14 @@ module rv32m_multicycle_unit (
             multiply_accumulator <= 64'h0;
             multiply_multiplicand <= 64'h0;
             multiply_multiplier <= 32'h0;
+            product_ll <= 32'h0;
+            product_lh <= 33'h0;
+            product_hl <= 33'h0;
+            product_hh <= 32'h0;
+            product_ll_pipe <= 32'h0;
+            product_lh_pipe <= 33'h0;
+            product_hl_pipe <= 33'h0;
+            product_hh_pipe <= 32'h0;
             divide_divisor <= 32'h0;
             divide_quotient <= 32'h0;
             divide_remainder <= 33'h0;
@@ -141,6 +183,11 @@ module rv32m_multicycle_unit (
                 divide_divisor <= rhs_magnitude;
                 divide_quotient <= lhs_magnitude;
                 divide_remainder <= 33'h0;
+            end else if (FAST_MULTIPLY) begin
+                product_ll <= multiply_lhs_low * multiply_rhs_low;
+                product_lh <= multiply_lhs_low * multiply_rhs_high;
+                product_hl <= multiply_lhs_high * multiply_rhs_low;
+                product_hh <= multiply_lhs_high * multiply_rhs_high;
             end else begin
                 result_negative <=
                     (multiply_lhs_signed && launch_lhs[31]) ^
@@ -162,6 +209,17 @@ module rv32m_multicycle_unit (
                     divide_remainder <= divide_remainder_next;
                     divide_quotient <= divide_quotient_next;
                     iteration <= iteration + 6'd1;
+                end
+            end else if (FAST_MULTIPLY) begin
+                if (iteration == 6'd0) begin
+                    product_ll_pipe <= product_ll;
+                    product_lh_pipe <= product_lh;
+                    product_hl_pipe <= product_hl;
+                    product_hh_pipe <= product_hh;
+                    iteration <= 6'd1;
+                end else begin
+                    result <= return_high_product ?
+                        fast_product[63:32] : fast_product[31:0];
                 end
             end else begin
                 if (iteration == 6'd31) begin

@@ -1,10 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_random_reference
-// Purpose: Compares DUT behavior against deterministic local reference or signature fixtures.
 // Checks: Compares CPU architectural register state against a generated branch-free random reference program.
-// Pass condition: DUT outputs match the generated expected fixture or signature and no mismatch or timeout occurs.
-// Does not prove: Branch-free register/ALU focused; not broad constrained-random verification.
+// Branch-free register/ALU program.
 
 module tb_random_reference;
 
@@ -16,7 +13,7 @@ module tb_random_reference;
     localparam PROGRAM_WORD_COUNT = 170;
 
     initial begin
-        $dumpfile("wave/tb_random_reference.vcd");
+        $dumpfile("results/waveforms/tb_random_reference.vcd");
         $dumpvars(0, tb_random_reference);
 
         reset_cpu();

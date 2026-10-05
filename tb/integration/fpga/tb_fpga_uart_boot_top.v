@@ -1,17 +1,14 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_uart_boot_top
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: The packetized UART boot FPGA top accepts a serial boot packet for uart_gpio_demo, releases CPU execution
 //   from external IMEM, reconstructs UART TX output, observes GPIO 0xa5, and sees the public pass signature.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Simulation-tested serial boot packet flow and board-facing top-level ports only; not physically
-//   board-validated, not timing evidence, and not a deploy-ready boot ROM.
 // Firmware: firmware/hex/soc_io/uart_gpio_demo.hex
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_uart_boot_top;
+    initial begin : watchdog
+        repeat (2000000) @(posedge clock);
+        $fatal(1, "Testbench watchdog expired");
+    end
 
     localparam integer UART_CLKS_PER_BIT = 4;
     localparam integer PROGRAM_WORD_COUNT = 54;
@@ -168,7 +165,7 @@ module tb_fpga_uart_boot_top;
     end
 
     initial begin
-        $dumpfile("wave/tb_fpga_uart_boot_top.vcd");
+        $dumpfile("results/waveforms/tb_fpga_uart_boot_top.vcd");
         $dumpvars(0, tb_fpga_uart_boot_top);
         $readmemh("firmware/hex/soc_io/uart_gpio_demo.hex", program_words, 0, PROGRAM_WORD_COUNT - 1);
 

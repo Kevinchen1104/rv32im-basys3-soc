@@ -5,18 +5,15 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\docs-link-audit.ps1
 Outputs:
   Console link-audit report.
-Scope:
-  Documentation integrity check only; not hardware evidence.
-Audience:
-  Public release audit check.
 #>
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 . "$PSScriptRoot\verification-source-identity.ps1"
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
 function Get-RepoRelativePath {
     param([string] $Path)
@@ -35,7 +32,7 @@ function Get-RepoRelativePath {
 function Test-ExternalOrAnchor {
     param([string] $Target)
 
-    return ($Target -match "^(?i)(https?:|mailto:|data:)" -or $Target.StartsWith("#"))
+    return ($Target -match "^(?i)(https?:|mailto:|data:)")
 }
 
 function Get-NormalizedTarget {
@@ -64,11 +61,6 @@ function Get-NormalizedTarget {
         return $null
     }
 
-    $hashIndex = $target.IndexOf("#")
-    if ($hashIndex -ge 0) {
-        $target = $target.Substring(0, $hashIndex)
-    }
-
     if ([string]::IsNullOrWhiteSpace($target)) {
         return $null
     }
@@ -87,7 +79,8 @@ function Get-NormalizedTarget {
 function Resolve-LocalReference {
     param(
         [string] $Target,
-        [string] $SourceFile
+        [string] $SourceFile,
+        [switch] $RepoRootReference
     )
 
     $target = $Target.Replace("/", [System.IO.Path]::DirectorySeparatorChar).Replace("\", [System.IO.Path]::DirectorySeparatorChar)
@@ -95,12 +88,37 @@ function Resolve-LocalReference {
         return [System.IO.Path]::GetFullPath($target)
     }
 
-    if ($target -eq "README.md" -or $target -match "^(\.?github|docs|scripts|rtl|tb|firmware|fixtures|release|fpga|tools|formal|programs|src)(\\|/|$)") {
+    if ($RepoRootReference) {
         return [System.IO.Path]::GetFullPath((Join-Path $repoRoot $target))
     }
 
     $sourceDir = Split-Path -Parent $SourceFile
     return [System.IO.Path]::GetFullPath((Join-Path $sourceDir $target))
+}
+
+function Test-MarkdownAnchor {
+    param([string]$Path, [string]$Anchor)
+    $headings = @{}
+    $used = @{}
+    $inFence = $false
+    foreach ($line in Get-Content -LiteralPath $Path) {
+        if ($line -match '^\s*(```|~~~)') { $inFence = -not $inFence; continue }
+        if ($inFence) { continue }
+        if ($line -match '^#{1,6}\s+(.+?)\s*#*\s*$') {
+            $heading = $Matches[1].ToLowerInvariant()
+            $heading = $heading -replace '\[([^\]]+)\]\([^)]+\)', '$1'
+            $heading = $heading -replace '<[^>]+>', ''
+            $heading = $heading -replace '[^\p{L}\p{N}\s_-]', '' -replace '\s', '-'
+            $id = $heading
+            if ($used.ContainsKey($heading)) { $used[$heading]++; $id = "$heading-$($used[$heading])" }
+            else { $used[$heading] = 0 }
+            $headings[$id] = $true
+        }
+        foreach ($match in [regex]::Matches($line, '(?i)(?:id|name)=["'']([^"'']+)["'']')) {
+            $headings[$match.Groups[1].Value] = $true
+        }
+    }
+    return $headings.ContainsKey($Anchor)
 }
 
 $scanFiles = [System.Collections.Generic.List[object]]::new()
@@ -140,14 +158,19 @@ foreach ($file in ($scanFiles | Sort-Object FullName -Unique)) {
             continue
         }
 
-        $resolved = Resolve-LocalReference -Target $target -SourceFile $file.FullName
+        $parts = $target -split '#', 2
+        $resolved = if ($parts[0]) { Resolve-LocalReference -Target $parts[0] -SourceFile $file.FullName } else { $file.FullName }
         $entry = [ordered]@{
             source = $relativeFile
             reference = $target
             kind = "markdown_link"
         }
 
-        if (Test-Path -LiteralPath $resolved) {
+        $valid = Test-Path -LiteralPath $resolved
+        if ($valid -and $parts.Count -eq 2 -and $parts[1] -and $resolved -match '\.md$') {
+            $valid = Test-MarkdownAnchor -Path $resolved -Anchor $parts[1]
+        }
+        if ($valid) {
             $checked.Add($entry) | Out-Null
         } else {
             $missing.Add($entry) | Out-Null
@@ -166,7 +189,7 @@ foreach ($file in ($scanFiles | Sort-Object FullName -Unique)) {
             continue
         }
 
-        $resolved = Resolve-LocalReference -Target $target -SourceFile $file.FullName
+        $resolved = Resolve-LocalReference -Target $target -SourceFile $file.FullName -RepoRootReference
         $entry = [ordered]@{
             source = $relativeFile
             reference = $target
@@ -188,20 +211,19 @@ $summary = [ordered]@{
     scanned_markdown_files = @($scanFiles | Sort-Object FullName -Unique).Count
     checked_local_references = $checked.Count
     missing_local_references = $missing.ToArray()
-    boundary = "Docs link audit checks local Markdown links and repo-root inline code references. It skips URLs, anchors, placeholders, wildcards, and release/final docs snapshots."
+    scope = "File-relative Markdown links and heading anchors; repo-root inline code paths. External URLs, placeholders, wildcards, and release/final docs snapshots are skipped."
 }
 Add-DocumentationIdentityFields -Summary $summary | Out-Null
 
-$summary | ConvertTo-Json -Depth 6 | Set-Content -Path "wave\docs-link-audit-summary.json" -Encoding Ascii
-
+Write-ResultJson $summary "results\docs-link-audit-summary.json"
 Write-Host "========================================"
 Write-Host "Docs link audit"
 Write-Host ("Status: {0}" -f $summary.status)
 Write-Host ("Scanned markdown files: {0}" -f $summary.scanned_markdown_files)
 Write-Host ("Checked local references: {0}" -f $summary.checked_local_references)
 Write-Host ("Missing local references: {0}" -f $missing.Count)
-Write-Host "Summary written to wave\docs-link-audit-summary.json"
+Write-Host "Summary written to results\docs-link-audit-summary.json"
 
 if ($summary.status -ne "pass") {
-    throw "Docs link audit failed; inspect wave\docs-link-audit-summary.json"
+    throw "Docs link audit failed; inspect results\docs-link-audit-summary.json"
 }

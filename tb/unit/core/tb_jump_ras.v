@@ -10,7 +10,7 @@ module tb_jump_ras;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_jump_ras.vcd");
+        $dumpfile("results/waveforms/tb_jump_ras.vcd");
         $dumpvars(0, tb_jump_ras);
         reset_cpu();
 

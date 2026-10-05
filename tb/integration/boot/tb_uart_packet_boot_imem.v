@@ -149,7 +149,7 @@ module tb_uart_packet_boot_imem;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_uart_packet_boot_imem.vcd");
+        $dumpfile("results/waveforms/tb_uart_packet_boot_imem.vcd");
         $dumpvars(0, tb_uart_packet_boot_imem);
         $readmemh("firmware/hex/showcase/board_smoke.hex", program_words, 0, WORD_COUNT - 1);
 
@@ -187,9 +187,16 @@ module tb_uart_packet_boot_imem;
             $display("FAIL: packet loader should stop accepting bytes after done");
             $fatal;
         end
-        if (boot_imem.memory[WORD_COUNT] !== 32'h0000_0013 ||
-            boot_imem.memory[127] !== 32'h0000_0013) begin
-            $display("FAIL: successful packet did not clear the unused IMEM tail");
+        force imem_addr = WORD_COUNT * 4;
+        #1;
+        if (imem_rdata[32*(WORD_COUNT % 4) +: 32] !== 32'h0000_0013) begin
+            $display("FAIL: successful packet did not clear the first unused IMEM word");
+            $fatal;
+        end
+        force imem_addr = 32'd508;
+        #1;
+        if (imem_rdata[127:96] !== 32'h0000_0013) begin
+            $display("FAIL: successful packet did not clear the last IMEM word");
             $fatal;
         end
 

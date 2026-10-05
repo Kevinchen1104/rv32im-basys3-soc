@@ -4,29 +4,27 @@ Purpose: Runs the main showcase demo simulation flow.
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\showcase-demo.ps1
 Outputs:
-  Console transcript summary and simulation artifacts under wave\.
-Scope:
-  Simulation demo evidence only; not physical board validation or production software evidence.
-Audience:
-  Public showcase helper.
+  Console transcript summary and simulation artifacts under results\.
 #>
 param()
 
+. "$PSScriptRoot/reference-common.ps1"
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
+. "$PSScriptRoot/verification-source-identity.ps1"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
 $programName = "showcase_demo"
 $programHex = "firmware\hex\showcase\$programName.hex"
-$summaryPath = "wave\showcase-summary.json"
+$summaryPath = "results\showcase-summary.json"
+$summary = [ordered]@{ status='running'; error_message=$null }
+Write-ResultJson $summary $summaryPath
+try {
+$identity = Add-VerificationIdentityFields -Summary $summary
 $expectedTranscript = "RV32IM SHOWCASE`nUART OK`nMATVEC PASS`nCOUNTERS PASS`nSHOWCASE PASS`n"
 $tests = @("program_showcase_demo", "fpga_uart_boot_showcase", "fpga_uart_boot_bram_soc_showcase")
-
-function To-UInt32 {
-    param([int64]$Value)
-    return [uint32]($Value -band 0xffffffffL)
-}
 
 function Format-HexWord {
     param([uint32]$Value)
@@ -66,9 +64,10 @@ foreach ($test in $tests) {
     & (Join-Path $PSScriptRoot "run.ps1") -Test $test
 }
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
 $summary = [ordered]@{
+    status = 'pass'
     generated_at_utc = (Get-Date).ToUniversalTime().ToString("o")
     program_hex = $programHex
     program_word_count = $payloadWords.Count
@@ -91,8 +90,15 @@ $summary = [ordered]@{
     claim_boundary = "simulation only; not physical board evidence, timing evidence, or benchmark evidence"
 }
 
-$summary | ConvertTo-Json -Depth 5 | Set-Content -Path $summaryPath -Encoding Ascii
-
+Assert-VerificationInputsUnchanged $identity
+Add-VerificationIdentityFields -Summary $summary -Identity $identity | Out-Null
+} catch {
+    $summary.status = 'fail'
+    $summary.error_message = $_.Exception.Message
+    throw
+} finally {
+    Write-ResultJson $summary $summaryPath
+}
 Write-Host "========================================"
 Write-Host "PASS: showcase demo completed"
 Write-Host "Showcase summary written to $summaryPath"

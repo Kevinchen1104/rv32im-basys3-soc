@@ -10,7 +10,7 @@
 module tb_matvec_perf_counters;
 
     reg clock = 0;
-    reg reset = 0;
+    reg reset = 1;
     wire [31:0] debug_status;
     wire [31:0] debug_pc;
     wire [31:0] perf_matvec_start_count;
@@ -84,9 +84,33 @@ module tb_matvec_perf_counters;
     always #5 clock = ~clock;
 
     integer cycle;
+    integer lane;
+    reg [31:0] injected_address;
+    reg [31:0] injected_data;
+    reg [2:0] injected_funct3;
+    reg injected_valid;
+    reg [31:0] expected_word;
+
+    // Inject an accepted MEM-stage store to exercise the real address decoder
+    // and byte-lane wiring independently of instruction scheduling.
+    task mmio_store;
+        input [31:0] address;
+        input [31:0] value;
+        input [2:0] width;
+        begin
+            @(negedge clock);
+            injected_address = address;
+            injected_data = value;
+            injected_funct3 = width;
+            injected_valid = 1'b1;
+            @(posedge clock);
+            #1;
+            injected_valid = 1'b0;
+        end
+    endtask
 
     initial begin
-        $dumpfile("wave/tb_matvec_perf_counters.vcd");
+        $dumpfile("results/waveforms/tb_matvec_perf_counters.vcd");
         $dumpvars(0, tb_matvec_perf_counters);
 
         reset = 1'b1;
@@ -105,6 +129,7 @@ module tb_matvec_perf_counters;
             $fatal;
         end
 
+        @(negedge clock);
         reset = 1'b0;
 
         for (cycle = 0; cycle < TIMEOUT_CYCLES; cycle = cycle + 1) begin
@@ -146,6 +171,45 @@ module tb_matvec_perf_counters;
             perf_matvec_done_count,
             perf_matvec_busy_cycle_count
         );
+        @(negedge clock);
+        reset = 1'b1;
+        @(negedge clock);
+        reset = 1'b0;
+        injected_valid = 1'b0;
+        force dut.EXMEMStoreValid = injected_valid;
+        force dut.EXMEMALUOut = injected_address;
+        force dut.EXMEMfunct3 = injected_funct3;
+        force dut.StoreData = injected_data;
+        for (lane = 0; lane < 4; lane = lane + 1) begin
+            mmio_store(32'h70c, 32'h1234_5678, 3'b010);
+            mmio_store(32'h70c + lane, 32'ha0 + lane, 3'b000);
+            expected_word = (32'h1234_5678 & ~(32'hff << (8 * lane))) |
+                            ((32'ha0 + lane) << (8 * lane));
+            if (dut.matvec_vector_read_data !== expected_word)
+                $fatal(1, "MATVEC MMIO byte lane %0d", lane);
+        end
+        for (lane = 0; lane < 4; lane = lane + 2) begin
+            mmio_store(32'h710, 32'd3, 3'b010);
+            mmio_store(32'h714, 32'h1234_5678, 3'b010);
+            mmio_store(32'h714 + lane, 32'hbeef, 3'b001);
+            expected_word = (32'h1234_5678 & ~(32'hffff << (8 * lane))) |
+                            (32'hbeef << (8 * lane));
+            if (dut.matvec_row_data_read_data !== expected_word)
+                $fatal(1, "MATVEC MMIO halfword lane %0d", lane);
+        end
+        mmio_store(32'h711, 32'd9, 3'b000);
+        if (dut.matvec_row_index_read_data !== 32'd3)
+            $fatal(1, "MATVEC upper index byte changed index");
+        mmio_store(32'h701, 32'd1, 3'b000);
+        if (dut.matvec_status_read_data[0] !== 1'b0)
+            $fatal(1, "MATVEC upper control byte started operation");
+        if (perf_matvec_start_count !== 0 || perf_matvec_done_count !== 0)
+            $fatal(1, "MATVEC upper control byte changed operation counters");
+        release dut.EXMEMStoreValid;
+        release dut.EXMEMALUOut;
+        release dut.EXMEMfunct3;
+        release dut.StoreData;
+        $display("PASS: MATVEC MMIO byte and halfword lanes preserve untouched data");
         $display("PASS: tb_matvec_perf_counters passed");
         $finish;
     end

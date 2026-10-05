@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "scope": "same-board, same-firmware FIR2 stress batches",
+  "records": {
+    "parallel64": {
+      "capture": "docs/fpga/board_evidence/automatic_acceptance_5c1c4c0/fir/default-review.json",
+      "capture_sha256": "87760beb9fc889c882e622d4fe723b7d97774103a7607dcfb73d79023cd402ed",
+      "build": "docs/fpga/board_evidence/automatic_acceptance_5c1c4c0/application-build.json",
+      "build_sha256": "a8be0dc1f294267c57755d2b6c6df7219d1e043c7f2cd165540872514bf690c6",
+      "packet_sha256": "d370180c6402cce6d9d791a88e562a7ad50831b1a7a92aed80e4e8da670e8c96",
+      "batches": 200,
+      "outputs_checked": 6608,
+      "cycles_min": 10054,
+      "cycles_median": 10054.0,
+      "cycles_max": 10054
+    },
+    "banked1024": {
+      "capture": "docs/benchmarks/dcache/capacity/board/capacity-dm64.json",
+      "capture_sha256": "34b5a832d972fe457e4b4f4dffbe2594cdd72b6d5213a0bb6be4246ff0e5e080",
+      "build": "docs/benchmarks/dcache/capacity/implementation/dm64/metadata.json",
+      "build_sha256": "3a24aa2c7c064be50c3fc0be05a3072a571f454e14ee4d0baf7330854c2db023",
+      "packet_sha256": "d370180c6402cce6d9d791a88e562a7ad50831b1a7a92aed80e4e8da670e8c96",
+      "batches": 200,
+      "outputs_checked": 6608,
+      "cycles_min": 9372,
+      "cycles_median": 9372.0,
+      "cycles_max": 9372
+    }
+  },
+  "median_cycle_reduction_percent": 6.783369803063457
+}

@@ -23,3 +23,12 @@ jobs:
       - name: Run optional Yosys synthesis smoke
         shell: pwsh
         run: pwsh -ExecutionPolicy Bypass -File scripts/synth-smoke.ps1
+
+      - name: Upload synthesis diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yosys-synthesis
+          path: |
+            results/synth-smoke-summary.json
+            results/logs/synthesis/

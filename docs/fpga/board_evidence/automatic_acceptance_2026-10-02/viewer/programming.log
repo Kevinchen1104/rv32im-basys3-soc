@@ -1,0 +1,43 @@
+Task: board-burst/default-viewer-current-programming
+Started: 2026-10-02T19:27:14.710789+00:00
+Command: C:/AMDDesignTools/2026.1/Vivado/bin\xsdb.bat ./fpga/xsdb/basys3_program.tcl -bitstream ./build/vivado/signal-console-current/RISCVCPU_basys3_top.bit -device_selector *xc7a35t* -result_path ./build/signal-console/programming.json
+Timeout: 120 seconds
+
+attempting to launch hw_server
+
+****** Xilinx hw_server v2026.1
+  **** Build date : May 29 2026 at 14:55:19
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+
+INFO: hw_server application started
+INFO: Use Ctrl-C to exit hw_server application
+
+
+
+****** Xilinx hw_server v2026.1
+
+  **** Build date : May 29 2026 at 14:55:19
+
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+    ** Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+
+
+
+INFO: hw_server application started
+
+INFO: Use Ctrl-C to exit hw_server application
+
+
+
+
+INFO: To connect to this hw_server instance use url: TCP:127.0.0.1:3121
+
+
+
+PROGRAM_RESULT: target={target_id=1 name=xc7a35t jtag_device_name=xc7a35t jtag_device_id=2} programmed=true configured=true retry_count=0
+
+Result: passed
+Exit code: 0
+Finished: 2026-10-02T19:27:22.383500+00:00

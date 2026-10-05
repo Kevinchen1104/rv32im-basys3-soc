@@ -5,10 +5,6 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\assemble.ps1 -Check
 Outputs:
   firmware\hex\*.hex images or check-mode freshness messages.
-Scope:
-  Local assembler image generation only; not an external toolchain conformance claim.
-Audience:
-  Public entrypoint.
 #>
 param(
     [string[]]$Programs = @("sum", "call_add", "nested_call", "stack_call", "memory_unsigned", "upper_branch", "alu_ops", "muldiv_ops", "csr_trap", "mret_trap", "mstatus_trap_return", "privileged_csr_edges", "exception_mcause_mtval", "misaligned_exception", "abi_call", "li_constants", "address_labels", "pointer_store", "array_sum", "byte_array_sum", "halfword_array_sum", "sum_function", "nested_sum_function", "byte_directive_sum", "half_directive_sum", "string_sum", "strlen_function", "strcmp_function", "string_escape_sum", "count_char_function", "counter_loop", "perf_mmio_read", "uart_gpio_demo", "showcase_demo", "interactive_showcase_demo", "hardware_validation_suite", "matvec_scratchpad_demo", "matvec_scratchpad_interrupt", "matvec_scratchpad_no_interrupt", "matvec_dma_demo", "machine_timer_interrupt", "machine_timer_no_interrupt", "compliance_basic", "rv32i_alu_compliance", "rv32i_control_compliance", "rv32i_memory_compliance", "rv32m_compliance", "board_smoke", "led_smoke"),
@@ -713,6 +709,11 @@ function Assemble-Instruction {
     }
 }
 
+if ($All) {
+    $sourceRoot = if ($programRoot) { $programRoot } else { $firmwareSourceRootPath }
+    $Programs = @(Get-ChildItem -LiteralPath $sourceRoot -Recurse:(!$programRoot) -File -Filter '*.S' | ForEach-Object BaseName | Sort-Object)
+    if (-not $Programs.Count) { throw "No assembly sources found under $sourceRoot" }
+}
 foreach ($program in $Programs) {
     $paths = Resolve-ProgramImagePaths $program
     $sourcePath = $paths.SourcePath

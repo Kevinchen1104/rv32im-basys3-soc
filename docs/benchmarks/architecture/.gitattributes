@@ -1,0 +1,5 @@
+# Keep the reviewed snapshot bytes stable for their recorded SHA-256 hashes.
+*.csv -text
+*.json -text
+# Vivado's report spacing is retained as measured evidence, not source style.
+implementation/** -text -whitespace

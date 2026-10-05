@@ -1,20 +1,17 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_uart_boot_runtime_rx_showcase
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: Packetized UART boot loads interactive_showcase_demo through RISCVCPU_uart_boot_runtime_soc_top, releases
 //   CPU execution with external IMEM and external DMem enabled, waits for READY, sends runtime command M on the same
 //   UART RX pin, captures the transcript, observes GPIO phases/final value, checks external DMem MATVEC/counter
 //   snapshots and read/write traffic, sees the public pass signature, and stress-checks synchronous board reset
 //   propagation plus external-BRAM retention.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Simulation-tested boot-to-runtime UART RX handoff only; not physical board evidence, production
-//   firmware, timing evidence, or benchmark evidence.
 // Firmware: firmware/hex/showcase/interactive_showcase_demo.hex
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_uart_boot_runtime_rx_showcase;
+    initial begin : watchdog
+        repeat (2000000) @(posedge clock);
+        $fatal(1, "Testbench watchdog expired");
+    end
 
     localparam integer UART_CLKS_PER_BIT = 4;
     localparam integer PROGRAM_WORD_COUNT = 320;
@@ -206,10 +203,9 @@ module tb_fpga_uart_boot_runtime_rx_showcase;
                          dut.dmem.memory[6], dut.dmem.memory[9]);
                 $fatal;
             end
-            if (^dut.dmem.memory[10] === 1'bx ||
-                ^dut.dmem.memory[11] === 1'bx ||
-                ^dut.dmem.memory[12] === 1'bx) begin
-                $display("FAIL: MATVEC counter snapshot contains unknown values");
+            if (^{dut.dmem.memory[5], dut.dmem.memory[6], dut.dmem.memory[7], dut.dmem.memory[8],
+                  dut.dmem.memory[9], dut.dmem.memory[10], dut.dmem.memory[11], dut.dmem.memory[12]} === 1'bx) begin
+                $display("FAIL: performance counter snapshot contains unknown values");
                 $fatal;
             end
             if (dut.cpu.DMemory[64] !== 32'h0) begin
@@ -247,7 +243,7 @@ module tb_fpga_uart_boot_runtime_rx_showcase;
     initial begin
         expected_message = "RV32IM INTERACTIVE\nREADY\nCMD M\nMATVEC PASS\nCOUNTERS PASS\nINTERACTIVE PASS\n";
 
-        $dumpfile("wave/tb_fpga_uart_boot_runtime_rx_showcase.vcd");
+        $dumpfile("results/waveforms/tb_fpga_uart_boot_runtime_rx_showcase.vcd");
         $dumpvars(0, tb_fpga_uart_boot_runtime_rx_showcase);
         $readmemh("firmware/hex/showcase/interactive_showcase_demo.hex", program_words, 0, PROGRAM_WORD_COUNT - 1);
 

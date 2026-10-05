@@ -1,0 +1,27 @@
+[
+  {
+    "path": "board.json",
+    "bytes": 1361,
+    "sha256": "5f505e1076d2f557335ebf443b40c4bdffbd5c1604d035499127949ba310e4a1"
+  },
+  {
+    "path": "fpga_sources.f",
+    "bytes": 1491,
+    "sha256": "c86bc176c33364a534346e20a800b10307dddaaf5d3a18dd0f4b1364fc163619"
+  },
+  {
+    "path": "package.json",
+    "bytes": 393,
+    "sha256": "db950f3b93a3d2e8cd5b910ff993db53084d0518e38e3c63412c40673daf1fee"
+  },
+  {
+    "path": "README.md",
+    "bytes": 470,
+    "sha256": "01f1a2fad8acca330adbf96a771f4ccefcd3a07635997067b3d42e32e37feb7c"
+  },
+  {
+    "path": "source-inputs.json",
+    "bytes": 423,
+    "sha256": "553e91f57fa09c15b1a2aea1c87d410cb4d156448cb191b9e5916a59e34b81b9"
+  }
+]

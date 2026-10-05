@@ -5,13 +5,9 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\arch-test-detect.ps1
 Outputs:
   Console environment report for arch-test related paths and tools.
-Scope:
-  Environment discovery only; not an official compliance result or hardware proof.
-Audience:
-  Public optional arch-test integration helper.
 #>
 param(
-    [string]$OutputPath = "wave\arch-test-detect.json",
+    [string]$OutputPath = "results\arch-test-detect.json",
     [string]$ToolchainBin = "",
     [string]$Prefix = ""
 )
@@ -20,7 +16,8 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+. "$PSScriptRoot/result-format.ps1"
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
 if ([string]::IsNullOrWhiteSpace($ToolchainBin) -and -not [string]::IsNullOrWhiteSpace($env:RISCV_TOOLCHAIN_BIN)) {
     $ToolchainBin = $env:RISCV_TOOLCHAIN_BIN
@@ -191,12 +188,12 @@ $summary = [ordered]@{
     tools = $tools
     notes = @(
         "RISCOF and Spike/Sail are optional for this harness.",
-        "When official reference tools are unavailable, arch-test-run can compare against the local independent RV32IM signature reference.",
+        "arch-test-run compares against the local RV32IM reference. Run scripts/sail_reference.py separately for the official Sail model; this detector does not probe WSL installations.",
         "passed_local_reference is not an official compliance result."
     )
 }
 
-$summary | ConvertTo-Json -Depth 8 | Set-Content -Path $OutputPath -Encoding Ascii
+Write-ResultJson $summary $OutputPath
 
 Write-Host "========================================"
 Write-Host "RISC-V arch-test integration tool detection"

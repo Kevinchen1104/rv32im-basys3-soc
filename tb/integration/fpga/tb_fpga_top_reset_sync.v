@@ -1,12 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_top_reset_sync
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: FPGA top reset synchronizer releases the CPU cleanly.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Simulation reset check only; no timing closure claim.
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_top_reset_sync;
 
@@ -35,7 +29,7 @@ module tb_fpga_top_reset_sync;
     always #5 clock = ~clock;
 
     initial begin
-        $dumpfile("wave/tb_fpga_top_reset_sync.vcd");
+        $dumpfile("results/waveforms/tb_fpga_top_reset_sync.vcd");
         $dumpvars(0, tb_fpga_top_reset_sync);
 
         #2;

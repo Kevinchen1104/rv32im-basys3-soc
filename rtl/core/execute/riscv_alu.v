@@ -4,7 +4,7 @@
 // Role: Shared combinational execute-result datapath for the RV32IM-style core.
 // Interface: Forwarded operands, decode fields, immediates, PC, CSR/RV32M
 //   results, the shared arithmetic result, and the selected execute result.
-// Key behavior: Shares one add/sub datapath across integer arithmetic, AUIPC, and memory effective addresses.
+// Key behavior: Shares add/sub and shift datapaths across register/immediate operations.
 
 module riscv_alu (
     input [6:0] opcode,
@@ -65,6 +65,24 @@ module riscv_alu (
     assign arithmetic_result_selected = is_arithmetic_result_instruction;
     reg [31:0] non_arithmetic_result;
 
+    // Reverse the bit order around a right shifter to implement left shifts.
+    // Register and immediate shifts differ only in the source of shift_amount.
+    wire shift_left = (funct3 == 3'b001);
+    wire [4:0] shift_amount = (opcode == ALURop) ? rhs[4:0] : imm_i[4:0];
+    wire shift_fill = !shift_left && funct7[5] && lhs[31];
+    wire [31:0] shift_input;
+    wire signed [32:0] shift_extended = {shift_fill, shift_input};
+    wire [32:0] shifted_right = shift_extended >>> shift_amount;
+    wire [31:0] shift_result;
+
+    genvar bit_index;
+    generate
+        for (bit_index = 0; bit_index < 32; bit_index = bit_index + 1) begin : shift_bits
+            assign shift_input[bit_index] = shift_left ? lhs[31-bit_index] : lhs[bit_index];
+            assign shift_result[bit_index] = shift_left ? shifted_right[31-bit_index] : shifted_right[bit_index];
+        end
+    endgenerate
+
     always @(*) begin
         non_arithmetic_result = 32'h0;
 
@@ -78,9 +96,9 @@ module riscv_alu (
                     {7'b0000000, 3'b010}: non_arithmetic_result = ($signed(lhs) < $signed(rhs)) ? 32'd1 : 32'd0; // SLT
                     {7'b0000000, 3'b011}: non_arithmetic_result = (lhs < rhs) ? 32'd1 : 32'd0; // SLTU
                     {7'b0000000, 3'b100}: non_arithmetic_result = lhs ^ rhs; // XOR
-                    {7'b0000000, 3'b001}: non_arithmetic_result = lhs << rhs[4:0]; // SLL
-                    {7'b0000000, 3'b101}: non_arithmetic_result = lhs >> rhs[4:0]; // SRL
-                    {7'b0100000, 3'b101}: non_arithmetic_result = $signed(lhs) >>> rhs[4:0]; // SRA
+                    {7'b0000000, 3'b001}: non_arithmetic_result = shift_result; // SLL
+                    {7'b0000000, 3'b101}: non_arithmetic_result = shift_result; // SRL
+                    {7'b0100000, 3'b101}: non_arithmetic_result = shift_result; // SRA
                     default: non_arithmetic_result = 32'h0;
                 endcase
             end
@@ -90,9 +108,9 @@ module riscv_alu (
                     {7'b???????, 3'b010}: non_arithmetic_result = ($signed(lhs) < $signed(imm_i)) ? 32'd1 : 32'd0; // SLTI
                     {7'b???????, 3'b011}: non_arithmetic_result = (lhs < imm_i) ? 32'd1 : 32'd0; // SLTIU
                     {7'b???????, 3'b100}: non_arithmetic_result = lhs ^ imm_i; // XORI
-                    {7'b0000000, 3'b001}: non_arithmetic_result = lhs << imm_i[4:0]; // SLLI
-                    {7'b0000000, 3'b101}: non_arithmetic_result = lhs >> imm_i[4:0]; // SRLI
-                    {7'b0100000, 3'b101}: non_arithmetic_result = $signed(lhs) >>> imm_i[4:0]; // SRAI
+                    {7'b0000000, 3'b001}: non_arithmetic_result = shift_result; // SLLI
+                    {7'b0000000, 3'b101}: non_arithmetic_result = shift_result; // SRLI
+                    {7'b0100000, 3'b101}: non_arithmetic_result = shift_result; // SRAI
                     {7'b???????, 3'b110}: non_arithmetic_result = lhs | imm_i; // ORI
                     {7'b???????, 3'b111}: non_arithmetic_result = lhs & imm_i; // ANDI
                     default: non_arithmetic_result = 32'h0;

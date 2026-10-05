@@ -1,4 +1,4 @@
-name: Release consistency
+name: Evidence integrity
 
 on:
   push:
@@ -40,7 +40,7 @@ concurrency:
 
 jobs:
   final-audit:
-    name: Clone-safe final audit
+    name: Recorded evidence integrity
     runs-on: windows-latest
     timeout-minutes: 10
 
@@ -50,11 +50,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Verify release package consistency
+      # Freshness is reported separately. Current source is exercised by check.yml.
+      - name: Verify package hashes and recorded provenance
         shell: pwsh
-        run: |
-          if (Test-Path -LiteralPath "SOURCE_IDENTITY.json") {
-            powershell -NoProfile -ExecutionPolicy Bypass -File scripts\final-audit.ps1 -PackagedEvidence -PublishedRelease
-          } else {
-            powershell -NoProfile -ExecutionPolicy Bypass -File scripts\final-audit.ps1 -PackagedEvidence
-          }
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\final-audit.ps1 -PackagedEvidence
+
+      - name: Upload integrity and freshness report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-integrity
+          path: results/final-audit-summary.json

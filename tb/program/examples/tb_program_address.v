@@ -12,7 +12,7 @@ module tb_program_address;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_program_address.vcd");
+        $dumpfile("results/waveforms/tb_program_address.vcd");
         $dumpvars(0, tb_program_address);
         reset_cpu();
 

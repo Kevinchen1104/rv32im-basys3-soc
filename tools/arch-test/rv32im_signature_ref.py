@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Local independent RV32IM signature reference for selected arch-test cases.
+"""Local RV32I/M model for the selected signature tests.
 
-This is intentionally small and scoped to the locally selected RV32I/RV32M
-arch-test sources. It is not a RISCOF, Spike, or Sail replacement and must not
-be used as an official compliance result.
+Privileged-architecture conformance is outside this model's scope.
+The optional Sail flow provides a separate upstream reference.
 """
 
 import argparse
-import json
 from pathlib import Path
+import re
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+from result_json import write_result_json
 
 MASK32 = 0xFFFFFFFF
 INT_MIN = 0x80000000
@@ -30,17 +31,22 @@ class ReferenceCpu:
         self.pc = 0
         self.cycles = 0
         self.memory_words = memory_words
+        if memory_words <= 0:
+            raise ValueError('memory_words must be positive')
         self.tohost_word = tohost_word
         self.pass_pc = pass_pc
         self.fail_pc = fail_pc
         self._load_hex(program_hex)
 
     def _load_hex(self, program_hex):
-        for word_index, raw_line in enumerate(Path(program_hex).read_text().splitlines()):
+        lines = Path(program_hex).read_text().splitlines()
+        if not lines:
+            raise ValueError('Program image is empty')
+        for word_index, raw_line in enumerate(lines):
             line = raw_line.strip()
-            if not line:
-                continue
-            word = int(line, 16) & MASK32
+            if not re.fullmatch(r'[0-9a-fA-F]{8}', line):
+                raise ValueError(f'Invalid program word at line {word_index + 1}: {line!r}')
+            word = int(line, 16)
             base = word_index * 4
             self.write_u8(base + 0, word & 0xFF)
             self.write_u8(base + 1, (word >> 8) & 0xFF)
@@ -48,7 +54,8 @@ class ReferenceCpu:
             self.write_u8(base + 3, (word >> 24) & 0xFF)
 
     def read_u8(self, addr):
-        return self.mem.get(addr & MASK32, 0) & 0xFF
+        self.check_address(addr)
+        return self.mem.get(addr, 0) & 0xFF
 
     def read_u16(self, addr):
         return self.read_u8(addr) | (self.read_u8(addr + 1) << 8)
@@ -62,7 +69,12 @@ class ReferenceCpu:
         ) & MASK32
 
     def write_u8(self, addr, value):
-        self.mem[addr & MASK32] = value & 0xFF
+        self.check_address(addr)
+        self.mem[addr] = value & 0xFF
+
+    def check_address(self, addr):
+        if not 0 <= addr < self.memory_words * 4:
+            raise UnsupportedInstruction(f'Address 0x{addr:x} is outside the reference RAM')
 
     def write_u16(self, addr, value):
         self.write_u8(addr, value)
@@ -399,11 +411,7 @@ def write_signature(cpu, output_path, start_word, word_count):
     Path(output_path).write_text("\n".join(lines) + ("\n" if lines else ""), encoding="ascii")
 
 
-def write_json(path, data):
-    Path(path).write_text(json.dumps(data, indent=2) + "\n", encoding="ascii")
-
-
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--program-hex", required=True)
     parser.add_argument("--signature-start-word", type=int, required=True)
@@ -415,15 +423,26 @@ def main():
     parser.add_argument("--max-cycles", type=int, default=250000)
     parser.add_argument("--output-signature", required=True)
     parser.add_argument("--output-json", required=True)
-    args = parser.parse_args()
-
-    cpu = ReferenceCpu(
-        args.program_hex,
-        args.memory_words,
-        args.tohost_word,
-        args.tohost_pass_pc,
-        args.tohost_fail_pc,
-    )
+    args = parser.parse_args(argv)
+    program = Path(args.program_hex).resolve()
+    signature = Path(args.output_signature).resolve()
+    record = Path(args.output_json).resolve()
+    if len({program, signature, record}) != 3:
+        parser.error('Program, signature and result JSON must use different paths')
+    write_result_json({'status': 'running', 'reference_kind': 'local'}, record)
+    signature.unlink(missing_ok=True)
+    try:
+        if args.signature_start_word < 0 or args.signature_words <= 0 or args.max_cycles <= 0:
+            raise ValueError('Signature range and maximum cycles must be positive')
+        if args.signature_start_word + args.signature_words > args.memory_words:
+            raise ValueError('Signature extends beyond reference RAM')
+        if not -1 <= args.tohost_word < args.memory_words:
+            raise ValueError('tohost word is outside reference RAM')
+        cpu = ReferenceCpu(args.program_hex, args.memory_words, args.tohost_word,
+                           args.tohost_pass_pc, args.tohost_fail_pc)
+    except (OSError, ValueError, UnsupportedInstruction) as error:
+        write_result_json({'status': 'fail', 'reference_kind': 'local', 'reason': str(error)}, record)
+        return 3
 
     status = "timeout"
     reason = "local reference timed out"
@@ -470,7 +489,7 @@ def main():
         "pc": cpu.pc,
         "claim_boundary": "local independent RV32IM signature reference only; not an official compliance result",
     }
-    write_json(args.output_json, result)
+    write_result_json(result, record)
 
     if status == "pass":
         return 0

@@ -1,15 +1,9 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_precise_exception_commit
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: Illegal-instruction, misaligned-load, and misaligned-store traps are precise: faulting register writes are
 //   blocked, faulting/wrong-path stores do not reach MEM, wrong-path register writes are suppressed, and
 //   mepc/mcause/mtval capture the documented values.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Instruction-address alignment, which is covered by
-//   tb_assert_control_transfer_legality_alignment, or complete privileged architecture behavior.
-// Assertion focus: Directed check for precise exception commit behavior or side-effect suppression.
+// tb_assert_control_transfer_legality_alignment checks instruction-address alignment.
 
 module tb_assert_precise_exception_commit;
 
@@ -172,7 +166,7 @@ module tb_assert_precise_exception_commit;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_assert_precise_exception_commit.vcd");
+        $dumpfile("results/waveforms/tb_assert_precise_exception_commit.vcd");
         $dumpvars(0, tb_assert_precise_exception_commit);
 
         run_illegal_phase();

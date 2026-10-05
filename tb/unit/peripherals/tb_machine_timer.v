@@ -6,7 +6,6 @@
 //   low/high register writes, registers MTIP-style comparison results with one-cycle observation latency, and
 //   handles compare postponement, low-half carry, and 64-bit rollover.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   nested interrupt, delegation, or board-timing proof.
 
 module tb_machine_timer;
     reg clock = 1'b0;
@@ -83,7 +82,7 @@ module tb_machine_timer;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_machine_timer.vcd");
+        $dumpfile("results/waveforms/tb_machine_timer.vcd");
         $dumpvars(0, tb_machine_timer);
 
         reset = 1'b1;

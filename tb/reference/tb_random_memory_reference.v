@@ -1,13 +1,9 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_random_memory_reference
-// Purpose: Compares DUT behavior against deterministic local reference or signature fixtures.
 // Checks: Compares CPU register and data-memory state against a fixed-seed generated memory reference program; final
 //   DMemory checking covers every generated memory operation word while JSON metadata records load results, store
 //   values, widths, affected words, and checksum progress.
-// Pass condition: DUT outputs match the generated expected fixture or signature and no mismatch or timeout occurs.
-// Does not prove: Branch-free fixed-seed generated memory slice; not broad constrained-random verification, full
-//   memory-system proof, or RISC-V compliance.
+// Branch-free, fixed-seed memory program.
 
 module tb_random_memory_reference;
 
@@ -22,14 +18,14 @@ module tb_random_memory_reference;
     localparam CHECKED_DMEM_WORD_COUNT = 32;
 
     initial begin
-        $dumpfile("wave/tb_random_memory_reference.vcd");
+        $dumpfile("results/waveforms/tb_random_memory_reference.vcd");
         $dumpvars(0, tb_random_memory_reference);
 
         reset_cpu();
-        $readmemh("fixtures/generated/reference/random_memory_reference.hex", dut.IMemory, 0, PROGRAM_WORD_COUNT - 1);
-        $readmemh("fixtures/generated/reference/random_memory_reference_dmem_init.hex", dut.DMemory, 0, INITIAL_DMEM_WORD_COUNT - 1);
-        $readmemh("fixtures/generated/reference/random_memory_reference_expected_regs.hex", expected_regs, 0, 31);
-        $readmemh("fixtures/generated/reference/random_memory_reference_expected_dmem.hex", expected_dmem, 0, CHECKED_DMEM_WORD_COUNT - 1);
+        $readmemh(reference_path("random_memory_reference.hex"), dut.IMemory, 0, reference_word_count(PROGRAM_WORD_COUNT) - 1);
+        $readmemh(reference_path("random_memory_reference_dmem_init.hex"), dut.DMemory, 0, INITIAL_DMEM_WORD_COUNT - 1);
+        $readmemh(reference_path("random_memory_reference_expected_regs.hex"), expected_regs, 0, 31);
+        $readmemh(reference_path("random_memory_reference_expected_dmem.hex"), expected_dmem, 0, CHECKED_DMEM_WORD_COUNT - 1);
 
         run_cycles(900);
 

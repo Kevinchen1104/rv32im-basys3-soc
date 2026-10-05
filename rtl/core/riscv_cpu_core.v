@@ -1,10 +1,8 @@
 `timescale 1ns / 1ps
 
-// Module: RISCVCPU
-// Role: RV32IM-style pipelined CPU core with local memories, caches, selected machine-mode CSR/trap handling, MMIO, and accelerator hooks.
-// Interface: Clock/reset, optional RV32M/SoC-slice enables, external-memory buses and configuration validity, debug/trace/performance outputs, GPIO, and UART handshakes.
-// Key behavior: Retires instructions through a staged pipeline, registers branch/jump recovery, prioritizes traps, bypasses D-cache for MMIO, and arbitrates MATVEC DMA-lite data memory ownership.
-// Non-goals: This is not a complete privileged-mode implementation, not a coherent DMA system, and not a timing or physical-board claim.
+// Five-stage RV32IM-style CPU with optional caches, machine-mode traps, and MMIO.
+// Pipeline payload and validity are stored separately. Control recovery uses
+// registered metadata; memory backpressure holds the live transaction.
 
 module RISCVCPU #(
     parameter MEMORY_WORD_COUNT = 1024,
@@ -13,10 +11,17 @@ module RISCVCPU #(
     parameter USE_EXTERNAL_IMEM = 0,
     parameter USE_EXTERNAL_DMEM = 0,
     parameter ENABLE_RV32M = 1,
+    parameter FAST_MULTIPLY = 0,
     parameter ENABLE_ACCELERATORS = 1,
+    parameter ENABLE_MATVEC_SCRATCHPAD = 1,
+    parameter ENABLE_MATVEC_DMA = 1,
     parameter ENABLE_MACHINE_TIMER = 1,
     parameter ENABLE_ICACHE = 1,
+    parameter ICACHE_BYTES = 64,
+    parameter ICACHE_PARALLEL_LOOKUP = 1,
     parameter ENABLE_DCACHE = 1,
+    parameter DCACHE_BYTES = 64,
+    parameter DCACHE_VICTIM_LINES = 0,
     parameter ENABLE_BRANCH_PREDICTOR = 1,
     parameter ENABLE_PERF_COUNTERS = 1,
     parameter ENABLE_CONTROL_REDIRECTS = 1,
@@ -76,7 +81,14 @@ module RISCVCPU #(
     localparam CORE_CONFIG_VALID =
         MEMORY_CONFIG_VALID &&
         INIT_PROGRAM_CONFIG_VALID &&
-        EXTERNAL_MEMORY_CONFIG_VALID;
+        EXTERNAL_MEMORY_CONFIG_VALID &&
+        (DCACHE_BYTES == 64 || DCACHE_BYTES == 128) &&
+        (DCACHE_VICTIM_LINES == 0 || DCACHE_VICTIM_LINES == 1 || DCACHE_VICTIM_LINES == 2 ||
+         DCACHE_VICTIM_LINES == 4 || DCACHE_VICTIM_LINES == 8) &&
+        (!ENABLE_ICACHE || ((ICACHE_BYTES >= 64) && (ICACHE_BYTES <= 4096) &&
+         ((ICACHE_BYTES & (ICACHE_BYTES - 1)) == 0) &&
+         ((ICACHE_PARALLEL_LOOKUP == 0) ||
+          ((ICACHE_PARALLEL_LOOKUP == 1) && (ICACHE_BYTES == 64)))));
 
     // Invalid memory depth, initialization range, or external cache-line
     // integration asserts config_error. Integrators must hold or reject such
@@ -84,66 +96,29 @@ module RISCVCPU #(
     assign config_error = !CORE_CONFIG_VALID;
 
     // ================================
-    // ISA opcode parameters
+    // Instruction classes and local decode constants
     // ================================
-    localparam ALURop = 7'b0110011;  // R-type ALU opcode
-    localparam ALUIop = 7'b0010011;  // I-type ALU opcode
-    localparam LW = 7'b0000011;  // Load Word opcode
-    localparam SW = 7'b0100011;  // Store Word opcode
-    localparam BEQ = 7'b1100011;  // Branch opcode
-    localparam JAL = 7'b1101111;  // Jump and Link opcode
-    localparam JALR = 7'b1100111;  // Jump and Link Register opcode
-    localparam LUIop = 7'b0110111;  // LUI opcode
-    localparam AUIPCop = 7'b0010111;  // AUIPC opcode
-    localparam SYSTEMop = 7'b1110011;  // CSR and environment opcode
-    localparam NOP = 32'h00000013;  // addi x0, x0, 0
+    // funct3/funct7 select the operation within each opcode class.
+    localparam [6:0] OP_REG    = 7'b0110011;
+    localparam [6:0] OP_IMM    = 7'b0010011;
+    localparam [6:0] OP_LOAD   = 7'b0000011;
+    localparam [6:0] OP_STORE  = 7'b0100011;
+    localparam [6:0] OP_BRANCH = 7'b1100011;
+    localparam [6:0] OP_JAL    = 7'b1101111;
+    localparam [6:0] OP_JALR   = 7'b1100111;
+    localparam [6:0] OP_LUI    = 7'b0110111;
+    localparam [6:0] OP_AUIPC  = 7'b0010111;
+    localparam [6:0] OP_SYSTEM = 7'b1110011;
+    localparam [31:0] NOP = 32'h00000013;  // addi x0, x0, 0
 
-    // ================================
-    // Cache controller parameters
-    // ================================
+    // Cache states used here or observed by the reset test.
     localparam CACHE_IDLE = 2'b00;
-    localparam CACHE_WRITEBACK = 2'b01;
-    localparam CACHE_MISS_WAIT = 2'b10;
     localparam CACHE_REFILL = 2'b11;
-
     localparam IC_IDLE = 1'b0;
-    localparam IC_MISS = 1'b1;
+
+    // Debug status mirrors a normal-memory store. Peripheral address decoding
+    // is owned by mmio_decode.
     localparam [31:0] DEBUG_STATUS_ADDR = 32'h0000_0100;
-    localparam [31:0] GPIO_OUTPUT_ADDR = 32'h0000_0200;
-    localparam [31:0] GPIO_INPUT_ADDR = 32'h0000_0204;
-    localparam [31:0] UART_TXDATA_ADDR = 32'h0000_0300;
-    localparam [31:0] UART_RXDATA_ADDR = 32'h0000_0304;
-    localparam [31:0] UART_STATUS_ADDR = 32'h0000_0308;
-    localparam [31:0] PERF_CYCLE_COUNT_ADDR = 32'h0000_0600;
-    localparam [31:0] PERF_RETIRED_COUNT_ADDR = 32'h0000_0604;
-    localparam [31:0] PERF_BRANCH_MISS_COUNT_ADDR = 32'h0000_0608;
-    localparam [31:0] PERF_ICACHE_MISS_COUNT_ADDR = 32'h0000_060c;
-    localparam [31:0] PERF_DCACHE_MISS_COUNT_ADDR = 32'h0000_0610;
-    localparam [31:0] PERF_STALL_CYCLE_COUNT_ADDR = 32'h0000_0614;
-    localparam [31:0] PERF_MATVEC_START_COUNT_ADDR = 32'h0000_0618;
-    localparam [31:0] PERF_MATVEC_DONE_COUNT_ADDR = 32'h0000_061c;
-    localparam [31:0] PERF_MATVEC_BUSY_CYCLE_COUNT_ADDR = 32'h0000_0620;
-    localparam [31:0] MATVEC_CTRL_ADDR = 32'h0000_0700;
-    localparam [31:0] MATVEC_STATUS_ADDR = 32'h0000_0704;
-    localparam [31:0] MATVEC_CONFIG_ADDR = 32'h0000_0708;
-    localparam [31:0] MATVEC_VECTOR_ADDR = 32'h0000_070c;
-    localparam [31:0] MATVEC_ROW_INDEX_ADDR = 32'h0000_0710;
-    localparam [31:0] MATVEC_ROW_DATA_ADDR = 32'h0000_0714;
-    localparam [31:0] MATVEC_RESULT_INDEX_ADDR = 32'h0000_0718;
-    localparam [31:0] MATVEC_RESULT_DATA_ADDR = 32'h0000_071c;
-    localparam [31:0] MATVEC_PERF_ADDR = 32'h0000_0720;
-    localparam [31:0] TIMER_MTIME_LOW_ADDR = 32'h0000_0800;
-    localparam [31:0] TIMER_MTIME_HIGH_ADDR = 32'h0000_0804;
-    localparam [31:0] TIMER_MTIMECMP_LOW_ADDR = 32'h0000_0808;
-    localparam [31:0] TIMER_MTIMECMP_HIGH_ADDR = 32'h0000_080c;
-    localparam [31:0] MATVEC_DMA_VEC_ADDR_ADDR = 32'h0000_0900;
-    localparam [31:0] MATVEC_DMA_MATRIX_ADDR_ADDR = 32'h0000_0904;
-    localparam [31:0] MATVEC_DMA_OUT_ADDR_ADDR = 32'h0000_0908;
-    localparam [31:0] MATVEC_DMA_ROWS_ADDR = 32'h0000_090c;
-    localparam [31:0] MATVEC_DMA_CTRL_ADDR = 32'h0000_0910;
-    localparam [31:0] MATVEC_DMA_STATUS_ADDR = 32'h0000_0914;
-    localparam [31:0] MATVEC_DMA_ERROR_ADDR = 32'h0000_0918;
-    localparam [31:0] MATVEC_DMA_PERF_ADDR = 32'h0000_091c;
 
     // ================================
     // Architectural state and memories
@@ -209,21 +184,42 @@ module RISCVCPU #(
     // ================================
     // Pipeline registers
     // ================================
-    reg [31:0] IFIDIR, IDEXIR, EXMEMIR, MEMWBIR;
+    // IF/ID: fetched instruction and prediction.
+    reg [31:0] IFIDIR;
     reg [31:0] IFIDPC;
+    reg IFIDValid;
+    reg IFIDPredTaken;
+    reg [31:0] IFIDPredPC;
+
+    // ID/EX: decoded operands and prediction to resolve in execute.
+    reg [31:0] IDEXIR;
     reg [31:0] IDEXPC;
-    reg [31:0] EXMEMPC;
-    reg [31:0] MEMWBPC;
     reg [31:0] IDEXA, IDEXB;
+    reg IDEXValid;
+    reg IDEXPredTaken;
+    reg [31:0] IDEXPredPC;
+
+    // EX/MEM: result, store operand, and destination/writeback metadata.
+    reg [31:0] EXMEMIR;
+    reg [31:0] EXMEMPC;
     reg [31:0] EXMEMB, EXMEMALUOut;
     reg [31:0] EXMEMPCPlus4;
-    reg [31:0] MEMWBValue;
+    reg EXMEMValid;
     reg EXMEMForwardRegWrite;
     reg EXMEMWritebackRegWrite;
     reg [4:0] EXMEMForwardRd;
     reg EXMEMForwardUsePCPlus4;
+
+    // MEM/WB: completed result and public retirement trace.
+    reg [31:0] MEMWBIR;
+    reg [31:0] MEMWBPC;
+    reg [31:0] MEMWBValue;
+    reg MEMWBValid;
     reg MEMWBForwardRegWrite;
     reg [4:0] MEMWBForwardRd;
+    reg TraceValid;
+
+    // Registered control recovery and delayed instruction-alignment checks.
     reg ControlRedirectPending;
     reg ControlRedirectPendingPrev;
     reg ControlResolutionWasBranch;
@@ -238,18 +234,12 @@ module RISCVCPU #(
     reg InstructionMisalignUseFallthrough;
     reg [31:0] InstructionMisalignPC;
     reg [31:0] InstructionMisalignTarget;
+
+    // Ownership of the iterative multiply/divide unit.
     reg RV32MInFlight;
     reg RV32MResultReady;
-    reg IFIDValid;
-    reg IDEXValid;
-    reg EXMEMValid;
-    reg MEMWBValid;
-    reg TraceValid;
-    reg IFIDPredTaken;
-    reg IDEXPredTaken;
-    reg [31:0] IFIDPredPC;
-    reg [31:0] IDEXPredPC;
 
+    // Performance counters, CSR state, and peripheral readback.
     wire [31:0] CycleCount;
     wire [31:0] RetiredCount;
     wire [31:0] BranchMissCount;
@@ -313,7 +303,7 @@ module RISCVCPU #(
     // ================================
     wire [1:0] cache_stall;
     wire [1:0] cache_state;
-    wire [3:0] DCacheDirty;
+    wire [(DCACHE_BYTES == 128 ? 8 : 4)-1:0] DCacheDirty;
 
     // Current fetch output from the instruction cache, or NOP on a miss.
     wire [31:0] IFInstruction;
@@ -330,11 +320,9 @@ module RISCVCPU #(
     // Instruction field aliases
     // ================================
     wire [6:0] IFIDop = IFIDIR[6:0];
-    wire [4:0] IFIDrd = IFIDIR[11:7];
     wire [2:0] IFIDfunct3 = IFIDIR[14:12];
     wire [4:0] IFIDrs1 = IFIDIR[19:15];
     wire [4:0] IFIDrs2 = IFIDIR[24:20];
-    wire [6:0] IFIDfunct7 = IFIDIR[31:25];
 
     wire [6:0] IDEXop = IDEXIR[6:0];
     wire [4:0] IDEXrd = IDEXIR[11:7];
@@ -345,7 +333,6 @@ module RISCVCPU #(
     wire [11:0] IDEXcsr = IDEXIR[31:20];
 
     wire [6:0] EXMEMop = EXMEMIR[6:0];
-    wire [4:0] EXMEMrd = EXMEMIR[11:7];
     wire [2:0] EXMEMfunct3 = EXMEMIR[14:12];
     wire [4:0] EXMEMrs2 = EXMEMIR[24:20];
     // Preserve the existing debug/testbench alias without decoding MEMWBIR
@@ -371,34 +358,44 @@ module RISCVCPU #(
     // ================================
     // Pipeline control decode
     // ================================
-    wire IDEXMemRead   = (IDEXop == LW);
-    wire IDEXMemWrite  = (IDEXop == SW);
-    wire IDEXBranch    = (IDEXop == BEQ);
-    wire IDEXJump      = (IDEXop == JAL) || (IDEXop == JALR);
-    wire IDEXSystem    = (IDEXop == SYSTEMop);
+    wire IDEXMemRead   = (IDEXop == OP_LOAD);
+    wire IDEXMemWrite  = (IDEXop == OP_STORE);
+    wire IDEXBranch    = (IDEXop == OP_BRANCH);
+    wire IDEXJump      = (IDEXop == OP_JAL) || (IDEXop == OP_JALR);
+    wire IDEXSystem    = (IDEXop == OP_SYSTEM);
     wire IDEXALUResult =
-        (IDEXop == ALURop) ||
-        (IDEXop == ALUIop) ||
-        (IDEXop == LUIop) ||
-        (IDEXop == AUIPCop) ||
+        (IDEXop == OP_REG) ||
+        (IDEXop == OP_IMM) ||
+        (IDEXop == OP_LUI) ||
+        (IDEXop == OP_AUIPC) ||
         IDEXSystem;
     wire IDEXWritesRegister =
         IDEXValid &&
         (IDEXrd != 0) &&
         (IDEXALUResult || IDEXMemRead || IDEXJump);
 
-    wire EXMEMMemRead   = (EXMEMop == LW);
-    wire EXMEMMemWrite  = (EXMEMop == SW);
+    wire EXMEMMemRead   = (EXMEMop == OP_LOAD);
+    wire EXMEMMemWrite  = (EXMEMop == OP_STORE);
     wire EXMEMMemAccess = EXMEMMemRead || EXMEMMemWrite;
-    wire EXMEMJump      = (EXMEMop == JAL) || (EXMEMop == JALR);
-    wire EXMEMALUResult = (EXMEMop == ALURop) || (EXMEMop == ALUIop) || (EXMEMop == LUIop) || (EXMEMop == AUIPCop) || (EXMEMop == SYSTEMop);
-    // These producer-valid terms own pipeline validity, architectural write
-    // intent, and x0 exclusion once. The forwarding unit then performs only
-    // source-register matching on its timing-sensitive operand paths.
+    wire EXMEMJump      = (EXMEMop == OP_JAL) || (EXMEMop == OP_JALR);
+    wire EXMEMALUResult =
+        (EXMEMop == OP_REG) ||
+        (EXMEMop == OP_IMM) ||
+        (EXMEMop == OP_LUI) ||
+        (EXMEMop == OP_AUIPC) ||
+        (EXMEMop == OP_SYSTEM);
+    // Opcode decode alone can remain asserted in a bubble. Qualify memory
+    // operations with stage validity before selecting side effects.
+    wire EXMEMLoadValid = EXMEMValid && EXMEMMemRead;
+    wire EXMEMStoreValid = EXMEMValid && EXMEMMemWrite;
+
+    // IDEXWritesRegister excludes x0 before rd/write intent enter EX/MEM.
+    // EX/MEM bubbles retain stale write metadata, so they still need Valid.
+    // MEM/WB captures write intent already qualified by memwb_input_valid;
+    // rechecking Valid or rd here would lengthen every WB forwarding path.
     wire EXMEMForwardProducerValid =
-        EXMEMValid && EXMEMForwardRegWrite && (EXMEMForwardRd != 0);
-    wire MEMWBForwardProducerValid =
-        MEMWBValid && MEMWBForwardRegWrite && (MEMWBForwardRd != 0);
+        EXMEMValid && EXMEMForwardRegWrite;
+    wire MEMWBForwardProducerValid = MEMWBForwardRegWrite;
     wire EXMEMRegWrite = EXMEMForwardProducerValid;
     wire MEMWBRegWrite = MEMWBForwardProducerValid;
 
@@ -437,6 +434,9 @@ module RISCVCPU #(
         .store_data(StoreData)
     );
 
+    // ================================
+    // Execute datapath and iterative multiply/divide
+    // ================================
     wire [31:0] execute_result;
     wire [31:0] execute_arithmetic_result;
     wire [31:0] rv32m_result;
@@ -461,7 +461,7 @@ module RISCVCPU #(
     wire IDEXMExtension =
         ENABLE_RV32M &&
         IDEXValid &&
-        (IDEXop == ALURop) &&
+        (IDEXop == OP_REG) &&
         (IDEXfunct7 == 7'b0000001);
     wire rv32m_squash;
     wire rv32m_start =
@@ -485,7 +485,7 @@ module RISCVCPU #(
 
     generate
         if (ENABLE_RV32M) begin : gen_rv32m_multicycle
-            rv32m_multicycle_unit rv32m_execute_unit (
+            rv32m_multicycle_unit #(.FAST_MULTIPLY(FAST_MULTIPLY)) rv32m_execute_unit (
                 .clock(clock),
                 .reset(reset),
                 .start(rv32m_start),
@@ -585,6 +585,9 @@ module RISCVCPU #(
         end
     endgenerate
 
+    // ================================
+    // Exception classification, trap acceptance, and CSR updates
+    // ================================
     wire is_ecall;
     wire is_ebreak;
     wire is_mret;
@@ -607,6 +610,8 @@ module RISCVCPU #(
     wire [31:0] trap_tval;
     wire architectural_mret_taken;
     wire execute_instruction_accept;
+    wire immediate_exception_pending;
+    wire exception_pending;
     wire immediate_exception_taken;
     wire instruction_misaligned_taken;
     wire instruction_misaligned_capture;
@@ -728,9 +733,14 @@ module RISCVCPU #(
     assign memory_access_fault_taken =
         memory_access_fault_detect &&
         !memory_access_fault_stall;
-    assign immediate_exception_taken =
+    // Select frontend recovery before memory backpressure arrives. Acceptance
+    // still gates trap/CSR side effects and the pipeline's final update edge.
+    assign immediate_exception_pending =
         ENABLE_CSR_TRAPS &&
-        execute_instruction_accept &&
+        IDEXValid &&
+        !ControlRedirectPending &&
+        !rv32m_execute_stall &&
+        !memory_access_fault_detect &&
         (
             instruction_access_fault ||
             !is_legal_instruction ||
@@ -738,6 +748,8 @@ module RISCVCPU #(
             is_ebreak ||
             is_misaligned_access
         );
+    assign immediate_exception_taken =
+        immediate_exception_pending && !dcache_pipeline_stall;
     // The branch comparator feeds only the one-bit capture event. The pending
     // register drives redirect and trap metadata on the following cycle.
     assign instruction_misaligned_taken =
@@ -748,6 +760,10 @@ module RISCVCPU #(
         memory_access_fault_taken ||
         immediate_exception_taken ||
         instruction_misaligned_taken;
+    assign exception_pending =
+        memory_access_fault_detect ||
+        immediate_exception_pending ||
+        (InstructionMisalignPending && !InstructionMisalignCancel);
     assign mret_taken =
         ENABLE_CSR_TRAPS &&
         !ControlRedirectPending &&
@@ -782,6 +798,7 @@ module RISCVCPU #(
         .instruction_is_m_extension(IDEXMExtension),
         .dcache_pipeline_stall(dcache_pipeline_stall),
         .exception_taken(exception_taken),
+        .exception_pending(exception_pending),
         .mret_taken(mret_taken),
         .interrupt_eligible(interrupt_eligible),
         .interrupt_taken(interrupt_taken),
@@ -923,16 +940,19 @@ module RISCVCPU #(
 
     // Branch/jump correction enters this path only from registered recovery
     // metadata. Trap and mret redirects retain their architectural priority.
-    assign redirect_pc = exception_taken ? CSRmtvec :
-                         interrupt_taken ? CSRmtvec :
+    // Exception > mret > interrupt > control recovery. A stalled candidate
+    // cannot change PC: pipeline_control applies the memory-stall guard.
+    assign redirect_pc = exception_pending ? CSRmtvec :
                          mret_taken ? CSRmepc :
+                         interrupt_eligible ? CSRmtvec :
                          ControlRedirectPC;
 
     // ================================
-    // Hazard detection
+    // Return prediction and load-use hazards
     // ================================
 
     wire        ras_predict_taken;
+    wire        IFReturnHint;
     wire [31:0] ras_predicted_pc;
     wire        ras_update_is_call;
     wire        ras_update_is_return;
@@ -962,7 +982,7 @@ module RISCVCPU #(
             ras_unit return_address_stack (
                 .clock(clock),
                 .reset(reset),
-                .fetch_instruction(IFInstruction),
+                .fetch_is_return(IFReturnHint),
                 .ras_predict_taken(ras_predict_taken),
                 .ras_predicted_pc(ras_predicted_pc),
                 .update_valid(ras_update_accept),
@@ -1000,7 +1020,7 @@ module RISCVCPU #(
     );
 
     // ================================
-    // Data cache address and status logic
+    // Memory-stage MMIO decode and data formatting
     // ================================
     wire [ 1:0] cache_byte_offset;
     wire        cache_hit;
@@ -1055,11 +1075,11 @@ module RISCVCPU #(
     assign matvec_busy = matvec_status_read_data[0];
     assign matvec_done = matvec_status_read_data[1];
     assign matvec_start_accepted =
-        ENABLE_ACCELERATORS &&
-        EXMEMValid &&
-        EXMEMMemWrite &&
+        ENABLE_ACCELERATORS && ENABLE_MATVEC_SCRATCHPAD &&
+        EXMEMStoreValid &&
         EXMEMMatvecCtrlAccess &&
-        StoreData[0] &&
+        matvec_store_byte_enable[0] &&
+        matvec_store_data[0] &&
         !matvec_busy;
 
     // MMIO addresses are decoded at the memory stage and bypass the D-cache;
@@ -1122,8 +1142,8 @@ module RISCVCPU #(
     wire [31:0] mmio_load_word;
     wire [31:0] mmio_load_value;
     wire [31:0] gpio_store_merged_value;
-    wire [31:0] matvec_store_old_word;
-    wire [31:0] matvec_store_merged_value;
+    reg [31:0] matvec_store_data;
+    reg [3:0] matvec_store_byte_enable;
     wire [31:0] matvec_dma_store_old_word;
     wire [31:0] matvec_dma_store_merged_value;
     wire [31:0] timer_store_old_word;
@@ -1165,12 +1185,10 @@ module RISCVCPU #(
     assign debug_status_store_word_access =
         ({EXMEMALUOut[31:2], 2'b00} == DEBUG_STATUS_ADDR);
     assign debug_status_store_commit =
-        EXMEMValid &&
-        EXMEMMemWrite &&
+        EXMEMStoreValid &&
         !EXMEMMmioAccess &&
         debug_status_store_word_access &&
         (
-            !ENABLE_DCACHE ||
             cache_hit ||
             ((cache_state == CACHE_REFILL) && !dcache_external_wait)
         );
@@ -1180,7 +1198,7 @@ module RISCVCPU #(
         .gpio_output_read_data(GPIOOutput),
         .gpio_input_read_data(gpio_inputs),
         .uart_rx_read_data({24'h0, uart_rx_data}),
-        .uart_status_read_data({29'h0, uart_rx_overrun, uart_tx_ready, uart_rx_valid}),
+        .uart_status_read_data({29'h0, uart_rx_overrun, (uart_tx_ready && !UARTTxValid), uart_rx_valid}),
         .matvec_status_read_data(matvec_status_read_data),
         .matvec_config_read_data(matvec_config_read_data),
         .matvec_vector_read_data(matvec_vector_read_data),
@@ -1213,14 +1231,24 @@ module RISCVCPU #(
         .read_word(mmio_load_word)
     );
 
-    assign matvec_store_old_word =
-        EXMEMMatvecCtrlAccess ? 32'h0 :
-        EXMEMMatvecConfigAccess ? matvec_config_read_data :
-        EXMEMMatvecVectorAccess ? matvec_vector_read_data :
-        EXMEMMatvecRowIndexAccess ? matvec_row_index_read_data :
-        EXMEMMatvecRowDataAccess ? matvec_row_data_read_data :
-        EXMEMMatvecResultIndexAccess ? matvec_result_index_read_data :
-        StoreData;
+    // Prepare write lanes independently of MMIO address decoding. The
+    // destination registers merge only enabled bytes, avoiding the old
+    // address -> readback mux -> merged data -> indexed row selection path.
+    always @(*) begin
+        matvec_store_data = StoreData;
+        matvec_store_byte_enable = 4'b1111;
+        case (EXMEMfunct3)
+            3'b000: begin
+                matvec_store_data = {24'h0, StoreData[7:0]} << (8 * cache_byte_offset);
+                matvec_store_byte_enable = 4'b0001 << cache_byte_offset;
+            end
+            3'b001: begin
+                matvec_store_data = {16'h0, StoreData[15:0]} << (16 * cache_byte_offset[1]);
+                matvec_store_byte_enable = cache_byte_offset[1] ? 4'b1100 : 4'b0011;
+            end
+            default: begin end
+        endcase
+    end
 
     assign matvec_dma_store_old_word =
         EXMEMMatvecDmaVecAddrAccess ? matvec_dma_vec_addr_read_data :
@@ -1287,15 +1315,6 @@ module RISCVCPU #(
         .store_merged_value(gpio_store_merged_value)
     );
 
-    load_store_format_unit matvec_store_format (
-        .word_data(matvec_store_old_word),
-        .store_data(StoreData),
-        .byte_offset(cache_byte_offset),
-        .funct3(EXMEMfunct3),
-        .load_value(),
-        .store_merged_value(matvec_store_merged_value)
-    );
-
     load_store_format_unit matvec_dma_store_format (
         .word_data(matvec_dma_store_old_word),
         .store_data(StoreData),
@@ -1341,11 +1360,16 @@ module RISCVCPU #(
         .store_merged_value(direct_dmem_store_merged_value)
     );
 
+    // ================================
+    // Data cache and direct-memory alternative
+    // ================================
     generate
         if (ENABLE_DCACHE) begin : gen_dcache
             dcache_unit #(
                 .USE_EXTERNAL_DMEM(USE_EXTERNAL_DMEM),
-                .MEMORY_WORD_COUNT(MEMORY_WORD_COUNT)
+                .MEMORY_WORD_COUNT(MEMORY_WORD_COUNT),
+                .CACHE_BYTES(DCACHE_BYTES),
+                .VICTIM_LINES(DCACHE_VICTIM_LINES)
             ) dcache (
                 .clock(clock),
                 .reset(reset),
@@ -1393,21 +1417,14 @@ module RISCVCPU #(
                 EXMEMValid &&
                 EXMEMMemAccess &&
                 !memory_access_fault_detect &&
+                !matvec_dma_cpu_memory_stall &&
                 !EXMEMMmioAccess;
             assign cache_miss = 1'b0;
-            assign dcache_request_complete =
-                EXMEMValid &&
-                EXMEMMemAccess &&
-                !memory_access_fault_detect &&
-                !EXMEMMmioAccess;
+            assign dcache_request_complete = cache_hit;
             assign cache_busy = 1'b0;
             assign dcache_external_wait = 1'b0;
             assign dcache_load_word = direct_dmem_word;
-            assign dcache_load_word_valid =
-                EXMEMValid &&
-                EXMEMMemRead &&
-                !memory_access_fault_detect &&
-                !EXMEMMmioAccess;
+            assign dcache_load_word_valid = cache_hit && EXMEMLoadValid;
             assign dcache_external_addr = 32'h0;
             assign dcache_external_read = 1'b0;
             assign dcache_external_write = 1'b0;
@@ -1424,19 +1441,23 @@ module RISCVCPU #(
         end
     endgenerate
 
+    // ================================
+    // Accelerator and timer MMIO endpoints
+    // ================================
     generate
-        if (ENABLE_ACCELERATORS) begin : gen_accelerators
+        if (ENABLE_ACCELERATORS && ENABLE_MATVEC_SCRATCHPAD) begin : gen_accelerators
             int8_matvec_scratchpad_accelerator accel_matvec (
                 .clock(clock),
                 .reset(reset),
-                .ctrl_write(EXMEMValid && EXMEMMemWrite && EXMEMMatvecCtrlAccess),
-                .config_write(EXMEMValid && EXMEMMemWrite && EXMEMMatvecConfigAccess),
-                .vector_write(EXMEMValid && EXMEMMemWrite && EXMEMMatvecVectorAccess),
-                .row_index_write(EXMEMValid && EXMEMMemWrite && EXMEMMatvecRowIndexAccess),
-                .row_data_write(EXMEMValid && EXMEMMemWrite && EXMEMMatvecRowDataAccess),
-                .result_index_write(EXMEMValid && EXMEMMemWrite && EXMEMMatvecResultIndexAccess),
+                .ctrl_write(EXMEMStoreValid && EXMEMMatvecCtrlAccess),
+                .config_write(EXMEMStoreValid && EXMEMMatvecConfigAccess),
+                .vector_write(EXMEMStoreValid && EXMEMMatvecVectorAccess),
+                .row_index_write(EXMEMStoreValid && EXMEMMatvecRowIndexAccess),
+                .row_data_write(EXMEMStoreValid && EXMEMMatvecRowDataAccess),
+                .result_index_write(EXMEMStoreValid && EXMEMMatvecResultIndexAccess),
                 .clear_done(1'b0),
-                .write_data(matvec_store_merged_value),
+                .write_data(matvec_store_data),
+                .write_byte_enable(matvec_store_byte_enable),
                 .status_read_data(matvec_status_read_data),
                 .config_read_data(matvec_config_read_data),
                 .vector_read_data(matvec_vector_read_data),
@@ -1448,16 +1469,28 @@ module RISCVCPU #(
                 .irq_pending(matvec_irq_pending)
             );
 
+        end else begin : gen_no_scratchpad
+            assign matvec_status_read_data = 32'h0;
+            assign matvec_config_read_data = 32'h0;
+            assign matvec_vector_read_data = 32'h0;
+            assign matvec_row_index_read_data = 32'h0;
+            assign matvec_row_data_read_data = 32'h0;
+            assign matvec_result_index_read_data = 32'h0;
+            assign matvec_result_data_read_data = 32'h0;
+            assign matvec_perf_read_data = 32'h0;
+            assign matvec_irq_pending = 1'b0;
+        end
+        if (ENABLE_ACCELERATORS && ENABLE_MATVEC_DMA) begin : gen_dma_accelerator
             int8_matvec_dma_lite #(
                 .DMEM_WORD_COUNT(MEMORY_WORD_COUNT)
             ) accel_matvec_dma (
                 .clock(clock),
                 .reset(reset),
-                .vec_addr_write(EXMEMValid && EXMEMMemWrite && EXMEMMatvecDmaVecAddrAccess),
-                .matrix_addr_write(EXMEMValid && EXMEMMemWrite && EXMEMMatvecDmaMatrixAddrAccess),
-                .out_addr_write(EXMEMValid && EXMEMMemWrite && EXMEMMatvecDmaOutAddrAccess),
-                .rows_write(EXMEMValid && EXMEMMemWrite && EXMEMMatvecDmaRowsAccess),
-                .ctrl_write(EXMEMValid && EXMEMMemWrite && EXMEMMatvecDmaCtrlAccess),
+                .vec_addr_write(EXMEMStoreValid && EXMEMMatvecDmaVecAddrAccess),
+                .matrix_addr_write(EXMEMStoreValid && EXMEMMatvecDmaMatrixAddrAccess),
+                .out_addr_write(EXMEMStoreValid && EXMEMMatvecDmaOutAddrAccess),
+                .rows_write(EXMEMStoreValid && EXMEMMatvecDmaRowsAccess),
+                .ctrl_write(EXMEMStoreValid && EXMEMMatvecDmaCtrlAccess),
                 .write_data(matvec_dma_store_merged_value),
                 .vec_addr_read_data(matvec_dma_vec_addr_read_data),
                 .matrix_addr_read_data(matvec_dma_matrix_addr_read_data),
@@ -1482,16 +1515,7 @@ module RISCVCPU #(
                 .dmem_snoop_hit(dcache_dma_snoop_hit),
                 .dmem_snoop_word(dcache_dma_snoop_read_word)
             );
-        end else begin : gen_no_accelerators
-            assign matvec_status_read_data = 32'h0;
-            assign matvec_config_read_data = 32'h0;
-            assign matvec_vector_read_data = 32'h0;
-            assign matvec_row_index_read_data = 32'h0;
-            assign matvec_row_data_read_data = 32'h0;
-            assign matvec_result_index_read_data = 32'h0;
-            assign matvec_result_data_read_data = 32'h0;
-            assign matvec_perf_read_data = 32'h0;
-            assign matvec_irq_pending = 1'b0;
+        end else begin : gen_no_dma
             assign matvec_dma_vec_addr_read_data = 32'h0;
             assign matvec_dma_matrix_addr_read_data = 32'h0;
             assign matvec_dma_out_addr_read_data = 32'h0;
@@ -1518,10 +1542,10 @@ module RISCVCPU #(
             machine_timer timer (
                 .clock(clock),
                 .reset(reset),
-                .mtime_low_write(EXMEMValid && EXMEMMemWrite && EXMEMTimerMtimeLowAccess),
-                .mtime_high_write(EXMEMValid && EXMEMMemWrite && EXMEMTimerMtimeHighAccess),
-                .mtimecmp_low_write(EXMEMValid && EXMEMMemWrite && EXMEMTimerMtimecmpLowAccess),
-                .mtimecmp_high_write(EXMEMValid && EXMEMMemWrite && EXMEMTimerMtimecmpHighAccess),
+                .mtime_low_write(EXMEMStoreValid && EXMEMTimerMtimeLowAccess),
+                .mtime_high_write(EXMEMStoreValid && EXMEMTimerMtimeHighAccess),
+                .mtimecmp_low_write(EXMEMStoreValid && EXMEMTimerMtimecmpLowAccess),
+                .mtimecmp_high_write(EXMEMStoreValid && EXMEMTimerMtimecmpHighAccess),
                 .write_data(timer_store_merged_value),
                 .mtime_low_read_data(timer_mtime_low_read_data),
                 .mtime_high_read_data(timer_mtime_high_read_data),
@@ -1564,7 +1588,9 @@ module RISCVCPU #(
             };
 
             icache_unit #(
-                .USE_EXTERNAL_IMEM(USE_EXTERNAL_IMEM)
+                .USE_EXTERNAL_IMEM(USE_EXTERNAL_IMEM),
+                .CACHE_BYTES(ICACHE_BYTES),
+                .PARALLEL_LOOKUP(ICACHE_PARALLEL_LOOKUP)
             ) instruction_cache (
                 .clock(clock),
                 .reset(reset),
@@ -1574,6 +1600,7 @@ module RISCVCPU #(
                 .external_ready(imem_ready),
                 .cancel_refill(if_redirect),
                 .instruction(IFInstruction),
+                .return_hint(IFReturnHint),
                 .miss(icache_miss),
                 .busy(icache_busy),
                 .external_read(icache_external_read),
@@ -1584,6 +1611,7 @@ module RISCVCPU #(
                 .lru_set1_debug(lru_set1)
             );
         end else begin : gen_no_icache
+            assign IFReturnHint = (IFInstruction & 32'hffff_8fff) == 32'h0000_8067;
             assign icache_internal_line_data = 128'h0;
             assign IFInstruction =
                 USE_EXTERNAL_IMEM ?
@@ -1600,6 +1628,9 @@ module RISCVCPU #(
         end
     endgenerate
 
+    // ================================
+    // Pipeline holds, advancement, and retirement events
+    // ================================
     wire if_hold;
     wire if_advance;
     wire id_hold;
@@ -1610,6 +1641,7 @@ module RISCVCPU #(
     wire ex_advance;
     wire if_accept_instruction;
     wire memwb_update;
+    wire memwb_input_valid;
     wire trace_event;
     wire retire_event;
     wire branch_mispredict_event;
@@ -1619,19 +1651,17 @@ module RISCVCPU #(
     wire matvec_start_accepted_event;
     wire matvec_done_rise_event;
 
-    // DMA-lite is not coherent with arbitrary CPU memory traffic; while it
-    // owns DMEM, CPU non-MMIO memory operations hold until the DMA transfer
-    // completes or yields the port.
+    // While DMA owns DMEM, hold CPU non-MMIO memory operations until the
+    // transfer completes or yields the port.
     assign matvec_dma_cpu_memory_stall =
         matvec_dma_busy &&
         EXMEMValid &&
         EXMEMMemAccess &&
         !EXMEMMmioAccess;
     wire uart_tx_pipeline_stall =
-        EXMEMValid &&
-        EXMEMMemWrite &&
+        EXMEMStoreValid &&
         EXMEMUartTxDataAccess &&
-        !uart_tx_ready;
+        (!uart_tx_ready || UARTTxValid);
     // An out-of-range access suppresses dcache request_valid, so it cannot
     // create a cache_miss. Keep only holds that can already be active when
     // deciding whether the precise access fault may be accepted.
@@ -1648,11 +1678,13 @@ module RISCVCPU #(
     assign memwb_update =
         !dcache_pipeline_stall || dcache_request_complete;
     assign trace_event = memwb_update && !cache_miss;
-    assign retire_event =
-        trace_event &&
+    // Qualify the MEM/WB input separately from the edge that captures it.
+    // Trace reporting additionally waits for the cache-miss event to clear.
+    assign memwb_input_valid =
         EXMEMValid &&
         !memory_access_fault_taken &&
         !InstructionMisalignPending;
+    assign retire_event = trace_event && memwb_input_valid;
     // Derive the branch-only counter event from registered recovery state.
     // PendingPrev turns a recovery held by backpressure into one pulse, while
     // the captured instruction class excludes JAL/JALR. Misaligned transfers
@@ -1737,6 +1769,8 @@ module RISCVCPU #(
     // Initialization
     // ================================
     integer i;
+    integer writeback_word;
+    integer dma_byte;
 
 
     initial begin
@@ -1806,7 +1840,7 @@ module RISCVCPU #(
     end
 
     // ================================
-    // Pipeline control and datapath
+    // Sequential state updates
     // ================================
     // This sequential block is the commit point for pipeline registers,
     // visible MMIO side effects, debug status, and retired-trace reporting.
@@ -1873,322 +1907,294 @@ module RISCVCPU #(
 
         end else begin
 
-        UARTTxValid <= 1'b0;
-        UARTRxReady <= 1'b0;
+            // Hold the queued byte until the UART accepts it. A following store
+            // stalls while this slot is occupied, including the acceptance edge.
+            if (UARTTxValid && uart_tx_ready) UARTTxValid <= 1'b0;
+            UARTRxReady <= 1'b0;
 
-        TraceValid <= 1'b0;
-        MatvecDonePrev <= matvec_done;
+            TraceValid <= 1'b0;
+            MatvecDonePrev <= matvec_done;
 
-        // Capture the next recovery candidates whenever the current registered
-        // event bank is free. ControlRedirectPending alone holds accepted
-        // payload through backpressure, so cache/trap logic does not drive the
-        // wide payload clock enables.
-        ControlRedirectPendingPrev <= ControlRedirectPending;
-        ControlResolutionWasBranch <= IDEXBranch;
-        if (!ControlRedirectPending) begin
-            ControlRedirectTargetPC <= IDEXJump ? jump_target : branch_target;
-            ControlRedirectFallthroughPC <= IDEXPC + 32'd4;
-            ControlRedirectUseFallthrough <= IDEXBranch && !branch_taken;
-        end
-
-        if (InstructionMisalignPending) begin
-            ControlRedirectPending <= 1'b0;
-        end else if (control_redirect_apply) begin
-            ControlRedirectPending <= 1'b0;
-        end else if (control_mispredict_accept) begin
-            ControlRedirectPending <= 1'b1;
-        end
-
-        // Capture one payload bank for the pending alignment check. Its enable
-        // is driven only by the registered check-valid bit, so backpressure
-        // cannot overwrite the accepted target and no cache comparator reaches
-        // these wide registers.
-        if (!ControlAlignmentCheckPending) begin
-            InstructionMisalignPC <= IDEXPC;
-            InstructionMisalignTarget <= control_target_address;
-            InstructionMisalignUseFallthrough <= IDEXBranch && !branch_taken;
-        end
-        // An older EX/MEM access fault can coincide with a younger misaligned
-        // control transfer. Register that cancellation so the memory-fault
-        // comparator does not feed the pending-event D cone.
-        InstructionMisalignCancel <= memory_access_fault_taken;
-        if (!dcache_pipeline_stall) begin
-            // The alignment check is a one-cycle event. A D-cache hold retains
-            // it; every advancing cycle replaces it with shallow control
-            // acceptance for the current instruction.
-            ControlAlignmentCheckPending <= control_alignment_capture;
-        end
-
-        // A pending interrupt does not preempt unresolved control flow. Once
-        // that instruction resolves, this flop permits interrupt entry at the
-        // next correct-path instruction boundary, including a self-loop branch.
-        if (interrupt_taken || exception_taken || !machine_interrupt_pending) begin
-            ControlInterruptDeferred <= 1'b0;
-        end else if (control_resolution_accept && machine_interrupt_pending) begin
-            ControlInterruptDeferred <= 1'b1;
-        end
-
-        // Trap/redirect acceptance owns squash priority. The iterative unit
-        // may finish discarded work in the background, but only a completion
-        // still owned by RV32MInFlight can become an architectural result.
-        if (rv32m_squash) begin
-            RV32MInFlight <= 1'b0;
-            RV32MResultReady <= 1'b0;
-        end else begin
-            if (rv32m_start) begin
-                RV32MInFlight <= 1'b1;
+            // Capture the next recovery candidates whenever the current registered
+            // event bank is free. ControlRedirectPending alone holds accepted
+            // payload through backpressure, so cache/trap logic does not drive the
+            // wide payload clock enables.
+            ControlRedirectPendingPrev <= ControlRedirectPending;
+            ControlResolutionWasBranch <= IDEXBranch;
+            if (!ControlRedirectPending) begin
+                ControlRedirectTargetPC <= IDEXJump ? jump_target : branch_target;
+                ControlRedirectFallthroughPC <= IDEXPC + 32'd4;
+                ControlRedirectUseFallthrough <= IDEXBranch && !branch_taken;
             end
-            if (rv32m_unit_done && RV32MInFlight) begin
+
+            if (InstructionMisalignPending) begin
+                ControlRedirectPending <= 1'b0;
+            end else if (control_redirect_apply) begin
+                ControlRedirectPending <= 1'b0;
+            end else if (control_mispredict_accept) begin
+                ControlRedirectPending <= 1'b1;
+            end
+
+            // Capture one payload bank for the pending alignment check. Its enable
+            // is driven only by the registered check-valid bit, so backpressure
+            // cannot overwrite the accepted target and no cache comparator reaches
+            // these wide registers.
+            if (!ControlAlignmentCheckPending) begin
+                InstructionMisalignPC <= IDEXPC;
+                InstructionMisalignTarget <= control_target_address;
+                InstructionMisalignUseFallthrough <= IDEXBranch && !branch_taken;
+            end
+            // An older EX/MEM access fault can coincide with a younger misaligned
+            // control transfer. Register that cancellation so the memory-fault
+            // comparator does not feed the pending-event D cone.
+            InstructionMisalignCancel <= memory_access_fault_taken;
+            if (!dcache_pipeline_stall) begin
+                // The alignment check is a one-cycle event. A D-cache hold retains
+                // it; every advancing cycle replaces it with shallow control
+                // acceptance for the current instruction.
+                ControlAlignmentCheckPending <= control_alignment_capture;
+            end
+
+            // A pending interrupt does not preempt unresolved control flow. Once
+            // that instruction resolves, this flop permits interrupt entry at the
+            // next correct-path instruction boundary, including a self-loop branch.
+            if (interrupt_taken || exception_taken || !machine_interrupt_pending) begin
+                ControlInterruptDeferred <= 1'b0;
+            end else if (control_resolution_accept && machine_interrupt_pending) begin
+                ControlInterruptDeferred <= 1'b1;
+            end
+
+            // Trap/redirect acceptance owns squash priority. The iterative unit
+            // may finish discarded work in the background, but only a completion
+            // still owned by RV32MInFlight can become an architectural result.
+            if (rv32m_squash) begin
                 RV32MInFlight <= 1'b0;
-                RV32MResultReady <= 1'b1;
-            end
-            if (rv32m_release) begin
                 RV32MResultReady <= 1'b0;
-            end
-        end
-
-        // Track the active interrupt class until mret so a still-pending
-        // source does not immediately retrigger the same handler.
-        if (interrupt_taken) begin
-            if (machine_external_interrupt_pending) begin
-                MachineExternalInterruptActive <= 1'b1;
             end else begin
-                MachineTimerInterruptActive <= 1'b1;
-            end
-        end else if (architectural_mret_taken) begin
-            MachineExternalInterruptActive <= 1'b0;
-            MachineTimerInterruptActive <= 1'b0;
-        end
-
-        // Internal-memory mode writes dirty D-cache evictions back into the
-        // local DMemory array; external-memory mode emits the same line on
-        // the top-level data-memory bus instead.
-        if (dcache_internal_writeback_valid &&
-            (((dcache_internal_writeback_addr >> 2) + 3) < INTERNAL_DMEM_WORD_COUNT)) begin
-            DMemory[(dcache_internal_writeback_addr >> 2) + 0] <= dcache_internal_writeback_line[31:0];
-            DMemory[(dcache_internal_writeback_addr >> 2) + 1] <= dcache_internal_writeback_line[63:32];
-            DMemory[(dcache_internal_writeback_addr >> 2) + 2] <= dcache_internal_writeback_line[95:64];
-            DMemory[(dcache_internal_writeback_addr >> 2) + 3] <= dcache_internal_writeback_line[127:96];
-        end
-
-        if (!ENABLE_DCACHE &&
-            !USE_EXTERNAL_DMEM &&
-            EXMEMValid &&
-            EXMEMMemWrite &&
-            !EXMEMMmioAccess &&
-            ((EXMEMALUOut >> 2) < INTERNAL_DMEM_WORD_COUNT)) begin
-            DMemory[EXMEMALUOut >> 2] <= direct_dmem_store_merged_value;
-        end
-
-        // DMA writes update the backing DMemory bytes directly in internal
-        // memory mode; the D-cache snoop path handles any resident cached word.
-        if (!USE_EXTERNAL_DMEM &&
-            matvec_dma_dmem_write &&
-            matvec_dma_dmem_ready &&
-            (((matvec_dma_dmem_addr >> 2) + 3) < INTERNAL_DMEM_WORD_COUNT)) begin
-            if (matvec_dma_dmem_byte_enable[0]) DMemory[(matvec_dma_dmem_addr >> 2) + 0][7:0] <= matvec_dma_dmem_wdata[7:0];
-            if (matvec_dma_dmem_byte_enable[1]) DMemory[(matvec_dma_dmem_addr >> 2) + 0][15:8] <= matvec_dma_dmem_wdata[15:8];
-            if (matvec_dma_dmem_byte_enable[2]) DMemory[(matvec_dma_dmem_addr >> 2) + 0][23:16] <= matvec_dma_dmem_wdata[23:16];
-            if (matvec_dma_dmem_byte_enable[3]) DMemory[(matvec_dma_dmem_addr >> 2) + 0][31:24] <= matvec_dma_dmem_wdata[31:24];
-
-            if (matvec_dma_dmem_byte_enable[4]) DMemory[(matvec_dma_dmem_addr >> 2) + 1][7:0] <= matvec_dma_dmem_wdata[39:32];
-            if (matvec_dma_dmem_byte_enable[5]) DMemory[(matvec_dma_dmem_addr >> 2) + 1][15:8] <= matvec_dma_dmem_wdata[47:40];
-            if (matvec_dma_dmem_byte_enable[6]) DMemory[(matvec_dma_dmem_addr >> 2) + 1][23:16] <= matvec_dma_dmem_wdata[55:48];
-            if (matvec_dma_dmem_byte_enable[7]) DMemory[(matvec_dma_dmem_addr >> 2) + 1][31:24] <= matvec_dma_dmem_wdata[63:56];
-
-            if (matvec_dma_dmem_byte_enable[8]) DMemory[(matvec_dma_dmem_addr >> 2) + 2][7:0] <= matvec_dma_dmem_wdata[71:64];
-            if (matvec_dma_dmem_byte_enable[9]) DMemory[(matvec_dma_dmem_addr >> 2) + 2][15:8] <= matvec_dma_dmem_wdata[79:72];
-            if (matvec_dma_dmem_byte_enable[10]) DMemory[(matvec_dma_dmem_addr >> 2) + 2][23:16] <= matvec_dma_dmem_wdata[87:80];
-            if (matvec_dma_dmem_byte_enable[11]) DMemory[(matvec_dma_dmem_addr >> 2) + 2][31:24] <= matvec_dma_dmem_wdata[95:88];
-
-            if (matvec_dma_dmem_byte_enable[12]) DMemory[(matvec_dma_dmem_addr >> 2) + 3][7:0] <= matvec_dma_dmem_wdata[103:96];
-            if (matvec_dma_dmem_byte_enable[13]) DMemory[(matvec_dma_dmem_addr >> 2) + 3][15:8] <= matvec_dma_dmem_wdata[111:104];
-            if (matvec_dma_dmem_byte_enable[14]) DMemory[(matvec_dma_dmem_addr >> 2) + 3][23:16] <= matvec_dma_dmem_wdata[119:112];
-            if (matvec_dma_dmem_byte_enable[15]) DMemory[(matvec_dma_dmem_addr >> 2) + 3][31:24] <= matvec_dma_dmem_wdata[127:120];
-        end
-
-        if (debug_status_store_commit) begin
-            DebugStatus <= debug_status_store_merged_value;
-        end
-
-        // ----------------
-        // IF stage
-        // ----------------
-        PC <= pc_next_value;
-        if (!if_hold) begin
-            // Payload capture is independent of redirect/trap decisions.
-            // IFIDValid alone marks a redirect-cycle capture as a bubble.
-            IFIDIR <= IFInstruction;
-            IFIDPC <= PC;
-            IFIDPredTaken <= final_predict_taken;
-            IFIDPredPC    <= final_predicted_pc;
-
-            if (if_redirect) begin
-                IFIDValid <= 1'b0;
-            end else if (if_advance) begin
-                IFIDValid <= 1'b1;
-            end
-        end
-
-        // ----------------
-        // ID stage
-        // ----------------
-        if (id_payload_hold) begin
-            if (MEMWBRegWrite && (MEMWBForwardRd == IDEXrs1)) begin
-                IDEXA <= MEMWBValue;
-            end else begin
-                IDEXA <= IDEXA;
-            end
-
-            if (MEMWBRegWrite && (MEMWBForwardRd == IDEXrs2)) begin
-                IDEXB <= MEMWBValue;
-            end else begin
-                IDEXB <= IDEXB;
-            end
-
-            IDEXPredTaken <= IDEXPredTaken;
-            IDEXPredPC    <= IDEXPredPC;
-        end else begin
-            if (MEMWBRegWrite && (MEMWBForwardRd == IFIDrs1)) begin
-                IDEXA <= MEMWBValue;
-            end else begin
-                IDEXA <= Regs[IFIDrs1];
-            end
-
-            if (MEMWBRegWrite && (MEMWBForwardRd == IFIDrs2)) begin
-                IDEXB <= MEMWBValue;
-            end else begin
-                IDEXB <= Regs[IFIDrs2];
-            end
-
-            IDEXIR <= IFIDIR;
-            IDEXPC <= IFIDPC;
-            IDEXPredTaken <= IFIDPredTaken;
-            IDEXPredPC    <= IFIDPredPC;
-        end
-
-        // Validity alone distinguishes an injected bubble from the captured
-        // payload. A real hold preserves the live transaction; every bubble
-        // kills it without clearing or clock-enabling the payload registers.
-        if (id_bubble) begin
-            IDEXValid <= 1'b0;
-        end else if (id_advance) begin
-            IDEXValid <= IFIDValid;
-        end else if (id_hold) begin
-            IDEXValid <= IDEXValid;
-        end
-
-        // ----------------
-        // EX stage
-        // ----------------
-        if (ex_hold) begin
-            EXMEMIR      <= EXMEMIR;
-            EXMEMPC      <= EXMEMPC;
-            EXMEMValid   <= EXMEMValid;
-            EXMEMB       <= EXMEMB;
-            EXMEMALUOut  <= EXMEMALUOut;
-            EXMEMPCPlus4 <= EXMEMPCPlus4;
-            EXMEMForwardRegWrite <= EXMEMForwardRegWrite;
-            EXMEMWritebackRegWrite <= EXMEMWritebackRegWrite;
-            EXMEMForwardRd <= EXMEMForwardRd;
-            EXMEMForwardUsePCPlus4 <= EXMEMForwardUsePCPlus4;
-
-        end else if (ex_advance) begin
-            // Invalid bubbles may carry arbitrary payload. Capture payload on
-            // every advancing cycle so exception/redirect decisions control
-            // only validity and write metadata, not wide-register enables.
-            EXMEMIR      <= IDEXIR;
-            EXMEMPC      <= IDEXPC;
-            EXMEMB       <= Bin;
-            EXMEMALUOut  <= execute_result;
-            EXMEMPCPlus4 <= IDEXPC + 4;
-
-            if (rv32m_execute_stall) begin
-                // Older EX/MEM work drains while the M instruction remains in
-                // ID/EX. EXMEMValid is the sole bubble authority; payload and
-                // write metadata remain don't-care while invalid.
-                EXMEMValid <= 1'b0;
-            end else if (exception_taken ||
-                         interrupt_taken ||
-                         control_redirect_apply) begin
-                // Trap-taking instructions update CSR state through csr_unit;
-                // registered control recovery likewise bubbles the younger
-                // wrong-path ID/EX instruction before side effects can commit.
-                // EXMEMValid alone authorizes interpretation of the captured
-                // payload and write metadata, so they need no runtime clear.
-                EXMEMValid <= 1'b0;
-            end
-
-            if (!rv32m_execute_stall &&
-                !exception_taken &&
-                !interrupt_taken &&
-                !control_redirect_apply) begin
-                EXMEMValid   <= IDEXValid;
-                EXMEMForwardRegWrite <=
-                    IDEXWritesRegister && !IDEXMemRead && !control_redirect_apply;
-                EXMEMWritebackRegWrite <=
-                    IDEXWritesRegister && !control_redirect_apply;
-                EXMEMForwardRd <= control_redirect_apply ? 5'd0 : IDEXrd;
-                EXMEMForwardUsePCPlus4 <= IDEXJump && !control_redirect_apply;
-            end
-        end
-
-        // ----------------
-        // MEM stage
-        // ----------------
-        if (EXMEMALUResult) begin
-            MEMWBValue <= EXMEMALUOut;
-        end else if (EXMEMMmioAccess) begin
-
-            if (EXMEMValid && EXMEMMemRead) begin
-                MEMWBValue <= mmio_load_value;
-                if (EXMEMUartRxDataAccess) begin
-                    UARTRxReady <= 1'b1;
+                if (rv32m_start) begin
+                    RV32MInFlight <= 1'b1;
                 end
-            end else if (EXMEMValid && EXMEMGpioOutputAccess) begin
-                GPIOOutput <= gpio_store_merged_value;
-            end else if (EXMEMValid && EXMEMUartTxDataAccess && uart_tx_ready) begin
-                UARTTxData <= StoreData[7:0];
-                UARTTxValid <= 1'b1;
+                if (rv32m_unit_done && RV32MInFlight) begin
+                    RV32MInFlight <= 1'b0;
+                    RV32MResultReady <= 1'b1;
+                end
+                if (rv32m_release) begin
+                    RV32MResultReady <= 1'b0;
+                end
             end
 
-        end else if (EXMEMMemAccess) begin
+            // Track the active interrupt class until mret so a still-pending
+            // source does not immediately retrigger the same handler.
+            if (interrupt_taken) begin
+                if (machine_external_interrupt_pending) begin
+                    MachineExternalInterruptActive <= 1'b1;
+                end else begin
+                    MachineTimerInterruptActive <= 1'b1;
+                end
+            end else if (architectural_mret_taken) begin
+                MachineExternalInterruptActive <= 1'b0;
+                MachineTimerInterruptActive <= 1'b0;
+            end
 
-            if (dcache_load_word_valid) begin
+            // Internal-memory mode writes dirty D-cache evictions back into the
+            // local DMemory array; external-memory mode emits the same line on
+            // the top-level data-memory bus instead.
+            if (dcache_internal_writeback_valid) begin
+                for (writeback_word = 0; writeback_word < 4; writeback_word = writeback_word + 1) begin
+                    if (((dcache_internal_writeback_addr >> 2) + writeback_word) < INTERNAL_DMEM_WORD_COUNT)
+                        DMemory[(dcache_internal_writeback_addr >> 2) + writeback_word] <=
+                            dcache_internal_writeback_line[writeback_word * 32 +: 32];
+                end
+            end
+
+            if (!ENABLE_DCACHE &&
+                !USE_EXTERNAL_DMEM &&
+                cache_hit &&
+                EXMEMStoreValid &&
+                ((EXMEMALUOut >> 2) < INTERNAL_DMEM_WORD_COUNT)) begin
+                DMemory[EXMEMALUOut >> 2] <= direct_dmem_store_merged_value;
+            end
+
+            // DMA writes update the backing DMemory bytes directly in internal
+            // memory mode; the D-cache snoop path handles any resident cached word.
+            if (!USE_EXTERNAL_DMEM &&
+                matvec_dma_dmem_write &&
+                matvec_dma_dmem_ready) begin
+                for (dma_byte = 0; dma_byte < 16; dma_byte = dma_byte + 1) begin
+                    if (matvec_dma_dmem_byte_enable[dma_byte] &&
+                        (((matvec_dma_dmem_addr >> 2) + dma_byte / 4) < INTERNAL_DMEM_WORD_COUNT))
+                        DMemory[(matvec_dma_dmem_addr >> 2) + dma_byte / 4][(dma_byte % 4) * 8 +: 8] <=
+                            matvec_dma_dmem_wdata[dma_byte * 8 +: 8];
+                end
+            end
+
+            if (debug_status_store_commit) begin
+                DebugStatus <= debug_status_store_merged_value;
+            end
+
+            // ----------------
+            // IF stage
+            // ----------------
+            PC <= pc_next_value;
+            if (!if_hold) begin
+                // Payload capture is independent of redirect/trap decisions.
+                // IFIDValid alone marks a redirect-cycle capture as a bubble.
+                IFIDIR <= IFInstruction;
+                IFIDPC <= PC;
+                IFIDPredTaken <= final_predict_taken;
+                IFIDPredPC    <= final_predicted_pc;
+
+                if (if_redirect) begin
+                    IFIDValid <= 1'b0;
+                end else if (if_advance) begin
+                    IFIDValid <= 1'b1;
+                end
+            end
+
+            // ----------------
+            // ID stage
+            // ----------------
+            if (id_payload_hold) begin
+                // A held operand still accepts a completing WB bypass. Other
+                // operands and prediction payload retain their registered values.
+                if (MEMWBRegWrite && (MEMWBForwardRd == IDEXrs1)) begin
+                    IDEXA <= MEMWBValue;
+                end
+                if (MEMWBRegWrite && (MEMWBForwardRd == IDEXrs2)) begin
+                    IDEXB <= MEMWBValue;
+                end
+            end else begin
+                if (MEMWBRegWrite && (MEMWBForwardRd == IFIDrs1)) begin
+                    IDEXA <= MEMWBValue;
+                end else begin
+                    IDEXA <= Regs[IFIDrs1];
+                end
+
+                if (MEMWBRegWrite && (MEMWBForwardRd == IFIDrs2)) begin
+                    IDEXB <= MEMWBValue;
+                end else begin
+                    IDEXB <= Regs[IFIDrs2];
+                end
+
+                IDEXIR <= IFIDIR;
+                IDEXPC <= IFIDPC;
+                IDEXPredTaken <= IFIDPredTaken;
+                IDEXPredPC    <= IFIDPredPC;
+            end
+
+            // Validity alone distinguishes an injected bubble from the captured
+            // payload. A real hold preserves the live transaction; every bubble
+            // kills it without clearing or clock-enabling the payload registers.
+            if (id_bubble) begin
+                IDEXValid <= 1'b0;
+            end else if (id_advance) begin
+                IDEXValid <= IFIDValid;
+            end else if (id_hold) begin
+                IDEXValid <= IDEXValid;
+            end
+
+            // ----------------
+            // EX stage
+            // ----------------
+            if (ex_hold) begin
+                EXMEMIR      <= EXMEMIR;
+                EXMEMPC      <= EXMEMPC;
+                EXMEMValid   <= EXMEMValid;
+                EXMEMB       <= EXMEMB;
+                EXMEMALUOut  <= EXMEMALUOut;
+                EXMEMPCPlus4 <= EXMEMPCPlus4;
+                EXMEMForwardRegWrite <= EXMEMForwardRegWrite;
+                EXMEMWritebackRegWrite <= EXMEMWritebackRegWrite;
+                EXMEMForwardRd <= EXMEMForwardRd;
+                EXMEMForwardUsePCPlus4 <= EXMEMForwardUsePCPlus4;
+
+            end else if (ex_advance) begin
+                // Invalid bubbles may carry arbitrary payload. Capture payload on
+                // every advancing cycle so exception/redirect decisions control
+                // only validity and write metadata, not wide-register enables.
+                EXMEMIR      <= IDEXIR;
+                EXMEMPC      <= IDEXPC;
+                EXMEMB       <= Bin;
+                EXMEMALUOut  <= execute_result;
+                EXMEMPCPlus4 <= IDEXPC + 4;
+
+                if (rv32m_execute_stall) begin
+                    // Older EX/MEM work drains while the M instruction remains in
+                    // ID/EX. EXMEMValid is the sole bubble authority; payload and
+                    // write metadata remain don't-care while invalid.
+                    EXMEMValid <= 1'b0;
+                end else if (exception_taken ||
+                             interrupt_taken ||
+                             control_redirect_apply) begin
+                    // Trap-taking instructions update CSR state through csr_unit;
+                    // registered control recovery likewise bubbles the younger
+                    // wrong-path ID/EX instruction before side effects can commit.
+                    // EXMEMValid alone authorizes interpretation of the captured
+                    // payload and write metadata, so they need no runtime clear.
+                    EXMEMValid <= 1'b0;
+                end
+
+                if (!rv32m_execute_stall &&
+                    !exception_taken &&
+                    !interrupt_taken &&
+                    !control_redirect_apply) begin
+                    EXMEMValid   <= IDEXValid;
+                    EXMEMForwardRegWrite <= IDEXWritesRegister && !IDEXMemRead;
+                    EXMEMWritebackRegWrite <= IDEXWritesRegister;
+                    EXMEMForwardRd <= IDEXrd;
+                    EXMEMForwardUsePCPlus4 <= IDEXJump;
+                end
+            end
+
+            // ----------------
+            // MEM stage
+            // ----------------
+            if (EXMEMALUResult) begin
+                MEMWBValue <= EXMEMALUOut;
+            end else if (EXMEMMmioAccess) begin
+
+                if (EXMEMLoadValid) begin
+                    MEMWBValue <= mmio_load_value;
+                    if (EXMEMUartRxDataAccess) begin
+                        UARTRxReady <= 1'b1;
+                    end
+                end else if (EXMEMValid && EXMEMGpioOutputAccess) begin
+                    GPIOOutput <= gpio_store_merged_value;
+                end else if (EXMEMStoreValid && EXMEMUartTxDataAccess && uart_tx_ready && !UARTTxValid) begin
+                    UARTTxData <= StoreData[7:0];
+                    UARTTxValid <= 1'b1;
+                end
+
+            end else if (EXMEMMemAccess) begin
+
+                if (dcache_load_word_valid) begin
                     MEMWBValue <= dcache_load_value;
+                end
+
+            end else if (EXMEMJump) begin
+                MEMWBValue <= EXMEMPCPlus4;
             end
 
-        end else if (EXMEMJump) begin
-            MEMWBValue <= EXMEMPCPlus4;
-        end
+            if (memwb_update) begin
+                // The trace port reports retired memory-stage events after stalls
+                // and cache misses have resolved, keeping wrong-path rows out of
+                // the public retired trace stream.
+                MEMWBIR <= EXMEMIR;
+                MEMWBPC <= EXMEMPC;
+                MEMWBValid <= memwb_input_valid;
+                MEMWBForwardRegWrite <= EXMEMWritebackRegWrite && memwb_input_valid;
+                MEMWBForwardRd <= EXMEMForwardRd;
+                TraceValid <= retire_event;
+            end
 
-        if (memwb_update) begin
-            // The trace port reports retired memory-stage events after stalls
-            // and cache misses have resolved, keeping wrong-path rows out of
-            // the public retired trace stream.
-            MEMWBIR <= EXMEMIR;
-            MEMWBPC <= EXMEMPC;
-            MEMWBValid <=
-                EXMEMValid &&
-                !memory_access_fault_taken &&
-                !InstructionMisalignPending;
-            MEMWBForwardRegWrite <=
-                EXMEMWritebackRegWrite &&
-                EXMEMValid &&
-                !memory_access_fault_taken &&
-                !InstructionMisalignPending;
-            MEMWBForwardRd <= EXMEMForwardRd;
-            TraceValid <= retire_event;
-        end
+            // ----------------
+            // WB stage
+            // ----------------
+            if (MEMWBRegWrite) begin
+                Regs[MEMWBForwardRd] <= MEMWBValue;
+            end
 
-        // ----------------
-        // WB stage
-        // ----------------
-        if (MEMWBRegWrite) begin
-            Regs[MEMWBForwardRd] <= MEMWBValue;
-        end
-
-        Regs[0] <= 0;
+            Regs[0] <= 0;
         end
     end
 endmodule

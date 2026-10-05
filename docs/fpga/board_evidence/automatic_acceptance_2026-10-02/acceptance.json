@@ -1,0 +1,109 @@
+{
+  "status": "passed",
+  "started_at_utc": "2026-10-02T18:17:58.8575871Z",
+  "steps": [
+    {
+      "name": "publish-cache-study",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T18:56:55.6546929Z"
+    },
+    {
+      "name": "check-cache-publication",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T18:56:56.6724873Z"
+    },
+    {
+      "name": "reload-dm128",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T18:57:30.6093616Z"
+    },
+    {
+      "name": "reload-victim4",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T18:58:04.4170822Z"
+    },
+    {
+      "name": "program-default-Showcase",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:13:41.9908196Z"
+    },
+    {
+      "name": "default-Showcase",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:13:45.3436861Z"
+    },
+    {
+      "name": "program-default-Interactive",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:13:57.0082336Z"
+    },
+    {
+      "name": "default-Interactive",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:14:00.4079384Z"
+    },
+    {
+      "name": "program-default-HardwareValidation",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:14:08.7012002Z"
+    },
+    {
+      "name": "default-HardwareValidation",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:14:12.0728350Z"
+    },
+    {
+      "name": "program-default-Matvec",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:14:20.7889520Z"
+    },
+    {
+      "name": "default-Matvec",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:14:26.8277173Z"
+    },
+    {
+      "name": "program-default-MatvecReload",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:14:47.9950129Z"
+    },
+    {
+      "name": "default-MatvecReload",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:14:54.1489128Z"
+    },
+    {
+      "name": "default-FIR-physical",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:27:14.1919298Z"
+    },
+    {
+      "name": "default-viewer-physical",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:27:44.3860531Z"
+    },
+    {
+      "name": "startup-preflight",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:27:45.6875658Z"
+    },
+    {
+      "name": "startup-status",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:27:46.6924900Z"
+    },
+    {
+      "name": "export-default-implementation",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:27:52.7531582Z"
+    },
+    {
+      "name": "export-generic-configuration",
+      "status": "passed",
+      "finished_at_utc": "2026-10-02T19:27:55.0129285Z"
+    }
+  ],
+  "error": null,
+  "active_step": "export-generic-configuration",
+  "finished_at_utc": "2026-10-02T19:27:55.1088180Z"
+}

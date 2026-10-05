@@ -70,7 +70,7 @@ module tb_branch_predictor_warm_recovery;
     end
 
     initial begin
-        $dumpfile("wave/tb_branch_predictor_warm_recovery.vcd");
+        $dumpfile("results/waveforms/tb_branch_predictor_warm_recovery.vcd");
         $dumpvars(0, tb_branch_predictor_warm_recovery);
         correct_taken_predictions = 0;
         saw_not_taken_recovery = 1'b0;

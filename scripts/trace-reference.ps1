@@ -5,16 +5,13 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\trace-reference.ps1 -Check -SkipSimulation
 Outputs:
   fixtures\generated\reference\trace_reference* artifacts or freshness diagnostics.
-Scope:
-  Trace-reference regression evidence only; not complete ISA proof or official compliance.
-Audience:
-  Internal helper used by scripts\check.ps1.
 #>
 param(
     [switch]$Check,
     [switch]$SkipSimulation
 )
 
+. "$PSScriptRoot/reference-common.ps1"
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
@@ -23,82 +20,12 @@ Set-Location $repoRoot
 $hexPath = Join-Path $repoRoot "fixtures/generated/reference/trace_reference.hex"
 $expectedPath = Join-Path $repoRoot "fixtures/generated/reference/trace_reference_expected.hex"
 
-function To-UInt32 {
-    param([int64]$Value)
-    return [uint32]($Value -band 0xffffffffL)
-}
-
-function Encode-RType {
-    param([int]$Funct7, [int]$Rs2, [int]$Rs1, [int]$Funct3, [int]$Rd)
-    return [uint32](([uint64]$Funct7 -shl 25) -bor
-                    ([uint64]$Rs2 -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]0x33)
-}
-
-function Encode-IType {
-    param([int]$Immediate, [int]$Rs1, [int]$Funct3, [int]$Rd, [int]$Opcode)
-    return [uint32](([uint64]($Immediate -band 0xfff) -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]$Opcode)
-}
-
-function Encode-SType {
-    param([int]$Immediate, [int]$Rs2, [int]$Rs1, [int]$Funct3)
-    return [uint32](([uint64](($Immediate -shr 5) -band 0x7f) -shl 25) -bor
-                    ([uint64]$Rs2 -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64]($Immediate -band 0x1f) -shl 7) -bor [uint64]0x23)
-}
-
 function Encode-Csr {
     param([int]$Csr, [int]$Rs1, [int]$Funct3, [int]$Rd)
     return [uint32](([uint64]($Csr -band 0xfff) -shl 20) -bor
                     ([uint64]$Rs1 -shl 15) -bor
                     ([uint64]$Funct3 -shl 12) -bor
                     ([uint64]$Rd -shl 7) -bor [uint64]0x73)
-}
-
-function Encode-JType {
-    param([int]$Immediate, [int]$Rd)
-    return [uint32](([uint64](($Immediate -shr 20) -band 0x1) -shl 31) -bor
-                    ([uint64](($Immediate -shr 1) -band 0x3ff) -shl 21) -bor
-                    ([uint64](($Immediate -shr 11) -band 0x1) -shl 20) -bor
-                    ([uint64](($Immediate -shr 12) -band 0xff) -shl 12) -bor
-                    ([uint64]$Rd -shl 7) -bor [uint64]0x6f)
-}
-
-function Encode-BType {
-    param([int]$Immediate, [int]$Rs2, [int]$Rs1, [int]$Funct3)
-    return [uint32](([uint64](($Immediate -shr 12) -band 0x1) -shl 31) -bor
-                    ([uint64](($Immediate -shr 5) -band 0x3f) -shl 25) -bor
-                    ([uint64]$Rs2 -shl 20) -bor
-                    ([uint64]$Rs1 -shl 15) -bor
-                    ([uint64]$Funct3 -shl 12) -bor
-                    ([uint64](($Immediate -shr 1) -band 0xf) -shl 8) -bor
-                    ([uint64](($Immediate -shr 11) -band 0x1) -shl 7) -bor [uint64]0x63)
-}
-
-function Format-HexWord {
-    param([uint32]$Value)
-    return "{0:x8}" -f $Value
-}
-
-function Format-TraceRow {
-    param([uint32]$Pc, [uint32]$Instruction, [int]$Rd, [bool]$RegWrite, [uint32]$Value)
-
-    $meta = [uint32]($Rd -band 0x1f)
-    if ($RegWrite) {
-        $meta = $meta -bor [uint32]0x20
-    }
-
-    return "{0}{1}{2}{3}" -f (Format-HexWord $Pc),
-                              (Format-HexWord $Instruction),
-                              (Format-HexWord $meta),
-                              (Format-HexWord $Value)
 }
 
 $program = [System.Collections.Generic.List[uint32]]::new()

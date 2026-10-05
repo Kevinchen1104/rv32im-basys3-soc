@@ -5,17 +5,14 @@ Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\fpga-tool-detect.ps1
 Outputs:
   Console tool-detection report.
-Scope:
-  Environment discovery only; not hardware evidence.
-Audience:
-  Public environment helper.
 #>
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/result-format.ps1"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path "results" | Out-Null
 
 function Get-ToolVersion {
     param(
@@ -32,25 +29,9 @@ function Get-ToolVersion {
     }
 }
 
-function Get-CommonVivadoPaths {
-    $paths = [System.Collections.Generic.List[string]]::new()
-    foreach ($root in @("C:\Xilinx\Vivado", "C:\Program Files\Xilinx\Vivado")) {
-        if (-not (Test-Path -LiteralPath $root)) {
-            continue
-        }
+. "$PSScriptRoot/script-common.ps1"
 
-        foreach ($versionDir in Get-ChildItem -LiteralPath $root -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending) {
-            foreach ($candidate in @("bin\vivado.bat", "bin\vivado.exe")) {
-                $path = Join-Path $versionDir.FullName $candidate
-                if (Test-Path -LiteralPath $path) {
-                    $paths.Add($path) | Out-Null
-                }
-            }
-        }
-    }
-
-    return $paths.ToArray()
-}
+function Get-CommonVivadoPaths { return @(Find-FpgaVendorTool vivado | Where-Object { $_ }) }
 
 function Get-ToolStatus {
     param(
@@ -153,8 +134,7 @@ $summary = [ordered]@{
     claim_boundary = "Tool availability evidence only; no timing closure, bitstream, or physical board validation claim."
 }
 
-$summary | ConvertTo-Json -Depth 8 | Set-Content -Path "wave\fpga-tool-detect.json" -Encoding Ascii
-
+Write-ResultJson $summary "results\fpga-tool-detect.json"
 Write-Host "========================================"
 Write-Host "FPGA tool detection"
 foreach ($toolName in $tools.Keys) {
@@ -163,4 +143,4 @@ foreach ($toolName in $tools.Keys) {
 }
 Write-Host ("Timing status: {0}" -f $summary.timing_readiness.timing_status)
 Write-Host ("Physical validation status: {0}" -f $summary.physical_validation_status)
-Write-Host "Tool detection written to wave\fpga-tool-detect.json"
+Write-Host "Tool detection written to results\fpga-tool-detect.json"

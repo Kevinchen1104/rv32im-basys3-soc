@@ -4,9 +4,23 @@ Both accelerators compute signed-int8 dot products with four lanes per row and
 return signed 32-bit results. They expose different software/data-movement
 contracts and do not share a start register.
 
+The [end-to-end benchmark](matvec-benchmark.md) compares both interfaces with
+GCC-compiled software, including data movement and polling.
+
 ## MATVEC Scratchpad
 
 RTL module: `int8_matvec_scratchpad_accelerator`
+
+```mermaid
+flowchart LR
+    CPU["CPU"] -->|"MMIO writes"| SP["Vector / row scratchpad"]
+    SP --> MAC["4 signed products<br/>balanced sum"]
+    MAC --> RES["Result array"]
+    RES -->|"MMIO reads"| CPU
+```
+
+Software loads the operands before starting and reads results after `done`.
+The engine processes rows sequentially; each row computes four products.
 
 | Address | Register | Behavior |
 | --- | --- | --- |
@@ -30,9 +44,28 @@ IRQ generation samples the interrupt-enable value from before that edge, so an
 enable write at final commit affects the next job while a disable write does
 not cancel the completion IRQ already being accepted.
 
+For consecutive polling jobs, write `CTRL=3` while idle to clear the previous
+`done` flag and start the next job in one write. Polling a new job without
+clearing the sticky flag can return before its results are ready.
+
 ## MATVEC DMA-lite
 
 RTL module: `int8_matvec_dma_lite`
+
+```mermaid
+flowchart TB
+    DESC["CPU: vector, matrix, output addresses / rows"] --> VALID["Validate descriptor"]
+    VALID -->|"valid"| VEC["Read vector once"]
+    VALID -->|"invalid"| ERROR["done = 1 / error code<br/>no memory request"]
+    VEC --> ROW["Read matrix row"]
+    ROW --> MAC["Multiply / reduce"]
+    MAC --> WRITE["Write result word"]
+    WRITE -->|"more rows"| ROW
+    WRITE -->|"last row"| DONE["done = 1; release ownership"]
+```
+
+Descriptors select memory operands instead of copying them into MMIO operand
+registers. The CPU polls status while the engine transfers and computes.
 
 | Address | Register | Behavior |
 | --- | --- | --- |
@@ -49,14 +82,36 @@ Invalid descriptors finish with `done=1` and a stable error code. `ROWS` keeps
 the full 32-bit software value, so values outside `1..4` cannot become valid by
 truncation. Validation uses 33-bit end-address arithmetic for every vector,
 matrix row, and output word; descriptors that exceed `MEMORY_WORD_COUNT` or
-wrap the 32-bit address space are rejected before DMEM ownership begins.
+wrap the 32-bit address space are rejected before any DMEM request is issued.
 The matrix and output ranges must be disjoint because each result is written
 before the next matrix row is read; overlapping descriptors are rejected.
-Configuration writes while busy are rejected. The engine stalls CPU non-MMIO
-memory traffic while it owns DMEM. Software must arrange cache usage so that
-the limited snoop behavior is sufficient. DMA-lite is polling-only:
+Configuration writes while busy are rejected. DMA-lite is polling-only:
 `irq_pending` is tied low.
 
-These blocks are compact verification and FPGA integration examples. They are
-not production AI accelerators, coherent DMA engines, or benchmark speedup
-claims.
+### Software sequence and cache behavior
+
+Use this sequence, illustrated by the
+[DMA demo](../firmware/src/accelerator/matvec_dma_demo.S):
+
+1. Store the packed vector and matrix rows in ordinary DMEM.
+2. Set the three word-aligned base addresses and a row count from 1 to 4.
+   Keep the matrix and output ranges disjoint and within memory capacity.
+3. Write `CTRL.start`, then poll `STATUS.error` and `STATUS.done`.
+   If an error is set, read `ERROR` before consuming results.
+4. After successful completion, load the output words through the CPU's
+   ordinary memory path. Write `CTRL` bit 2 to clear done/error when needed.
+
+During a job, `matvec_dma_cpu_memory_stall` holds CPU non-MMIO loads/stores;
+MMIO status polling remains available. A DMA read checks the D-cache snoop
+port and uses the cached word on a hit, including a dirty CPU-written value.
+An accepted DMA write updates a resident cached word and marks its line dirty,
+preserving the new value through a later line writeback. On a miss, results
+remain in backing memory and a later CPU load refills them normally.
+
+This serialized CPU/DMA arrangement is the supported sharing model. It does
+not provide a coherence protocol for additional bus masters. There is no
+software cache-flush command required by the demo sequence.
+
+For the four-row demo, the vector is `[1, -2, 3, -4]`; the expected results are
+`[-10, -6, 386, 70]`. The job counters record five logical word reads (one
+vector plus four rows) and four result writes.

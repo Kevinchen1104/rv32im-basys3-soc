@@ -1,15 +1,10 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_assert_timer_interrupt_flush
-// Purpose: Exercises a focused pipeline, trap, or side-effect invariant with a directed simulation scenario.
 // Checks: A forced machine-timer interrupt redirect suppresses the interrupted instruction plus younger wrong-path
 //   data-memory, GPIO, timer, and UART MMIO stores, publishes a public pass signature, and separately checks
 //   simultaneous MEIP/MTIP priority selects MEIP.
-// Pass condition: The directed scenario reaches the expected invariant/pass point without a mismatch, timeout, or
-//   $fatal.
-// Does not prove: Directed interrupt redirect and priority assertion using hierarchical pending injection; the real
-//   timer compare-to-interrupt path is covered by CPU program tests.
-// Assertion focus: Directed check for timer interrupt flush behavior or side-effect suppression.
+// Injects timer pending state hierarchically; tb_program_machine_timer_interrupt checks real timer compare
+// interrupts.
 
 module tb_assert_timer_interrupt_flush;
 
@@ -104,7 +99,7 @@ module tb_assert_timer_interrupt_flush;
     end
 
     initial begin
-        $dumpfile("wave/tb_assert_timer_interrupt_flush.vcd");
+        $dumpfile("results/waveforms/tb_assert_timer_interrupt_flush.vcd");
         $dumpvars(0, tb_assert_timer_interrupt_flush);
         reset_cpu();
 

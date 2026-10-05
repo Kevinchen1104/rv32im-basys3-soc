@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "checked_at_utc": "2026-09-30T21:30:38.097470+00:00",
+  "cases_passed": 90,
+  "outputs_checked": 2418,
+  "transcript_sha256": "77113bf1dd8c8d2815c12a2aed1e949ac9917ec3021ad51ac216845d73d9f2ac",
+  "firmware": {
+    "status": "passed",
+    "source_commit": "d0c3b75c371fbc616d8cbd4e84bc8ad79155921f",
+    "inputs": {
+      "firmware/c/board_matvec.c": "937a0b3c946cbf554e42d92e3e0e1402ad8952741661430f84574d70f1faf7c1",
+      "firmware/c/board.ld": "0278142aed9e1fd259791bdce6105c0edb55d1caf5eb89ae4f4fd8731f020349",
+      "firmware/c/start.S": "e68b7a40ce8396211f9c3fcb616681786feec328b6f6ec35ca6ccfa5c2a1ad36",
+      "scripts/board_matvec.py": "c58df705eccbfd1e30fd802e13b84a7135792effed598d0614404fc3f3c786d2",
+      "scripts/matvec_benchmark.py": "370004523e1e8ae96af7eeb314ddb114fc032915a563704cb6d36208b3523ed3",
+      "scripts/compiled_programs.py": "c3ed7fb9955e7c1b3b0c598d51ca1c9f8b48a7bfa21258b8f673af5cfaaa60c3",
+      "scripts/result_json.py": "07fce16c16a52aff82710cdf21307313ebfc7765b3ef2009cf9ae70b1a847b9d",
+      "scripts/execution_context.py": "5d276bd11723fd738f769f210d31bc9d1e65a07a47fc70860b0859d80be1b99b"
+    },
+    "firmware_bytes": 2012,
+    "working_tree_dirty": false,
+    "packet_sha256": "c2fabdf59fd7e4b73dfac0f91c0247f5cba625d02053970b1d9908730006c70e",
+    "elf_sha256": "2caba6d3ae08855f959e3592b8b1624ca891f07dde2ab51a7fd4402d7efac68d",
+    "compiler": "riscv64-unknown-elf-gcc.EXE (GCC) 15.1.0"
+  },
+  "measurements_sha256": "16553e1cf78b2b93e627adbaa51b318331e864e28de342fb78c6143aa61c5577"
+}

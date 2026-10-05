@@ -1,13 +1,7 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_fpga_top_smoke_pass
-// Purpose: Exercises an FPGA-facing simulation wrapper or UART boot path.
 // Checks: FPGA top smoke_pass assertion for matching status values.
-// Pass condition: Wrapper outputs, UART transcript, GPIO/status signals, or boot markers match expected values before
-//   timeout.
-// Does not prove: Status comparator simulation only.
 // Firmware: firmware/hex/showcase/led_smoke.hex
-// Boundary: Simulation wrapper evidence only; not timing closure or physical board validation.
 
 module tb_fpga_top_smoke_pass;
 
@@ -69,7 +63,7 @@ module tb_fpga_top_smoke_pass;
     always #5 clock = ~clock;
 
     initial begin
-        $dumpfile("wave/tb_fpga_top_smoke_pass.vcd");
+        $dumpfile("results/waveforms/tb_fpga_top_smoke_pass.vcd");
         $dumpvars(0, tb_fpga_top_smoke_pass);
 
         reset = 1'b1;
@@ -80,7 +74,7 @@ module tb_fpga_top_smoke_pass;
             $fatal;
         end
 
-        repeat (2) @(posedge clock);
+        repeat (2) @(negedge clock);
         reset = 1'b0;
 
         repeat (260) @(posedge clock);

@@ -4,17 +4,19 @@ Purpose: Runs Yosys synthesis smoke checks for selected top-level modules when a
 Common usage:
   powershell -ExecutionPolicy Bypass -File scripts\synth-smoke.ps1
 Outputs:
-  Synthesis logs and JSON/stat artifacts under wave\synth-smoke or blocked-tool status.
-Scope:
-  Synthesis smoke evidence only; not timing closure or physical board validation.
-Audience:
-  Public optional synthesis check.
+  Work files under build/; command logs under results/logs/synthesis; JSON summary under results/.
 #>
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 . "$PSScriptRoot\verification-source-identity.ps1"
+. "$PSScriptRoot/process-runner.ps1"
+$summaryPath = 'results/synth-smoke-summary.json'
+$summary = [ordered]@{ status='running'; started_at_utc=(Get-Date).ToUniversalTime().ToString('o'); checked_tops=@(); error_message=$null }
+Write-ResultJson $summary $summaryPath
+try {
+$startingIdentity = Add-VerificationIdentityFields $summary
 
 $yosysCommand = Get-Command yosys -ErrorAction SilentlyContinue
 if ($null -eq $yosysCommand) {
@@ -28,7 +30,7 @@ foreach ($source in $sources) {
     }
 }
 
-New-Item -ItemType Directory -Force -Path "wave" | Out-Null
+New-Item -ItemType Directory -Force -Path "results", "build" | Out-Null
 
 $tops = @(
     "RISCVCPU",
@@ -51,8 +53,8 @@ $readSources = ($sources | ForEach-Object { $_ -replace "\\", "/" }) -join " "
 $checkedTops = [System.Collections.Generic.List[object]]::new()
 
 foreach ($top in $tops) {
-    $logPath = "wave\synth-smoke-$top.log"
-    $scriptPath = "wave\synth-smoke-$top.ys"
+    $logPath = "results/logs/synthesis/$top.log"
+    $scriptPath = Join-Path 'build' "synth-smoke-$top.ys"
     $yosysScript = @(
         "read_verilog -sv $readSources",
         "hierarchy -check -top $top",
@@ -66,12 +68,13 @@ foreach ($top in $tops) {
     Write-Host "========================================"
     Write-Host "Running optional Yosys synthesis smoke: $top"
 
-    yosys -q -l $logPath -s $scriptPath
+    $result = Invoke-LoggedProcess -FilePath $yosysCommand.Source -Arguments @('-s', $scriptPath) -LogPath $logPath -WorkingDirectory $repoRoot -TimeoutSeconds 300 -Quiet
 
-    if ($LASTEXITCODE -ne 0) {
+    if ($result.status -ne 'passed') {
         Write-Host "Yosys synthesis smoke failed: $top"
+        Get-Content -LiteralPath $logPath -Tail 40 | Write-Host
         Write-Host "See log: $logPath"
-        exit $LASTEXITCODE
+        throw "Yosys synthesis check failed: $top. See $logPath"
     }
 
     $checkedTops.Add([ordered]@{
@@ -86,11 +89,19 @@ $summary = [ordered]@{
     status = "pass"
     checked_tops = $checkedTops.ToArray()
     source_count = $sources.Count
-    claim_boundary = "Generic Yosys hierarchy/proc/opt/check smoke only; not timing closure, FPGA-family implementation, bitstream, or physical board validation."
+    method = 'Yosys hierarchy / proc / opt / check'
 }
-Add-VerificationIdentityFields -Summary $summary | Out-Null
+Assert-VerificationInputsUnchanged $startingIdentity
+Add-VerificationIdentityFields -Summary $summary -Identity $startingIdentity | Out-Null
 
-$summary | ConvertTo-Json -Depth 6 | Set-Content -Path "wave\synth-smoke-summary.json" -Encoding Ascii
+} catch {
+    $summary.status = 'fail'
+    $summary['error_message'] = $_.Exception.Message
+    throw
+} finally {
+    $summary['generated_at_utc'] = (Get-Date).ToUniversalTime().ToString('o')
+    Write-ResultJson $summary $summaryPath
+}
 
 Write-Host "========================================"
 Write-Host "PASS: optional Yosys synthesis smoke checks passed"

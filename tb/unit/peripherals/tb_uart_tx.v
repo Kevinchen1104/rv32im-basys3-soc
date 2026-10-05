@@ -4,9 +4,12 @@
 // Purpose: Checks a local MMIO peripheral, UART, timer, GPIO, or decoder block.
 // Checks: UART TX serialization, ready/busy behavior, ignored busy attempts, and invalid clock-divisor handling.
 // Pass condition: All self-checks complete on the PASS path without a mismatch, timeout, or $fatal.
-//   subsystem claim.
 
 module tb_uart_tx;
+    initial begin
+        #100000;
+        $fatal(1, "UART TX test timed out");
+    end
 
     localparam integer CLKS_PER_BIT = 4;
 
@@ -105,7 +108,7 @@ module tb_uart_tx;
     endtask
 
     initial begin
-        $dumpfile("wave/tb_uart_tx.vcd");
+        $dumpfile("results/waveforms/tb_uart_tx.vcd");
         $dumpvars(0, tb_uart_tx);
 
         reset = 1'b1;

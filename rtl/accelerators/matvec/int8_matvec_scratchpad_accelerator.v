@@ -22,6 +22,7 @@ module int8_matvec_scratchpad_accelerator (
     input clear_done,
 
     input [31:0] write_data,
+    input [3:0] write_byte_enable,
 
     output [31:0] status_read_data,
     output [31:0] config_read_data,
@@ -75,11 +76,17 @@ module int8_matvec_scratchpad_accelerator (
 
     // The scratchpad register model lets software stage operands while idle;
     // busy writes are ignored so the active vector/row count remain stable.
-    wire start_request = ctrl_write && write_data[0];
-    wire clear_request = clear_done || (ctrl_write && write_data[1]);
-    wire interrupt_enable_set_request = ctrl_write && write_data[2];
-    wire interrupt_enable_clear_request = ctrl_write && write_data[3];
-    wire clear_irq_request = clear_request || (ctrl_write && write_data[4]);
+    wire start_request = ctrl_write && write_byte_enable[0] && write_data[0];
+    wire clear_request = clear_done || (ctrl_write && write_byte_enable[0] && write_data[1]);
+    wire interrupt_enable_set_request = ctrl_write && write_byte_enable[0] && write_data[2];
+    wire interrupt_enable_clear_request = ctrl_write && write_byte_enable[0] && write_data[3];
+    wire clear_irq_request = clear_request || (ctrl_write && write_byte_enable[0] && write_data[4]);
+    wire [31:0] write_mask = {{8{write_byte_enable[3]}}, {8{write_byte_enable[2]}},
+                             {8{write_byte_enable[1]}}, {8{write_byte_enable[0]}}};
+    wire [31:0] merged_row_data = (selected_row_data_readback & ~write_mask) |
+                                 (write_data & write_mask);
+    wire [3:0] next_row_index = write_byte_enable[0] ? write_data[3:0] : selected_row_index;
+    wire [3:0] next_result_index = write_byte_enable[0] ? write_data[3:0] : selected_result_index;
     wire busy_write_request =
         config_write ||
         vector_write ||
@@ -104,6 +111,7 @@ module int8_matvec_scratchpad_accelerator (
     wire signed [31:0] partial_sum23 = product2_extended + product3_extended;
 
     integer i;
+    integer lane;
 
     assign status_read_data = {
         22'h0,
@@ -180,29 +188,34 @@ module int8_matvec_scratchpad_accelerator (
                     ignored_busy_writes <= ignored_busy_writes + 8'd1;
                 end
             end else if (!busy) begin
-                if (config_write) begin
+                if (config_write && write_byte_enable[0]) begin
                     row_count_minus1 <= write_data[3:0];
                 end
                 if (vector_write) begin
-                    vector_reg <= write_data;
+                    for (lane = 0; lane < 4; lane = lane + 1) begin
+                        if (write_byte_enable[lane])
+                            vector_reg[lane*8 +: 8] <= write_data[lane*8 +: 8];
+                    end
                 end
                 if (row_index_write) begin
-                    selected_row_index <= write_data[3:0];
+                    selected_row_index <= next_row_index;
                 end
                 if (row_data_write) begin
-                    row_scratchpad[selected_row_index] <= write_data;
+                    for (lane = 0; lane < 4; lane = lane + 1) begin
+                        if (write_byte_enable[lane])
+                            row_scratchpad[selected_row_index][lane*8 +: 8] <= write_data[lane*8 +: 8];
+                    end
                 end
-                case ({row_index_write, row_data_write})
-                    2'b01: selected_row_data_readback <= write_data;
-                    2'b10: selected_row_data_readback <= row_scratchpad[write_data[3:0]];
-                    2'b11: selected_row_data_readback <=
-                        (write_data[3:0] == selected_row_index) ?
-                        write_data : row_scratchpad[write_data[3:0]];
-                    default: begin end
-                endcase
+                if (row_index_write) begin
+                    selected_row_data_readback <=
+                        (row_data_write && next_row_index == selected_row_index) ?
+                        merged_row_data : row_scratchpad[next_row_index];
+                end else if (row_data_write) begin
+                    selected_row_data_readback <= merged_row_data;
+                end
                 if (result_index_write) begin
-                    selected_result_index <= write_data[3:0];
-                    selected_result_data_readback <= result_scratchpad[write_data[3:0]];
+                    selected_result_index <= next_result_index;
+                    selected_result_data_readback <= result_scratchpad[next_result_index];
                 end
             end
 
@@ -281,6 +294,17 @@ module int8_matvec_scratchpad_accelerator (
             end
         end
     end
+
+`ifdef FORMAL
+    reg formal_seen_reset = 1'b0;
+    always @(posedge clock) begin
+        if (reset)
+            formal_seen_reset <= 1'b1;
+        // The shadow supplies preserved bytes without a second scratchpad read port.
+        if (formal_seen_reset)
+            assert(selected_row_data_readback == row_scratchpad[selected_row_index]);
+    end
+`endif
 endmodule
 
 `endif

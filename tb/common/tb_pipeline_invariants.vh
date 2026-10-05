@@ -1,3 +1,6 @@
+    // PC poison checks cover the next eight cycles of these directed programs.
+    // The window assumes no legitimate re-entry to a poisoned PC; long-stall
+    // flush behavior is checked by the dedicated stall/redirect testbenches.
     integer pipeline_invariant_i;
     integer pipeline_poison_i;
     integer pipeline_poison_slot;
@@ -81,6 +84,23 @@
         end else begin
             if (dut.Regs[0] !== 32'h0) begin
                 pipeline_invariant_fail("x0 changed from zero");
+            end
+
+            // Registered write intent carries x0 exclusion. MEM/WB also
+            // captures validity, whereas EX/MEM must gate stale bubble flags.
+            if ((dut.EXMEMForwardRegWrite || dut.EXMEMWritebackRegWrite) &&
+                dut.EXMEMForwardRd == 5'd0) begin
+                pipeline_invariant_fail("EX/MEM write metadata names x0");
+            end
+            if (dut.MEMWBForwardRegWrite &&
+                (!dut.MEMWBValid || dut.MEMWBForwardRd == 5'd0)) begin
+                pipeline_invariant_fail("MEM/WB write metadata is not prequalified");
+            end
+            if (dut.EXMEMForwardProducerValid !==
+                (dut.EXMEMValid && dut.EXMEMForwardRegWrite && (dut.EXMEMForwardRd != 0)) ||
+                dut.MEMWBForwardProducerValid !==
+                (dut.MEMWBValid && dut.MEMWBForwardRegWrite && (dut.MEMWBForwardRd != 0))) begin
+                pipeline_invariant_fail("forwarding qualification differs from the explicit checks");
             end
 
             if (dut.PC[1:0] !== 2'b00) begin

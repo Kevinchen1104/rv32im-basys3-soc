@@ -4,7 +4,6 @@
 # Observable result: Public debug_status pass/fail signature plus handler/result state are checked by the program
 #   testbench.
 # Used by: tb_program_matvec_scratchpad_interrupt
-#   accelerator, or speedup claim.
 
 # MATVEC Scratchpad interrupt-driven smoke.
 # Uses the minimal machine external interrupt slice: mstatus.MIE, mie.MEIE,

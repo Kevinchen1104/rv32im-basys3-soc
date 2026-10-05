@@ -1,11 +1,6 @@
 `timescale 1ns / 1ps
 
-// Testbench: tb_program_alu
-// Purpose: Runs CPU firmware as selected local ISA/compliance-style directed simulation evidence.
 // Checks: Assembled register/immediate ALU operations across shifts, compares, and logic.
-// Pass condition: Firmware-visible register, memory, debug_status, I/O, or transcript signatures match expected
-//   values before timeout.
-// Does not prove: Directed ALU program; not exhaustive random ALU testing.
 // Firmware: firmware/hex/examples/alu_ops.hex
 
 module tb_program_alu;
@@ -13,7 +8,7 @@ module tb_program_alu;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_program_alu.vcd");
+        $dumpfile("results/waveforms/tb_program_alu.vcd");
         $dumpvars(0, tb_program_alu);
         reset_cpu();
 

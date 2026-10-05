@@ -12,7 +12,7 @@ module tb_program_board_smoke;
 `include "tb_common.vh"
 
     initial begin
-        $dumpfile("wave/tb_program_board_smoke.vcd");
+        $dumpfile("results/waveforms/tb_program_board_smoke.vcd");
         $dumpvars(0, tb_program_board_smoke);
         reset_cpu();
 
