@@ -4,7 +4,7 @@
 // Role: Small Basys3 board-smoke target for lightweight CPU execution evidence.
 // Interface: Basys3 clock/reset button, switches, LEDs, and idle USB-UART pins for shared constraints.
 // Key behavior: Runs a minimal RV32I CPU smoke profile from internal memory and exposes pass/fail/done/status on LEDs.
-// Non-goals: This does not replace the full Basys3 SoC top, does not exercise control-flow/trap features, and is not physical-board validation by itself.
+// Test scope: Minimal CPU profile; control-flow and trap features are disabled.
 
 module RISCVCPU_basys3_board_smoke_top #(
     parameter MEMORY_WORD_COUNT = 128,

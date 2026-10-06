@@ -4,7 +4,6 @@
 // Role: FPGA-facing top for packetized UART boot into the CPU instruction memory.
 // Interface: Clock/reset, serial UART RX/TX, GPIO, status/debug outputs, and boot loader visibility signals.
 // Key behavior: Accepts a packetized image over UART, writes instruction memory, and releases the CPU after loader completion.
-// Non-goals: This is not a secure boot path, production loader, or timing-closure claim.
 
 module RISCVCPU_uart_boot_fpga_top #(
     parameter MEMORY_WORD_COUNT = 1024,

@@ -2,7 +2,7 @@
 
 // Module: machine_timer
 // Role: Machine timer MMIO block for the selected machine-mode interrupt subset.
-// Interface: Clock/reset, MMIO read/write selects, write data, mtime/mtimecmp read data, and timer interrupt output.
+// Interface: Clock/reset, MMIO write selects/data, continuously exposed mtime/mtimecmp readback, and timer interrupt output.
 // Key behavior: Increments mtime, updates mtimecmp through MMIO stores, and registers the sampled mtime/mtimecmp comparison.
 
 module machine_timer (

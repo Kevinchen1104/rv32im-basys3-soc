@@ -4,7 +4,7 @@
 // Role: DMA-lite signed int8 MATVEC accelerator that reads vector/matrix data from DMEM and writes results back.
 // Interface: MMIO register writes/readbacks, status/error/perf outputs, and a 128-bit DMEM line request port with cache snoop input.
 // Key behavior: Validates a small job descriptor, owns DMEM while busy, and pipelines each row through read, multiply, reduce, and write stages.
-// Non-goals: No coherent DMA protocol, deployment DMA engine, or deployment accelerator behavior is claimed.
+// Memory contract: Owns DMEM during a job; cache snooping is local to this SoC, not a multi-master coherence protocol.
 
 `ifndef INT8_MATVEC_DMA_LITE_V
 `define INT8_MATVEC_DMA_LITE_V

@@ -4,7 +4,6 @@
 // Role: SoC top that boots through packetized UART and then hands the UART RX path to runtime firmware.
 // Interface: Clock/reset, serial UART RX/TX, GPIO, debug/status, and boot/runtime observability outputs.
 // Key behavior: Holds the CPU in reset during boot loading, releases it on a valid packet image, then routes serial RX to the running CPU.
-// Non-goals: This is a simulation-tested boot/runtime integration path, not a secure boot ROM or physical-board validation claim.
 
 module RISCVCPU_uart_boot_runtime_soc_top #(
     parameter MEMORY_WORD_COUNT = 1024,

@@ -4,7 +4,7 @@
 // Role: Generates the low-frequency clock used by the full-feature Basys3 SoC target.
 // Interface: Accepts the 100 MHz board clock and active-high reset; outputs a 6.25 MHz clock and lock status.
 // Key behavior: Vivado uses an MMCME2_BASE with buffered feedback/output; portable tools use a deterministic divide-by-16 model.
-// Non-goals: The portable fallback is for simulation and generic synthesis smoke, not the Basys3 bitstream clock network.
+// Build constraint: The Basys3 bitstream uses the MMCM path; the divider model is for portable simulation/synthesis smoke.
 
 module basys3_lowfreq_clock_gen (
     input clk,

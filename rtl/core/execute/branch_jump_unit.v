@@ -3,7 +3,7 @@
 // Module: branch_jump_unit
 // Role: Branch and jump decision unit for the execute stage.
 // Interface: Current PC, operands, immediates, branch/jump decode controls, and predicted PC/taken inputs.
-// Key behavior: Computes branch condition results, jump targets, link values, and redirect/mispredict information.
+// Key behavior: Computes branch decisions, branch/jump targets, branch fallthrough PC, and misprediction flags.
 
 module branch_jump_unit (
     input [6:0] opcode,

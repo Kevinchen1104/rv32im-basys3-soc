@@ -2,9 +2,8 @@
 
 // Module: RISCVCPU_basys3_top
 // Role: Basys3-oriented FPGA wrapper around the CPU/SoC top-level signals.
-// Interface: Board clock/reset, UART pins, LEDs, switches/buttons, and debug/status outputs.
-// Key behavior: Adapts reset polarity and board-facing I/O while preserving the core SoC behavior underneath.
-// Non-goals: This wrapper does not by itself claim timing closure or physical-board validation.
+// Interface: 100 MHz clock, active-high BTN C reset, USB-UART RX/TX, 16 switches, and 16 LEDs.
+// Key behavior: Synchronizes switches, passes active-high reset to the SoC, and maps GPIO/status to LEDs.
 
 module RISCVCPU_basys3_top #(
     parameter MEMORY_WORD_COUNT = 1024,

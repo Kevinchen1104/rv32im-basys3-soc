@@ -210,7 +210,7 @@ their absolute cycle counts across the two profiles.
 
 ### Measured results
 
-The [current-input board run](./fpga/board_evidence/automatic_acceptance_5c1c4c0/README.md)
+The [dated board run](./fpga/board_evidence/automatic_acceptance_5c1c4c0/README.md)
 passed all 90 cases twice, with 2,418 numerical outputs checked in each run.
 The repeat after JTAG reconfiguration and firmware reload produced identical
 cycle counts for every case. At 100 MHz, one cycle is 0.01 microseconds; the

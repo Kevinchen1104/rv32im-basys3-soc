@@ -2,7 +2,7 @@
 
 // Module: forwarding_unit
 // Role: Operand forwarding selector for the pipelined core.
-// Interface: Source register numbers, downstream destination/writeback controls, and forwarding select outputs.
+// Interface: Source/destination registers and bypass values; outputs forwarded operands, store data, and two address-low bits.
 // Key behavior: Chooses EX/MEM or MEM/WB bypass sources to reduce RAW dependency stalls.
 
 module forwarding_unit (

@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 // Module: exception_decode_unit
-// Role: Decode-stage classifier for the selected machine-mode trap subset.
+// Role: Combinational execute-stage classifier for the selected machine-mode trap subset.
 // Interface: Instruction fields, an optional RV32M enable parameter, memory/control-transfer metadata, and classification outputs.
 // Key behavior: Identifies ecall/ebreak/mret/CSR accesses, illegal instructions, and misaligned instruction/load/store exceptions.
 

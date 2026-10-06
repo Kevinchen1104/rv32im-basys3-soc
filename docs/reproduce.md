@@ -43,9 +43,9 @@ JSON files retain machine-readable details. Each stage has its own log
 under `results/logs/check/quick/` or `results/logs/check/full/`; the report links
 to it. A failed stage stops the gate and records its name and log.
 
-JSON uses two-space indentation and compact short scalar arrays. Full also
-checks the result-writer inventory so new scripts cannot silently reintroduce
-the older layout. The overview's supporting-record section includes auxiliary
+JSON uses two-space indentation and compact short scalar arrays. Full checks
+that the registered result writers use this shared format.
+The overview's supporting-record section includes auxiliary
 summaries and their freshness status; a recorded PASS without a matching source
 identity is not treated as a current verification gate.
 

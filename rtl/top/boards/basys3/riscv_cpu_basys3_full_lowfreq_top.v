@@ -4,7 +4,6 @@
 // Role: Runs the complete Basys3 UART boot/runtime SoC at a timing-oriented 6.25 MHz clock.
 // Interface: Preserves the Basys3 clock, reset button, USB-UART, switches, and LED port contract.
 // Key behavior: Holds the existing full SoC in reset until the MMCM locks, then forwards all board I/O unchanged.
-// Non-goals: Timing closure for this target does not imply 100 MHz full-top closure or physical-board validation.
 
 module RISCVCPU_basys3_full_lowfreq_top #(
     parameter MEMORY_WORD_COUNT = 1024,

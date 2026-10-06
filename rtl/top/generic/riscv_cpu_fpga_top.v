@@ -4,7 +4,6 @@
 // Role: Generic FPGA-facing wrapper around the CPU/SoC core and local memories.
 // Interface: Board-style clock/reset inputs, LED/debug/status outputs, GPIO, and UART pins.
 // Key behavior: Instantiates the CPU with selectable program image parameters and maps public status/debug signals to top-level ports.
-// Non-goals: This wrapper does not claim timing closure or physical-board validation.
 
 module RISCVCPU_fpga_top #(
     parameter MEMORY_WORD_COUNT = 1024,

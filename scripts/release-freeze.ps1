@@ -28,7 +28,7 @@ try {
         'Read `package.json` for included gates and omitted optional tools; `evidence/` contains their recorded summaries.', '',
         '`source-inputs.json` identifies the tested input files. `artifacts.json` checks every packaged file by size and SHA-256.', '',
         'Verify integrity with `powershell -File scripts/final-audit.ps1 -PackagedEvidence` from the repository root.',
-        'Add `-RequireCurrent` when checking that this snapshot matches the current checkout.') |
+        'Add `-Scope portable -RequireCurrent` to check this portable snapshot against the current checkout.') |
         Set-Content -LiteralPath (Join-Path $stage 'README.md') -Encoding UTF8
     Write-ReleaseManifest $stage
     Publish-ReleasePackage $stage 'release/current' $root

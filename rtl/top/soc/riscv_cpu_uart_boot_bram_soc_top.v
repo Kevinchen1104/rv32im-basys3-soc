@@ -1,10 +1,9 @@
 `timescale 1ns / 1ps
 
 // Module: RISCVCPU_uart_boot_bram_soc_top
-// Role: BRAM-backed SoC top for packetized UART boot with external-style instruction and data memories.
-// Interface: Clock/reset, UART, GPIO, debug/status, and BRAM-backed memory integration signals.
-// Key behavior: Loads the program image through UART boot logic and runs the CPU against BRAM-backed memory adapters.
-// Non-goals: The BRAM integration is not a cache-coherent memory fabric or physical-board validation claim.
+// Role: UART-boot SoC with a synchronous BRAM data-memory backend.
+// Interface: Clock/reset, UART RX/TX, LEDs, GPIO, and loader/execution/memory-activity status.
+// Key behavior: Loads instruction memory over UART for asynchronous line reads; data accesses use the internal BRAM adapter.
 
 module RISCVCPU_uart_boot_bram_soc_top #(
     parameter MEMORY_WORD_COUNT = 1024,

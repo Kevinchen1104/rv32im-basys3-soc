@@ -16,8 +16,8 @@ Committed review snapshots are grouped by what they measure:
 
 ## Public history and recorded revisions
 
-Public updates combine development work into a release commit. The export
-origin is recorded in [`SOURCE_IDENTITY.json`](../../SOURCE_IDENTITY.json).
+The integrated public update combined development work into a release commit.
+Its export origin is recorded in [`SOURCE_IDENTITY.json`](../../SOURCE_IDENTITY.json).
 A `source_commit` in a measurement is the original development revision, not
 necessarily a commit available in this public repository. Those values and
 the original measurement dates are preserved; publication is not a new
@@ -39,9 +39,22 @@ The dated architecture/cache simulation manifests also include the shared
 `matvec_benchmark.py` reporting helper. Its report-link handling was later
 updated for different Windows drives, so those complete manifests are not
 byte-for-byte current. Their measured RTL, firmware and testbench inputs are
-unchanged; the original records are preserved rather than relabeled as new
-runs. The separate 90-case MATVEC benchmark was rerun after this change, with
+unchanged by that reporting change; the original records are preserved rather
+than relabeled as new runs. The separate 90-case MATVEC benchmark was rerun after that change, with
 identical measurement CSV values and refreshed provenance.
+
+The subsequent documentation cleanup corrects RTL header descriptions and
+removes repeated disclaimers. Relative to public revision `7bbe4fb`, every
+non-comment RTL line, testbench, firmware file, FPGA script and constraint is
+unchanged.
+These header edits still change the full-file hashes used by the evidence
+system. Routed and physical snapshots therefore retain their original hashes
+and are reported as historical, not relabeled as new hardware measurements.
+Fresh portable and MATVEC runs record the corrected source separately. Optional
+tool gates not rerun for this cleanup are listed as omitted in the new portable
+package; their previous records remain available in public revision `7bbe4fb`.
+For freshness checks, use `-Scope portable -RequireCurrent`; an all-scope
+`-RequireCurrent` check deliberately rejects the older hardware inputs.
 
 ## Publish a portable snapshot
 

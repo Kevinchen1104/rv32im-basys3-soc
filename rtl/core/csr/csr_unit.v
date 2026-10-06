@@ -4,7 +4,6 @@
 // Role: Selected machine-mode CSR file for traps, interrupts, and mret side effects.
 // Interface: CSR address/function/write inputs, trap/mret events, pending interrupt inputs, and CSR readback outputs.
 // Key behavior: Implements mstatus/mie/mtvec/mepc/mcause/mtval/mip readback, WARL masking, immediate trap-entry status updates, registered trap-metadata commit, and mret restoration for the supported subset.
-// Non-goals: This is not a complete privileged-mode implementation.
 
 module csr_unit (
     input clock,

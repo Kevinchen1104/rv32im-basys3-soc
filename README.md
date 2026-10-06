@@ -37,8 +37,8 @@ Replace `COM3` with your board's port. After **BTN C**, add `--upload`. After
 power loss, explicitly load the application bitstream with `--program` (XSDB)
 or Vivado Hardware Manager, then upload the firmware. The
 [startup guide](docs/signal-console.md#startup-and-recovery) explains these states
-and includes a non-mutating local preflight. The startup command never guesses
-that a failed connection should trigger reprogramming.
+and includes a non-mutating local preflight. Reprogramming requires the explicit
+`--program` option.
 
 No board available? Run the [portable simulation checks](#quick-start), or the
 [C firmware UART simulations](docs/signal-console.md#build-and-test).
@@ -138,7 +138,7 @@ memory limits and accelerator contracts.
 | Evidence | Recorded result |
 | --- | --- |
 | Portable regression | **169 / 169 passed** |
-| Python tools and viewer | **108 / 108 passed**, including Tk controls |
+| Python tools and viewer | **110 / 110 passed**, including Tk controls |
 | Official Sail cross-check | **36 selected upstream RV32I/M tests**, 552,404 signature words matched; [scope and reproduction](docs/compiled-programs.md#optional-upstream-sail-comparison) |
 | Physical viewer output checks | Source-matched repeat at `5c1c4c0`: **10 sessions, 8,704 outputs passed**; [capture and reproduction](docs/fpga/board_evidence/automatic_acceptance_5c1c4c0/README.md) |
 | Bounded formal | **8 focused harnesses**; scopes listed in [`formal/README.md`](formal/README.md) |
@@ -153,8 +153,8 @@ memory limits and accelerator contracts.
 The cache studies include physical FIR comparisons as well as simulation
 and routed implementation. The automatic acceptance programs the `9d46f04`
 default image and the rebuilt `5c1c4c0` application image; all 45 hardware/build
-inputs match the reviewed source. The six cache comparisons identify each
-candidate separately. The 128 B direct and four-victim candidates were also
+inputs matched the source reviewed for that record. The six cache comparisons
+identify each candidate separately. The 128 B direct and four-victim candidates were also
 reloaded and repeated, reproducing all 200 stress-batch cycle counts.
 The board configuration defaults remain unchanged. JTAG reload is not an
 operator-pressed BTN C test; earlier manual observations retain their dated records.
@@ -169,7 +169,7 @@ shifter, banked IMEM, frontend/cache-path changes, return hints, MATVEC byte
 writes, and a clock-period sweep. The earlier `e96f878` RTL met a 9.5-ns
 (105.26-MHz) implementation target; its 9.0-ns run failed setup timing.
 The board profile remains 100 MHz. The
-[current-input automatic board record](docs/fpga/board_evidence/automatic_acceptance_5c1c4c0/README.md)
+[dated automatic board record](docs/fpga/board_evidence/automatic_acceptance_5c1c4c0/README.md)
 contains source-matched bitstream identities, UART captures, numerical checks
 and measured cycle counts. Manual LED/reset observations remain in the
 [2026-09-30 record](docs/fpga/board_evidence/basys3_full_direct_100mhz_2026-09-30/README.md).
@@ -179,7 +179,9 @@ The Evidence integrity badge checks the recorded identities and hashes in the
 committed [review snapshots](release/README.md), and reports whether their inputs
 match the checkout. The Check job runs the current source.
 Recorded development revisions are preserved when publishing an integrated
-update; see [public history and evidence identity](docs/evidence/README.md#public-history-and-recorded-revisions).
+update. The later documentation/header corrections change source-file hashes,
+not RTL logic; saved measurements retain their original inputs and dates.
+See [public history and evidence identity](docs/evidence/README.md#public-history-and-recorded-revisions).
 
 ## Repository map
 
@@ -246,7 +248,8 @@ results whose recorded inputs no longer match the working source.
 
 Python checks are separate so the portable RTL flow does not acquire plotting
 or emulator dependencies. Use native Windows Python 3.11 or later with Tk
-(CI uses 3.12). Install both Python requirement files and run:
+(CI uses 3.12). Create `.venv` once with `py -3 -m venv .venv`, or reuse your
+existing native Windows environment. Install both Python requirement files and run:
 
 ```powershell
 .venv/Scripts/python.exe -m pip install -r scripts/signal-viewer-requirements.txt -r tools/compiled-programs/requirements.txt
@@ -258,6 +261,12 @@ Read `results/python-tests/summary.json` and `tests.log`. Without `--gui`, the
 Tk-control test is explicitly skipped and counted; missing plotting/emulator
 dependencies fail the runner instead of silently reducing coverage. No board is
 needed. Environment setup is in [Compiled C programs](docs/compiled-programs.md).
+
+For planning, a measured local run took about 34 seconds for Quick,
+11 minutes 16 seconds for Full, and 29-39 seconds for the Python tests.
+These exclude installing dependencies; CPU speed, antivirus scanning and
+disk performance affect the times. Vivado implementation and physical-board
+checks are separate from these commands.
 
 Compiled simulators can occupy hundreds of MiB locally. The
 [disk cleanup guide](docs/reproduce.md#disk-usage-and-cleanup) provides a

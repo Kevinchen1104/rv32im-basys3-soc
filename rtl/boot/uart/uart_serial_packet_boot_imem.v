@@ -2,7 +2,7 @@
 
 // Module: uart_serial_packet_boot_imem
 // Role: Serial UART packet boot bridge for loading instruction memory.
-// Interface: Clock/reset, serial RX input, memory write port, loader status, and optional debug outputs.
+// Interface: Clock/reset, serial RX input, instruction-line read request/response, CPU reset, and loader/RX status.
 // Key behavior: Deserializes UART bytes, checks the packet format, writes program words, and marks the boot image complete.
 
 module uart_serial_packet_boot_imem #(

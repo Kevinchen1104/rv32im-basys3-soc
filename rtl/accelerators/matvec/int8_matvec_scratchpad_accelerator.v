@@ -4,7 +4,6 @@
 // Role: Scratchpad-register signed int8 MATVEC accelerator behind the MATVEC MMIO window.
 // Interface: MMIO register write selects/data, row/result index readbacks, status/perf readbacks, and interrupt-pending output.
 // Key behavior: Pipelines each selected row through load, multiply, balanced reduction, and commit stages while preserving clear/ignore/interrupt semantics.
-// Non-goals: Not DMA-backed, not deployment-class accelerator behavior, and not a timing or speedup claim.
 
 `ifndef INT8_MATVEC_SCRATCHPAD_ACCELERATOR_V
 `define INT8_MATVEC_SCRATCHPAD_ACCELERATOR_V

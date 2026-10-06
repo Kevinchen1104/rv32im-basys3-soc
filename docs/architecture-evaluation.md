@@ -255,8 +255,8 @@ With the Python environment and RISC-V GCC described in
 [the compiled C setup](compiled-programs.md), run:
 
 ```powershell
-python scripts/architecture_benchmark.py
-python scripts/architecture_benchmark.py --external-dmem
+.venv/Scripts/python.exe -B scripts/architecture_benchmark.py
+.venv/Scripts/python.exe -B scripts/architecture_benchmark.py --external-dmem
 ```
 
 `--smoke` writes an isolated small matrix. Complete results overwrite the

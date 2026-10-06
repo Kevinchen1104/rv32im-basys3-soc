@@ -25,14 +25,14 @@ requirement files before running the tests. From the repository root:
 .venv/Scripts/python.exe -B scripts/python_tests.py --gui
 ```
 
-Append `--toolchain-bin C:/path/to/bin` if the RISC-V tools are not on PATH.
-The first command compiles the firmware, boots it through the simulated UART
-pins, and checks commands against a separate Python convolution calculation on
+Append `--toolchain-bin C:/path/to/bin` to `signal_console_check.py` if the
+RISC-V tools are not on PATH. This checker compiles the firmware, boots it through
+the simulated UART pins, and checks commands against a separate Python convolution calculation on
 both multiplier profiles. Each session also checks malformed packets, board
 LEDs, switch reads, and reset/reboot. Read `results/signal-console/RESULTS.md`;
 source hashes and compiler identity are in the adjacent `summary.json`.
-`--build-only` produces firmware without running simulation.
-`--cache-study` additionally checks the six D-cache study profiles through
+Its `--build-only` option produces firmware without running simulation.
+Its `--cache-study` option additionally checks the six D-cache study profiles through
 the same UART pins and reset/reboot sequence.
 The Python runner requires both `scripts/signal-viewer-requirements.txt` and
 `tools/compiled-programs/requirements.txt`; it checks all Python helpers, not

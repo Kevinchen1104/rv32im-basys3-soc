@@ -5,7 +5,7 @@ Start with [the design study](../../dcache-study.md), not the JSON files.
 The complete six-profile study is in [capacity/](capacity/): 300 executions,
 six routed implementations, and their source-matched physical sessions.
 Check its bounded publication with
-`python -B scripts/publish_cache_study.py --check` from the repository root.
+`.venv/Scripts/python.exe -B scripts/publish_cache_study.py --check` from the repository root.
 The [optimization/](optimization/) directory retains the successive
 four-entry datapath refinements.
 

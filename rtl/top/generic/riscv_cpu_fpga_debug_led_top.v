@@ -4,7 +4,6 @@
 // Role: Debug LED wrapper for FPGA smoke and bring-up visibility.
 // Interface: Clock/reset, optional board inputs, LED outputs, and selected CPU status/debug signals.
 // Key behavior: Runs the CPU wrapper and maps reset/done/pass/fail style debug flags onto LED-visible outputs.
-// Non-goals: LED indications are bring-up aids, not timing or physical-board validation evidence by themselves.
 
 module RISCVCPU_fpga_debug_led_top #(
     parameter MEMORY_WORD_COUNT = 1024,
