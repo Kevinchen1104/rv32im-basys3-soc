@@ -1,68 +1,38 @@
 [
   {
-    "path": "evidence/arch-test/sail/summary.json",
-    "bytes": 36288,
-    "sha256": "8ddd103dd1e378b2f64704ab11e3c6951d274263b6f787d13d217ce1c1545d10"
-  },
-  {
-    "path": "evidence/arch-test-results.json",
-    "bytes": 57760,
-    "sha256": "1f20202969f120349ec9b3a44789b704fb1d475b4e9b9e9eb434c3548ed4c866"
-  },
-  {
     "path": "evidence/check-summary.json",
-    "bytes": 9937,
-    "sha256": "62be3fc45bbfb3b5a9a0840ffa7c7556177d6fda10afdd80898f1cae812e9a83"
-  },
-  {
-    "path": "evidence/formal-matvec-smoke-summary.json",
-    "bytes": 516,
-    "sha256": "848ad9c99d5733131e530a058512cf8be61899939e8a4d7ebd4bb8eb4e8d6c13"
-  },
-  {
-    "path": "evidence/formal-smoke-summary.json",
-    "bytes": 696,
-    "sha256": "485a49bb2923f29554327e4889ec6227ddbb02c6fa6735bde14539d4dc435faa"
+    "bytes": 9936,
+    "sha256": "a5ee04395bcb8cb30899b7dfa28badb1495d7fd2a7ffb64d4b66e78669409d17"
   },
   {
     "path": "evidence/regression-evidence-summary.json",
     "bytes": 1801,
-    "sha256": "32da9deb57c9c032cd31563c93f8615f04fcf5e0d8b4e31d7d3387f2d34a1a91"
+    "sha256": "1734dc1d983cbf682d3d4a28c1858615188581926f841edb9d3cd7a083a985e5"
   },
   {
     "path": "evidence/regression-summary.json",
-    "bytes": 362818,
-    "sha256": "cc59ced362fd7168edfed2055908a4433c997ab22858a2f42d95f16fb8c867cf"
-  },
-  {
-    "path": "evidence/synth-smoke-summary.json",
-    "bytes": 2967,
-    "sha256": "37c62310b8b03fa0113a8af979ea9e10f7cdd2da0bc149ed7adb162aa93d9b27"
+    "bytes": 362817,
+    "sha256": "9d213a09028b36ad8a5731dcf65b409188c9458099c08366845332438af3d104"
   },
   {
     "path": "evidence/test-catalog-summary.json",
     "bytes": 1810,
-    "sha256": "ec6319c67683610fe7cae9f225bdd06a0ed6ad4b6ef984086f3cad3e67a264d4"
-  },
-  {
-    "path": "evidence/verilator-lint-summary.json",
-    "bytes": 3355,
-    "sha256": "0ac4497add1d5d4ccd7d9ab1a7862eeddb84b14d040db26eb9f3ab1828ec13e8"
+    "sha256": "4145a6a347e2efbc0cbc8f7f478db9c96c0db6231b6321ac449ce4fc8a143912"
   },
   {
     "path": "package.json",
-    "bytes": 1233,
-    "sha256": "f19803f45360602318fc3af473aea2b10bc01511a11790651c1e57e16b67155b"
+    "bytes": 1295,
+    "sha256": "c43578ff6ba212e590b74f4afb4468d0cd60091c98728d99614cedfb01b73d04"
   },
   {
     "path": "README.md",
-    "bytes": 596,
-    "sha256": "96630c8d0ea1b44b166f843e0e52ce15835a70631552da7b5efc55a5d83c6aa4"
+    "bytes": 611,
+    "sha256": "6d6d4f3db5e4cee8515affd124af7570d710121e6f442a2b2eab734079a65024"
   },
   {
     "path": "source-inputs.json",
     "bytes": 77827,
-    "sha256": "bfe65f531d9b3f1e8ba4d572ec7ab4030aee79f78b6723a14baa8aceb93541d0"
+    "sha256": "ddd1e8c865c3fe35610f762fd4ae5c1182a2f333d18696dc03f14edc44a9b040"
   },
   {
     "path": "test_catalog.json",

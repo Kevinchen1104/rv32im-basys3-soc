@@ -1,6 +1,6 @@
 {
   "status": "pass",
-  "generated_at_utc": "2026-10-06T03:19:38.7614291Z",
+  "generated_at_utc": "2026-10-06T05:09:55.1061912Z",
   "total_catalog_entries": 186,
   "run_ps1_tests": 169,
   "counts_by_category": {
@@ -71,8 +71,8 @@
     "trace_reference": 3
   },
   "hierarchical_tests": 142,
-  "source_commit": "ddfce23cef5c1bbf05b6830b51f1385610f57f30",
-  "verification_input_fingerprint": "97e1e9af9dc4f540b15cf9ef6ceb694f491ede314665ee0895937a91c68aad60",
+  "source_commit": "c85280d49904d62367d54b7fb8561601db7831a9",
+  "verification_input_fingerprint": "a31535d095e8831ffe77911803bce36e072d66f08d55fdcbc79714f29f2fb5bf",
   "verification_input_count": 507,
   "verification_working_tree_dirty": false
 }

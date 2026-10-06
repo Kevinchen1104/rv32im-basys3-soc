@@ -3,9 +3,9 @@
   "mode": "Full",
   "failed_step": "",
   "error_message": "",
-  "started_at_utc": "2026-10-06T03:16:59.5207783Z",
-  "finished_at_utc": "2026-10-06T03:28:25.7292132Z",
-  "duration_ms": 686303,
+  "started_at_utc": "2026-10-06T05:07:06.4283059Z",
+  "finished_at_utc": "2026-10-06T05:18:27.5982021Z",
+  "duration_ms": 681263,
   "planned_steps": 31,
   "steps": [
     {
@@ -14,7 +14,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 41264,
+      "duration_ms": 45884,
       "log": "results/logs/check/full/01-runner-self-test.log"
     },
     {
@@ -23,7 +23,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 14919,
+      "duration_ms": 16098,
       "log": "results/logs/check/full/02-workflow-self-test.log"
     },
     {
@@ -32,7 +32,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 61769,
+      "duration_ms": 61241,
       "log": "results/logs/check/full/03-result-integrity-self-test.log"
     },
     {
@@ -41,7 +41,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 2823,
+      "duration_ms": 2664,
       "log": "results/logs/check/full/04-result-format-self-test.log"
     },
     {
@@ -50,7 +50,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 5199,
+      "duration_ms": 5099,
       "log": "results/logs/check/full/05-verification-edge-tests.log"
     },
     {
@@ -59,7 +59,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1516,
+      "duration_ms": 1330,
       "log": "results/logs/check/full/06-assembler-tests.log"
     },
     {
@@ -68,7 +68,7 @@
       "arguments": ["-Check"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 5321,
+      "duration_ms": 5235,
       "log": "results/logs/check/full/07-assemble.log"
     },
     {
@@ -77,7 +77,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1566,
+      "duration_ms": 1543,
       "log": "results/logs/check/full/08-static-rtl-check.log"
     },
     {
@@ -86,7 +86,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 982,
+      "duration_ms": 862,
       "log": "results/logs/check/full/09-vivado-drc-parser-self-test.log"
     },
     {
@@ -95,7 +95,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 5960,
+      "duration_ms": 6019,
       "log": "results/logs/check/full/10-verification-source-identity-self-test.log"
     },
     {
@@ -104,7 +104,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 8829,
+      "duration_ms": 7894,
       "log": "results/logs/check/full/11-release-provenance-self-test.log"
     },
     {
@@ -113,7 +113,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 3213,
+      "duration_ms": 2898,
       "log": "results/logs/check/full/12-check-test-catalog.log"
     },
     {
@@ -122,7 +122,7 @@
       "arguments": ["-Check", "-SkipSimulation"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1139,
+      "duration_ms": 1083,
       "log": "results/logs/check/full/13-random-reference.log"
     },
     {
@@ -131,7 +131,7 @@
       "arguments": ["-Check", "-SkipSimulation"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1567,
+      "duration_ms": 1553,
       "log": "results/logs/check/full/14-random-memory-reference.log"
     },
     {
@@ -140,7 +140,7 @@
       "arguments": ["-Check", "-SkipSimulation"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1536,
+      "duration_ms": 1569,
       "log": "results/logs/check/full/15-random-control-reference.log"
     },
     {
@@ -149,7 +149,7 @@
       "arguments": ["-Check", "-SkipSimulation"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1609,
+      "duration_ms": 1626,
       "log": "results/logs/check/full/16-random-hazard-reference.log"
     },
     {
@@ -158,7 +158,7 @@
       "arguments": ["-Check", "-SkipSimulation"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1612,
+      "duration_ms": 1707,
       "log": "results/logs/check/full/17-random-call-reference.log"
     },
     {
@@ -167,7 +167,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 84031,
+      "duration_ms": 82311,
       "log": "results/logs/check/full/18-generated-reference-seed-smoke.log"
     },
     {
@@ -176,7 +176,7 @@
       "arguments": ["-Hex", "firmware/hex/showcase/board_smoke.hex", "-DryRun", "-Check"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 959,
+      "duration_ms": 892,
       "log": "results/logs/check/full/19-uart-boot-packet.log"
     },
     {
@@ -185,7 +185,7 @@
       "arguments": ["-Hex", "firmware/hex/showcase/showcase_demo.hex", "-DryRun", "-Check"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1048,
+      "duration_ms": 1017,
       "log": "results/logs/check/full/20-uart-boot-packet.log"
     },
     {
@@ -194,7 +194,7 @@
       "arguments": ["-Hex", "firmware/hex/showcase/interactive_showcase_demo.hex", "-DryRun", "-Check"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1084,
+      "duration_ms": 1101,
       "log": "results/logs/check/full/21-uart-boot-packet.log"
     },
     {
@@ -203,7 +203,7 @@
       "arguments": ["-Hex", "firmware/hex/showcase/hardware_validation_suite.hex", "-DryRun", "-Check"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1171,
+      "duration_ms": 1127,
       "log": "results/logs/check/full/22-uart-boot-packet.log"
     },
     {
@@ -212,7 +212,7 @@
       "arguments": ["-Check", "-SkipSimulation"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1356,
+      "duration_ms": 1371,
       "log": "results/logs/check/full/23-trace-reference.log"
     },
     {
@@ -221,7 +221,7 @@
       "arguments": ["-Check", "-SkipSimulation"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 1070,
+      "duration_ms": 996,
       "log": "results/logs/check/full/24-trace-trap-reference.log"
     },
     {
@@ -230,7 +230,7 @@
       "arguments": ["-Check", "-SkipSimulation"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 2123,
+      "duration_ms": 2037,
       "log": "results/logs/check/full/25-trace-lockstep-reference.log"
     },
     {
@@ -239,7 +239,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 37734,
+      "duration_ms": 38427,
       "log": "results/logs/check/full/26-trace-lockstep-seed-smoke.log"
     },
     {
@@ -248,7 +248,7 @@
       "arguments": ["-SkipAssemble"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 11318,
+      "duration_ms": 11370,
       "log": "results/logs/check/full/27-perf-counter-export.log"
     },
     {
@@ -257,7 +257,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 2036,
+      "duration_ms": 2119,
       "log": "results/logs/check/full/28-perf-counter-threshold-tests.log"
     },
     {
@@ -266,7 +266,7 @@
       "arguments": ["-Test", "all", "-SummaryJson", "results/regression-summary.json"],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 357226,
+      "duration_ms": 344876,
       "log": "results/logs/check/full/29-run.log"
     },
     {
@@ -275,7 +275,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 5334,
+      "duration_ms": 4904,
       "log": "results/logs/check/full/30-regression-evidence-report.log"
     },
     {
@@ -284,7 +284,7 @@
       "arguments": [],
       "status": "passed",
       "exit_code": 0,
-      "duration_ms": 5730,
+      "duration_ms": 5548,
       "log": "results/logs/check/full/31-fpga-smoke.log"
     }
   ],
@@ -311,8 +311,8 @@
   "regression": true,
   "regression_evidence_report": true,
   "fpga_smoke": true,
-  "source_commit": "ddfce23cef5c1bbf05b6830b51f1385610f57f30",
-  "verification_input_fingerprint": "97e1e9af9dc4f540b15cf9ef6ceb694f491ede314665ee0895937a91c68aad60",
+  "source_commit": "c85280d49904d62367d54b7fb8561601db7831a9",
+  "verification_input_fingerprint": "a31535d095e8831ffe77911803bce36e072d66f08d55fdcbc79714f29f2fb5bf",
   "verification_input_count": 507,
   "verification_working_tree_dirty": false
 }
