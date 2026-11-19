@@ -2,10 +2,10 @@
   "schema_version": 1,
   "kind": "portable",
   "status": "pass",
-  "generated_at_utc": "2026-10-06T05:19:15.4284428Z",
-  "source_commit": "c85280d49904d62367d54b7fb8561601db7831a9",
-  "source_fingerprint": "a31535d095e8831ffe77911803bce36e072d66f08d55fdcbc79714f29f2fb5bf",
-  "input_count": 507,
+  "generated_at_utc": "2026-11-01T05:54:20.4312333Z",
+  "source_commit": "fd520745fcf361b09d164b77cb4568241c9593e6",
+  "source_fingerprint": "ab1c812abbd1e16c484640c3f8e25d0ee2dbb5f35d1b62244bd8374598a4594b",
+  "input_count": 519,
   "gates": [
     {
       "path": "evidence/check-summary.json",
@@ -22,32 +22,31 @@
     {
       "path": "evidence/regression-evidence-summary.json",
       "required": true
+    },
+    {
+      "path": "evidence/verilator-lint-summary.json",
+      "required": false
+    },
+    {
+      "path": "evidence/synth-smoke-summary.json",
+      "required": false
+    },
+    {
+      "path": "evidence/formal-smoke-summary.json",
+      "required": false
+    },
+    {
+      "path": "evidence/formal-matvec-smoke-summary.json",
+      "required": false
+    },
+    {
+      "path": "evidence/arch-test-results.json",
+      "required": false
+    },
+    {
+      "path": "evidence/arch-test/sail/summary.json",
+      "required": false
     }
   ],
-  "omitted_optional": [
-    {
-      "path": "results/verilator-lint-summary.json",
-      "reason": "different_inputs"
-    },
-    {
-      "path": "results/synth-smoke-summary.json",
-      "reason": "different_inputs"
-    },
-    {
-      "path": "results/formal-smoke-summary.json",
-      "reason": "different_inputs"
-    },
-    {
-      "path": "results/formal-matvec-smoke-summary.json",
-      "reason": "different_inputs"
-    },
-    {
-      "path": "results/arch-test-results.json",
-      "reason": "different_inputs"
-    },
-    {
-      "path": "results/arch-test/sail/summary.json",
-      "reason": "different_inputs"
-    }
-  ]
+  "omitted_optional": []
 }

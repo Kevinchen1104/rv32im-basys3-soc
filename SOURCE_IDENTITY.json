@@ -1,26 +1,27 @@
 {
   "schema_version": 2,
   "publication_mode": "One public update commit over the previous public release; development history is retained separately.",
-  "previous_public_revision": "acc1b89106ebd5c1210282bb5c9733bae17cbf5a",
-  "development_revision": "48ede888e6d6a6312167c57fb4beb97e545acd0c",
-  "development_tree": "390ef68a04cb6250e4dac6c0e94c3dd6bc30c5d2",
+  "previous_public_revision": "36cb25c705ee8c481b11a70942dc9d8fb35b8b47",
+  "development_revision": "012f140ef4ca173c0fd5c4c941b679813d944c3b",
+  "development_tree": "95d96e1d1e9cabbf825ec6de99f55c732470b530",
+  "included_development_changes": [
+    "rtl/core/riscv_cpu_core.v: raise the misaligned control-transfer trap for a misaligned JAL/JALR directly after a not-taken branch",
+    "rtl/core/riscv_cpu_core.v: raise one trap, not two, when a misaligned control target is also an instruction access fault",
+    "rtl/core/riscv_cpu_core.v: pop the UART RX FIFO in the cycle of the MMIO read so back-to-back reads return consecutive bytes",
+    "rtl/core/riscv_cpu_core.v: mirror debug_status stores that complete through a D-cache victim-buffer hit",
+    "rtl/core/csr/csr_unit.v: make mip.MTIP and mip.MEIP read-only; they reflect the timer and external interrupt inputs",
+    "rtl/soc/mmio/mmio_read_mux.v: read write-only and unmapped MMIO registers as zero instead of the GPIO output value",
+    "tb/ and firmware/src/: four new regression programs and updated CSR and MMIO unit tests; each new test fails on the previous RTL",
+    "docs/: document read-only mip, zero readback, and per-class interrupt re-entry",
+    "release/current and release/implementation/basys3: regenerated verification and routed implementation evidence for the fixed RTL"
+  ],
   "publication_changes": [
-    "README.md: link to the recorded-revision explanation and clarify Python requirements",
-    "docs/evidence/README.md: explain public history and source-hash verification",
-    "docs/compiled-programs.md: distinguish standalone and viewer Python requirements",
-    "docs/signal-console.md: include the dependency installation step and Python minimum",
-    "SOURCE_IDENTITY.json: record the export origin and publication scope",
-    "scripts/matvec_benchmark.py and its tests: support report output on a different Windows drive",
-    "docs/benchmarks/matvec/run.json: refresh the 90-case benchmark provenance after the report-link fix; measured CSV values are unchanged",
-    "scripts/runner-self-test.ps1: make Unicode and legacy-encoding fixtures independent of Windows locale",
-    ".github/workflows/lint.yml: use tested Verilator 5.048 instead of the distribution's older release",
-    ".github/workflows/extended-verification.yml: use the action-reported MSYS2 location and keep native Python first on PATH",
-    "scripts/synth-smoke.ps1: build native script paths on Windows/Linux and print failed-tool diagnostics",
-    ".github/workflows/lint.yml and synth-smoke.yml: retain tool logs and summaries as CI artifacts",
-    "release/current: refresh the portable verification snapshot after the CI portability fixes"
+    "README.md: state that the last board run predates the six RTL fixes and that the fixed RTL has no board run yet",
+    "docs/timing_baseline.md: describe the current routed critical path instead of an earlier build's path",
+    "SOURCE_IDENTITY.json: record the export origin and publication scope"
   ],
   "evidence_policy": "Recorded source_commit values are original development identities and are not rewritten to the public commit. They may not be reachable in public Git history. Package source manifests and artifact hashes identify the measured inputs and preserved outputs.",
   "integrity_check": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/final-audit.ps1 -PackagedEvidence",
   "current_input_check": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/final-audit.ps1 -PackagedEvidence -RequireCurrent",
-  "scope_note": "Publication preparation does not claim a new FPGA implementation or physical-board run. Fresh software checks are distinct from the preserved dated hardware measurements."
+  "scope_note": "The fixed RTL has fresh regression, formal, Sail comparison and routed implementation results. It has no bitstream or physical-board run; every recorded board result was measured on the earlier RTL."
 }

@@ -264,7 +264,7 @@ module RISCVCPU #(
     reg [31:0] GPIOOutput;
     reg [7:0] UARTTxData;
     reg UARTTxValid;
-    reg UARTRxReady;
+    wire UARTRxReady;
 
     wire [31:0] matvec_status_read_data;
     wire [31:0] matvec_config_read_data;
@@ -697,9 +697,14 @@ module RISCVCPU #(
     // Register a shallow "alignment check due" event at the control-resolution
     // edge. Registered target/outcome state then determines the actual IALIGN
     // fault without placing the full branch comparator on this event's D path.
+    // An older control transfer that is taking its own IALIGN trap squashes
+    // this instruction, and an instruction-access fault traps it here, so
+    // neither case may arm a second check.
     assign control_alignment_capture =
         ENABLE_CSR_TRAPS &&
         !ControlRedirectPending &&
+        !InstructionMisalignPending &&
+        !instruction_access_fault &&
         IDEXValid &&
         (IDEXBranch || IDEXJump) &&
         is_legal_instruction &&
@@ -1089,6 +1094,12 @@ module RISCVCPU #(
     // any memory-stage side effect.
     assign EXMEMMmioAccess =
         EXMEMValid && EXMEMMemAccess && EXMEMAnyMmioSelect;
+    // Pop the RX queue on the same edge that captures RXDATA into MEM/WB, so
+    // the next read sees the next byte and an immediate status read sees the
+    // updated count. An MMIO load never raises a memory-stage hold, so this
+    // edge always retires the load.
+    assign UARTRxReady =
+        EXMEMLoadValid && EXMEMMmioAccess && EXMEMUartRxDataAccess;
 
     mmio_decode exmem_mmio_decode (
         .addr(EXMEMALUOut),
@@ -1184,14 +1195,13 @@ module RISCVCPU #(
 
     assign debug_status_store_word_access =
         ({EXMEMALUOut[31:2], 2'b00} == DEBUG_STATUS_ADDR);
+    // Mirror the store on the edge the D-cache completes it: a hit, a refill
+    // or a victim-buffer swap.
     assign debug_status_store_commit =
         EXMEMStoreValid &&
         !EXMEMMmioAccess &&
         debug_status_store_word_access &&
-        (
-            cache_hit ||
-            ((cache_state == CACHE_REFILL) && !dcache_external_wait)
-        );
+        dcache_request_complete;
 
     mmio_read_mux exmem_mmio_read_mux (
         .addr(EXMEMALUOut),
@@ -1812,7 +1822,6 @@ module RISCVCPU #(
         GPIOOutput = 32'd0;
         UARTTxData = 8'h00;
         UARTTxValid = 1'b0;
-        UARTRxReady = 1'b0;
         DebugStatus = 32'h0;
 
         for (i = 0; i < 32; i = i + 1) begin
@@ -1898,7 +1907,6 @@ module RISCVCPU #(
             GPIOOutput <= 32'd0;
             UARTTxData <= 8'h00;
             UARTTxValid <= 1'b0;
-            UARTRxReady <= 1'b0;
             DebugStatus <= 32'h0;
 
             for (i = 0; i < 32; i = i + 1) begin
@@ -1910,7 +1918,6 @@ module RISCVCPU #(
             // Hold the queued byte until the UART accepts it. A following store
             // stalls while this slot is occupied, including the acceptance edge.
             if (UARTTxValid && uart_tx_ready) UARTTxValid <= 1'b0;
-            UARTRxReady <= 1'b0;
 
             TraceValid <= 1'b0;
             MatvecDonePrev <= matvec_done;
@@ -1935,11 +1942,11 @@ module RISCVCPU #(
                 ControlRedirectPending <= 1'b1;
             end
 
-            // Capture one payload bank for the pending alignment check. Its enable
-            // is driven only by the registered check-valid bit, so backpressure
-            // cannot overwrite the accepted target and no cache comparator reaches
-            // these wide registers.
-            if (!ControlAlignmentCheckPending) begin
+            // Capture the execute-stage payload on every advancing edge, even
+            // while a check is pending, so a control transfer that follows
+            // another one on the next cycle checks its own target. A D-cache
+            // hold keeps the payload of the check that is still waiting.
+            if (!ControlAlignmentCheckPending || !dcache_pipeline_stall) begin
                 InstructionMisalignPC <= IDEXPC;
                 InstructionMisalignTarget <= control_target_address;
                 InstructionMisalignUseFallthrough <= IDEXBranch && !branch_taken;
@@ -2155,9 +2162,6 @@ module RISCVCPU #(
 
                 if (EXMEMLoadValid) begin
                     MEMWBValue <= mmio_load_value;
-                    if (EXMEMUartRxDataAccess) begin
-                        UARTRxReady <= 1'b1;
-                    end
                 end else if (EXMEMValid && EXMEMGpioOutputAccess) begin
                     GPIOOutput <= gpio_store_merged_value;
                 end else if (EXMEMStoreValid && EXMEMUartTxDataAccess && uart_tx_ready && !UARTTxValid) begin

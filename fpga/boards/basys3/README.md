@@ -24,10 +24,12 @@ Both paths configure a selected bitstream; neither proves UART, LED, reset,
 or accelerator behavior by itself. See [bringup_checklist.md](bringup_checklist.md)
 for the board-side checks.
 
-The source-matched Vivado 2026.1 build at `849270b` met 100 MHz timing
-(WNS `+0.399 ns`, WHS `+0.018 ns`) and passed the 2026-09-30 board suite.
-It includes JTAG/UART, RV32M, timer-interrupt and DMA checks, plus two complete
-90-case MATVEC runs with identical cycle counts after reset. See
+The current routed default build at `fd52074` meets 100 MHz timing
+(WNS `+0.021 ns`, WHS `+0.034 ns`); it has no board run yet. The latest
+board-validated build, `9d46f04`, passed the
+[automatic board acceptance](../../../docs/fpga/board_evidence/automatic_acceptance_5c1c4c0/README.md):
+JTAG/UART, RV32M, timer-interrupt and DMA checks, plus two complete 90-case
+MATVEC runs, including after JTAG reload. See
 [`docs/fpga_basys3.md`](../../../docs/fpga_basys3.md).
 
 Physical host preflight checks the current 100-MHz Vivado bitstream build,

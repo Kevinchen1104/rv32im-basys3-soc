@@ -1,8 +1,8 @@
 {
-  "generated_at_utc": "2026-10-06T05:18:21.1428125Z",
+  "generated_at_utc": "2026-11-01T05:23:06.7789109Z",
   "status": "pass",
-  "total_tests": 169,
-  "passed": 169,
+  "total_tests": 173,
+  "passed": 173,
   "failed": 0,
   "counts_by_category": {
     "accelerator": 7,
@@ -10,9 +10,9 @@
     "alu": 9,
     "assembler": 6,
     "boot": 4,
-    "cache": 5,
+    "cache": 6,
     "control_flow": 12,
-    "csr_trap": 24,
+    "csr_trap": 26,
     "external_memory": 5,
     "fpga_wrapper": 22,
     "hazard": 6,
@@ -26,7 +26,7 @@
     "side_effect_flush": 15,
     "smoke": 4,
     "trace_reference": 4,
-    "uart": 4
+    "uart": 5
   },
   "counts_by_tag": {
     "accelerator": 23,
@@ -35,12 +35,12 @@
     "assembler": 6,
     "boot": 10,
     "branch": 2,
-    "cache": 13,
-    "control_flow": 46,
-    "csr_trap": 39,
-    "dcache": 2,
-    "exception": 8,
-    "external_memory": 11,
+    "cache": 14,
+    "control_flow": 47,
+    "csr_trap": 41,
+    "dcache": 3,
+    "exception": 10,
+    "external_memory": 12,
     "forwarding": 4,
     "fpga_wrapper": 23,
     "hazard": 12,
@@ -49,7 +49,7 @@
     "jump": 3,
     "load_store": 3,
     "memory": 34,
-    "mmio": 29,
+    "mmio": 31,
     "performance_counter": 11,
     "predictor": 5,
     "random_memory_reference": 1,
@@ -59,23 +59,23 @@
     "side_effect_flush": 26,
     "smoke": 7,
     "trace_reference": 5,
-    "uart": 18,
+    "uart": 19,
     "x0_invariant": 2
   },
   "counts_by_evidence_level": {
     "assertion_monitor": 20,
-    "directed": 129,
+    "directed": 133,
     "random_reference": 5,
     "smoke": 12,
     "trace_reference": 3
   },
-  "hierarchical_tests": 140,
+  "hierarchical_tests": 144,
   "failed_by_category": {
   },
   "failed_by_tag": {
   },
-  "source_commit": "c85280d49904d62367d54b7fb8561601db7831a9",
-  "verification_input_fingerprint": "a31535d095e8831ffe77911803bce36e072d66f08d55fdcbc79714f29f2fb5bf",
-  "verification_input_count": 507,
+  "source_commit": "fd520745fcf361b09d164b77cb4568241c9593e6",
+  "verification_input_fingerprint": "ab1c812abbd1e16c484640c3f8e25d0ee2dbb5f35d1b62244bd8374598a4594b",
+  "verification_input_count": 519,
   "verification_working_tree_dirty": false
 }

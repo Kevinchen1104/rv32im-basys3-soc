@@ -137,18 +137,26 @@ memory limits and accelerator contracts.
 
 | Evidence | Recorded result |
 | --- | --- |
-| Portable regression | **169 / 169 passed** |
+| Portable regression | **173 / 173 passed** |
 | Python tools and viewer | **110 / 110 passed**, including Tk controls |
 | Official Sail cross-check | **36 selected upstream RV32I/M tests**, 552,404 signature words matched; [scope and reproduction](docs/compiled-programs.md#optional-upstream-sail-comparison) |
 | Physical viewer output checks | Source-matched repeat at `5c1c4c0`: **10 sessions, 8,704 outputs passed**; [capture and reproduction](docs/fpga/board_evidence/automatic_acceptance_5c1c4c0/README.md) |
 | Bounded formal | **8 focused harnesses**; scopes listed in [`formal/README.md`](formal/README.md) |
 | Canonical FPGA target | `RISCVCPU_basys3_top`, **100 MHz** on `xc7a35tcpg236-1` |
-| Routed implementation | Default profile, build `9d46f04`, 100 MHz: **timing met**, WNS `+0.323 ns`, TNS `0`; hold and DRC pass |
-| Routed utilization | Default profile: 9,476 LUT, 7,179 FF, 2 BRAM, 0 DSP |
+| Routed implementation | Default profile, build `fd52074`, 100 MHz: **timing met**, WNS `+0.021 ns`, TNS `0`; hold and DRC pass |
+| Routed utilization | Default profile: 9,359 LUT, 7,176 FF, 2 BRAM, 0 DSP |
 | FIR application implementation | Separate `fast_cpu` image, build `5c1c4c0`: 6,718 LUT, 5,287 FF, 2 BRAM, 4 DSP; 100 MHz WNS `+0.067 ns`, WHS `+0.010 ns`; [reports](docs/fpga/board_evidence/automatic_acceptance_5c1c4c0/application-reports/) |
 | Banked 1 KiB I-cache, current 64 B direct D-cache | `fast_cpu`: 6,967 LUT, 4,741 FF, 2 BRAM, 4 DSP; 100 MHz WNS `+0.116 ns`, WHS `+0.039 ns`; [six-profile comparison](docs/dcache-study.md#complete-six-profile-comparison) |
 | Four-line victim-cache implementation | With 1 KiB I-cache: 7,804 LUT, 5,388 FF, 2 BRAM, 4 DSP; 100 MHz WNS `+0.306 ns`, WHS `+0.036 ns`; [source-matched reports](docs/benchmarks/dcache/capacity/implementation/victim4/) |
-| Physical validation | Default build `9d46f04`, inputs matched to `5c1c4c0`: JTAG/UART/RV32M/timer/DMA checks passed; 90 MATVEC cases / 2,418 outputs passed twice, including after JTAG reload |
+| Physical validation | Last board run used default build `9d46f04`, **before the six RTL fixes in this revision**; inputs matched to `5c1c4c0`: JTAG/UART/RV32M/timer/DMA checks passed; 90 MATVEC cases / 2,418 outputs passed twice, including after JTAG reload |
+
+**Board status of the current RTL.** The current RTL (build `fd52074`) adds six
+fixes: the misaligned control-transfer trap after a not-taken branch, a single
+trap for an access-faulting misaligned target, UART RX pop timing,
+`debug_status` with victim lines, read-only `mip` interrupt bits, and zero
+readback for write-only MMIO registers. It passes the regression, formal,
+Sail and routed-timing checks above, but it has not been run on the board yet.
+Every physical result in this README was measured on the earlier RTL.
 
 The cache studies include physical FIR comparisons as well as simulation
 and routed implementation. The automatic acceptance programs the `9d46f04`
@@ -238,7 +246,7 @@ For the complete gate, run:
 powershell -ExecutionPolicy Bypass -File scripts/check.ps1 -Mode Full
 ```
 
-Full retains all 169 simulations, reference and helper checks, and eight FPGA
+Full retains all 173 simulations, reference and helper checks, and eight FPGA
 top elaborations. Open `results/RESULTS.md` for the project overview,
 `results/full-RESULTS.md` for workflow stages, and `results/regression.csv`
 for individual tests. Omitting `-Mode` also runs Full. Quick, Full, and

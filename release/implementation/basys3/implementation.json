@@ -1,8 +1,8 @@
 {
-  "generated_at_utc": "2026-10-02T22:48:00.2655537Z",
+  "generated_at_utc": "2026-11-01T05:31:15.3905205Z",
   "status": "pass",
   "execution_status": "pass",
-  "mode": "bitstream",
+  "mode": "implementation",
   "exit_code": 0,
   "vivado": {
     "name": "Vivado",
@@ -19,12 +19,12 @@
   "dcache_bytes": 64,
   "timing_period_ns": 10,
   "clock_profile": "board_100mhz",
-  "source_commit": "9d46f0418a7ac6296a8a116aef524cca6b58a5e3",
+  "source_commit": "fd520745fcf361b09d164b77cb4568241c9593e6",
   "working_tree_dirty": false,
-  "source_fingerprint": "293d6cc96a7134b3c6caeca1e80984bd5c21b79d6f7083e6b77882c8416e983a",
-  "verification_input_fingerprint": "da420bb7fba26e61893921e1a41ba78ca29bb3c1fb49b93ef3d5199e33887094",
-  "verification_inputs_changed_during_run": true,
-  "verification_input_count": 507,
+  "source_fingerprint": "866b799c0a40bef330890c13bbd27db904974f535e6fbc966b34bbaf3f16c4e2",
+  "verification_input_fingerprint": "ab1c812abbd1e16c484640c3f8e25d0ee2dbb5f35d1b62244bd8374598a4594b",
+  "verification_inputs_changed_during_run": false,
+  "verification_input_count": 519,
   "verification_working_tree_dirty": false,
   "source_inputs": [
     {
@@ -41,11 +41,11 @@
     },
     {
       "path": "rtl/accelerators/matvec/int8_matvec_dma_lite.v",
-      "sha256": "88f9dcf8cc9fa0c402337e3321b23e78460fe8f5b7788a259aacf890ce5720ca"
+      "sha256": "6e1756cb09e1f3170165d9f45e99a05793dcf4a18ea41620d91c122171a3bdc2"
     },
     {
       "path": "rtl/accelerators/matvec/int8_matvec_scratchpad_accelerator.v",
-      "sha256": "750ca5bbd3f9b8019ff08f7889446b64bca3c7fd3e7cc2bd52f79a8ffd5bcae3"
+      "sha256": "65499d6e0ccdf9ba06ad7254920dc5fbe13d89803a40ba35172885403320fe7b"
     },
     {
       "path": "rtl/boot/uart/boot_reset_controller.v",
@@ -57,15 +57,15 @@
     },
     {
       "path": "rtl/boot/uart/uart_serial_packet_boot_imem.v",
-      "sha256": "829d2aee3b78e69a465213a473080ed8bacabc9e4aef134ef50d6ffd82e894bc"
+      "sha256": "60abc86122e6d4c9e628f59e8a48eb5e8f0af595c24d1c9b06df92252031001a"
     },
     {
       "path": "rtl/core/csr/csr_unit.v",
-      "sha256": "04c568da1afc36c8e7a97e768173ab2e2f4087b050f666cfb6f8cc96ebce17cd"
+      "sha256": "499ff9ce65620a10d6470d3a622b32d0b26f55ba0273f355ccfae7861dd2c16b"
     },
     {
       "path": "rtl/core/csr/exception_decode_unit.v",
-      "sha256": "1fd70d824ededf838d3b92a23303a7212c1149264489b7744a4cdd9866609e2d"
+      "sha256": "ce3cdf19f1dd239d77262332396ba8dc950d916b0b4ce8d7b60c0988ca5c1bd6"
     },
     {
       "path": "rtl/core/csr/trap_redirect_control_unit.v",
@@ -73,7 +73,7 @@
     },
     {
       "path": "rtl/core/execute/branch_jump_unit.v",
-      "sha256": "a3f4b032268c087afc258656a3cb6835bb922c5f9a86473ee5c9d894a5666137"
+      "sha256": "c5da1f85fd7c13bc11b09cff4f7dbf36b74f5e8921dda906b99379c7008d5bc3"
     },
     {
       "path": "rtl/core/execute/riscv_alu.v",
@@ -93,7 +93,7 @@
     },
     {
       "path": "rtl/core/pipeline/forwarding_unit.v",
-      "sha256": "65af61c7979c224453809c2fb7bc44c364b1e630c3145f20c30f459712d87362"
+      "sha256": "7b94a11b6b3cf1c513539a1665fd63f26930135b84d37ba3037f0295d8afa062"
     },
     {
       "path": "rtl/core/pipeline/hazard_unit.v",
@@ -105,7 +105,7 @@
     },
     {
       "path": "rtl/core/riscv_cpu_core.v",
-      "sha256": "98e1d6e56935f423ff12e621aede60a6e7bcb1a3184d7023f195543f49d82994"
+      "sha256": "a01dd9a0f9d53eaabf46233164a9bede4f8890f7c1d4616fa9757a60b409f7dd"
     },
     {
       "path": "rtl/memory/bram/external_dmem_bram.v",
@@ -125,7 +125,7 @@
     },
     {
       "path": "rtl/peripherals/timer/machine_timer.v",
-      "sha256": "61b7b67fd240f4e9559b7e07af81a889edb90032c5ab26a0066fdddccc15c4d1"
+      "sha256": "f24094b30f40ac71ac009f27077a6f4e7a741f8f9b3b3ea7dae14e22b3b9e35a"
     },
     {
       "path": "rtl/peripherals/uart/uart_rx.v",
@@ -145,7 +145,7 @@
     },
     {
       "path": "rtl/soc/mmio/mmio_read_mux.v",
-      "sha256": "94e4cd860422e34de976864c8970dd5eb3cb8235731ef76c420057e48c42e424"
+      "sha256": "f40f066acb4fb92975e2bdbb6415a8bd2aab92004b0e42eb4a80f217f4fea619"
     },
     {
       "path": "rtl/soc/perf/performance_counter_unit.v",
@@ -153,39 +153,39 @@
     },
     {
       "path": "rtl/top/boards/basys3/basys3_lowfreq_clock_gen.v",
-      "sha256": "748cde385747dbdd79ab76ac6738530b5604db8ba5445486447272a980b11c62"
+      "sha256": "82df37279e6ea7fdff59dc7791f966c2a19d8c93c36937508344442cb8fd30f6"
     },
     {
       "path": "rtl/top/boards/basys3/riscv_cpu_basys3_board_smoke_top.v",
-      "sha256": "21aa81d515c69aad6c79212554bdb4c904ce7885e48a6436ca995565d4c01757"
+      "sha256": "a0950b4e415652ff84b15ab5f5313a238aaad31ff3d034637bd1c06282cd10c4"
     },
     {
       "path": "rtl/top/boards/basys3/riscv_cpu_basys3_full_lowfreq_top.v",
-      "sha256": "0d920fe5593eed3f1f38f9cee462acba0b6d9b291814a66f9784ed1bc9b9b2e5"
+      "sha256": "3fe657b79acb425c9b98ad11156a9e85f46413781991f0dd388fe176c0de5915"
     },
     {
       "path": "rtl/top/boards/basys3/riscv_cpu_basys3_top.v",
-      "sha256": "1b85f7e4fbd00bec6e937dec76e162f77b2d1d314a864519025cdad8e6098ab8"
+      "sha256": "2bbf2b1102b176459723ccfe1a420c82d08dcba84586e3717f45d67faefc8e20"
     },
     {
       "path": "rtl/top/generic/riscv_cpu_fpga_debug_led_top.v",
-      "sha256": "2b69230aa3a1e21d73235a6be3830f8599bcb8e4586bbe1f8982f0f370f3af88"
+      "sha256": "21aebcf1c79417701cb9394813eedd5e6f8d8e0df6db5eb9796964bd64a851d4"
     },
     {
       "path": "rtl/top/generic/riscv_cpu_fpga_top.v",
-      "sha256": "9172cd6959da2a4bc2faf2be9957c8dfef4e6fa76eb0f53158345a5ccdd4b0bb"
+      "sha256": "31280a11b52c399a834fa5c872b8d3f78ac29192243a0543ac448e9eb90f2a33"
     },
     {
       "path": "rtl/top/soc/riscv_cpu_uart_boot_bram_soc_top.v",
-      "sha256": "711e865a22d4e3c5a264964ab67a3246069c48ca62516f497bd233d08a166d35"
+      "sha256": "d8bd416b1c5dc5066023266dfcb2ede833a1152c81fd9ceb5b45f3fdf822360c"
     },
     {
       "path": "rtl/top/soc/riscv_cpu_uart_boot_fpga_top.v",
-      "sha256": "217aaadda3703b81b7d44ee7ef28ba8fe5b3b5c0d1ea6e6471f63d50a11d7544"
+      "sha256": "b02e96f25a33d2d1d6b6535676ed692c2acd1d487dedad9c48a129264c12ac1f"
     },
     {
       "path": "rtl/top/soc/riscv_cpu_uart_boot_runtime_soc_top.v",
-      "sha256": "5d9f3a7896cb81fb7357835b89c0aa8b2dd853979a52c30097a7797d893eff15"
+      "sha256": "25b90028c8c93bed3acc905fc2549561a42e2afd2101212bafed872b663f78aa"
     },
     {
       "path": "scripts/result-format.ps1",
@@ -214,8 +214,8 @@
   "vivado_log": ".\\build\\vivado\\basys3\\vivado.log",
   "vivado_journal": ".\\build\\vivado\\basys3\\vivado.jou",
   "vivado_temp_dir": ".\\build\\vivado\\basys3\\tmp",
-  "command": "vivado -mode batch -log ./build/vivado/basys3/vivado.log -journal ./build/vivado/basys3/vivado.jou -tempDir ./build/vivado/basys3/tmp -source ./fpga/vivado/basys3_build.tcl -tclargs -repo_root . -out_dir ./build/vivado/basys3 -top RISCVCPU_basys3_top -run_synth_only 0 -run_impl 1 -generate_bitstream 1 -opt_directive ExploreWithRemap -place_directive Explore -phys_opt_directive Explore -route_directive NoTimingRelaxation -timing_period_ns 10 -architecture_profile default -icache_bytes 64 -icache_parallel_lookup 1 -dcache_bytes 64 -dcache_victim_lines 0",
-  "peak_memory_mb": 2651.141,
+  "command": "vivado -mode batch -log ./build/vivado/basys3/vivado.log -journal ./build/vivado/basys3/vivado.jou -tempDir ./build/vivado/basys3/tmp -source ./fpga/vivado/basys3_build.tcl -tclargs -repo_root . -out_dir ./build/vivado/basys3 -top RISCVCPU_basys3_top -run_synth_only 0 -run_impl 1 -generate_bitstream 0 -opt_directive ExploreWithRemap -place_directive Explore -phys_opt_directive Explore -route_directive NoTimingRelaxation -timing_period_ns 10 -architecture_profile default -icache_bytes 64 -icache_parallel_lookup 1 -dcache_bytes 64 -dcache_victim_lines 0",
+  "peak_memory_mb": 2650.594,
   "synth_status": "pass",
   "implementation_status": "pass",
   "timing_status": "pass",
@@ -228,20 +228,20 @@
     "route_directive": "NoTimingRelaxation"
   },
   "drc_status": "pass",
-  "bitstream_status": "pass",
+  "bitstream_status": "not_run",
   "reports": {
     "post_synth_utilization": {
       "path": "reports/post_synth_utilization.rpt",
       "present": true,
       "lut": {
-        "used": 9621,
+        "used": 9488,
         "available": 20800,
-        "percent": 46.25
+        "percent": 45.62
       },
       "ff": {
-        "used": 7179,
+        "used": 7176,
         "available": 41600,
-        "percent": 17.26
+        "percent": 17.25
       },
       "bram": {
         "used": 2,
@@ -262,8 +262,8 @@
     "post_synth_timing": {
       "path": "reports/post_synth_timing.rpt",
       "present": true,
-      "wns_ns": -0.318,
-      "tns_ns": -1.576,
+      "wns_ns": -0.978,
+      "tns_ns": -4.099,
       "whs_ns": 0.045,
       "ths_ns": 0,
       "no_clock_count": 0,
@@ -274,12 +274,12 @@
     "post_synth_critical_path": {
       "path": "reports/post_synth_critical_path.rpt",
       "present": true,
-      "slack_ns": -0.318,
-      "source": "soc/cpu/MEMWBForwardRd_reg[0]/C",
+      "slack_ns": -0.978,
+      "source": "soc/cpu/gen_dcache.dcache/cache_tag_store_reg[1][12]/C",
       "destination": "soc/cpu/csr_unit_inst/mie_reg[11]/D",
       "path_group": "sys_clk_pin",
-      "logic_levels": 15,
-      "cell_types": "(LUT1=1 LUT2=1 LUT3=1 LUT4=4 LUT5=1 LUT6=7)"
+      "logic_levels": 14,
+      "cell_types": "(LUT1=1 LUT2=3 LUT5=1 LUT6=9)"
     },
     "post_synth_clocks": [
       {
@@ -325,14 +325,14 @@
       "path": "reports/post_route_utilization.rpt",
       "present": true,
       "lut": {
-        "used": 9476,
+        "used": 9359,
         "available": 20800,
-        "percent": 45.56
+        "percent": 45
       },
       "ff": {
-        "used": 7179,
+        "used": 7176,
         "available": 41600,
-        "percent": 17.26
+        "percent": 17.25
       },
       "bram": {
         "used": 2,
@@ -354,9 +354,9 @@
     "post_route_timing": {
       "path": "reports/post_route_timing.rpt",
       "present": true,
-      "wns_ns": 0.323,
+      "wns_ns": 0.021,
       "tns_ns": 0,
-      "whs_ns": 0.04,
+      "whs_ns": 0.034,
       "ths_ns": 0,
       "no_clock_count": 0,
       "unconstrained_internal_endpoint_count": 0,
@@ -366,12 +366,12 @@
     "post_route_critical_path": {
       "path": "reports/post_route_critical_path.rpt",
       "present": true,
-      "slack_ns": 0.323,
-      "source": "soc/dmem/line_memory_reg_1/CLKARDCLK",
-      "destination": "soc/cpu/MEMWBValue_reg[25]/D",
+      "slack_ns": 0.021,
+      "source": "soc/cpu/EXMEMALUOut_reg[5]/C",
+      "destination": "soc/cpu/ControlRedirectPending_reg/D",
       "path_group": "sys_clk_pin",
-      "logic_levels": 7,
-      "cell_types": "(LUT2=1 LUT3=1 LUT4=1 LUT6=4)"
+      "logic_levels": 12,
+      "cell_types": "(LUT2=1 LUT3=1 LUT4=2 LUT6=8)"
     },
     "post_route_top50_paths": "reports/post_route_top50_paths.rpt",
     "post_route_clocks": [
@@ -416,72 +416,72 @@
     },
     "post_route_timing_exceptions": "reports/post_route_timing_exceptions.rpt"
   },
-  "bitstream": "build\\vivado\\basys3\\RISCVCPU_basys3_top.bit",
-  "bitstream_sha256": "abe7202aee91a3ecf7b1fc1444b0dea0e81a7a7be22ea5476e0e46becf58d851",
+  "bitstream": null,
+  "bitstream_sha256": null,
   "physical_validation_status": "not_run",
   "method": "Vivado synthesis and requested implementation checks; physical runs are recorded separately",
   "report_artifacts": [
     {
       "path": "reports/post_synth_utilization.rpt",
       "size_bytes": 9185,
-      "sha256": "76d08caf94ca818893d9f46461a9229b8609456c8e35c79ce6f6463cc3665f1f"
+      "sha256": "7c41365adf5f419b953912e3d02bf50a1a1335413ece1ca98d11861c0333200b"
     },
     {
       "path": "reports/post_synth_timing.rpt",
-      "size_bytes": 24669,
-      "sha256": "328b933450238a7a4a46d5aecef641d0bf64b2f65a4913fcbeb8d8efb07c435b"
+      "size_bytes": 24483,
+      "sha256": "1c9ffcd34130539c0cf2d33fa1f5585bd9fe8966cc8bd3e6fa85bcf0bd7063a6"
     },
     {
       "path": "reports/post_synth_critical_path.rpt",
-      "size_bytes": 100128,
-      "sha256": "6cd7400535a740a0443beaf57f00eec161b185ef28a358166a0092451e2c95d4"
+      "size_bytes": 95778,
+      "sha256": "ced6a17df244e25baacf4dd8d5a9e3c8e1430535c64c6c54ec72b55d29a3b489"
     },
     {
       "path": "reports/post_synth_drc.rpt",
       "size_bytes": 1306,
-      "sha256": "e4c3e65721551a71f9abd4a28bc69dd27ea6f02a4ff6bf2ec882108f28894814"
+      "sha256": "edcde31c71e429001f4d67afae7e73557698fdc8b353efe42b252c4dddddeccf"
     },
     {
       "path": "reports/post_route_utilization.rpt",
       "size_bytes": 11369,
-      "sha256": "ec71905a42715a63762c5b86dcc58177d96bdc873d24b86714310c3456259b2c"
+      "sha256": "c1c450be36663acae830c36d9f68ba0955d88de45c2dcd7d271eaa933741fbfb"
     },
     {
       "path": "reports/post_route_hierarchy.rpt",
       "size_bytes": 7365,
-      "sha256": "03c2b417f06ee2be97ad39807cd04cd3ac3e80fc9d0bb71a458bd89cd1185be2"
+      "sha256": "0b74fbcf3b7c544bf6fa3149be4682f0958245ed01814d14b4eac20cac13f601"
     },
     {
       "path": "reports/post_route_timing.rpt",
-      "size_bytes": 23423,
-      "sha256": "65f3e28eee65c64458598b67aed22fd42158af265802aaa0425e88328e88ca6c"
+      "size_bytes": 25064,
+      "sha256": "dcb0218b2af4dc8ab0e7c420d917ab9b6e2db766e836c6c202888be5514a15a2"
     },
     {
       "path": "reports/post_route_critical_path.rpt",
-      "size_bytes": 90969,
-      "sha256": "ef5c5699399c42ee767af19955bd4651a9a1f6169632d6f88bdcacf6ff0bf473"
+      "size_bytes": 89197,
+      "sha256": "456fe5d29ab81a8eabf4f6e46d9df48e0ecce64f5559565e6a7627abc44a979c"
     },
     {
       "path": "reports/post_route_top50_paths.rpt",
-      "size_bytes": 331935,
-      "sha256": "defabc3f6d56e81da2a473f7c153dbd1ee0b29b1d9df407304af909c73c8dec9"
+      "size_bytes": 314016,
+      "sha256": "edaa0d14de116274e655e9c5d33fb935dfe77378eac2e6e4e0a0eb1591030d20"
     },
     {
       "path": "reports/post_route_drc.rpt",
       "size_bytes": 1307,
-      "sha256": "ea1d4361541f316581e027b1dcb1db05ea89b7f26584eadc3b5886dfbc58f9e3"
+      "sha256": "d7344a02ed7f9dabf404bf79d6d84bb85b93f91e9af0cf3c3c715eb956171782"
     },
     {
       "path": "reports/post_route_timing_exceptions.rpt",
       "size_bytes": 1568,
-      "sha256": "ebe5b8fb38988f153b0483bc5a76d0b5e822f33da149f038ee0a68a113dcbd25"
+      "sha256": "08c64e3062b7195f4f569dce9d7036107ae8c69e58ad278850da2c0b4e53e7aa"
     }
   ],
   "original_report_artifacts": [
     {
       "path": "build\\vivado\\basys3\\reports\\post_route_clock_interaction.rpt",
       "size_bytes": 2001,
-      "sha256": "2cfe4d25d92436587249538ffcbae25b0717c1d5f643df6715aa1ff177c4c69d"
+      "sha256": "c52a97073fb0a93fdf310fc51e1b5e0a7b7c58cece7e9b7d405f1890d5366092"
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_route_clocks.rpt",
@@ -490,38 +490,38 @@
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_route_critical_paths.rpt",
-      "size_bytes": 92171,
-      "sha256": "3eecdc022d17b08074ac5af753a774ebaf21905fea5708089d01a20b21e37a4d"
+      "size_bytes": 90376,
+      "sha256": "97d60b4c9c8426425ee96a76180f6dc209bae10c71253c601cbdf1112c27c5b8"
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_route_drc.rpt",
       "size_bytes": 1385,
-      "sha256": "b18400a11ea974c579ac0319151e7bbd5bec492d92affde383c16002a673f1bc"
+      "sha256": "4775d9f7e968b1f23b0b841e225aadc1130c217800c569a4dff627bbfeb395ea"
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_route_hierarchy.rpt",
       "size_bytes": 7443,
-      "sha256": "ddbaeb010754130a36ca24fe5653fda3dc5988d84056591007bb0de4e10510cf"
+      "sha256": "a75ba4937d83b60d9f61bbb9c4743c4b5d9fc4359a22c6f79c8cacf1ad4f7984"
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_route_timing_exceptions.rpt",
       "size_bytes": 1666,
-      "sha256": "e980304f566261f8e3db208db258ecc5d1ee2c196088e9ff1f2a5ce67196274f"
+      "sha256": "f000554cd02eeb15e1137af6db831f8eb02aada33c543750a417e56ad91eff17"
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_route_timing_summary.rpt",
-      "size_bytes": 23903,
-      "sha256": "2ba6a051d27d1ed3dbc64416dc0a1203c7a042de98e3ee6da78e07be15326eab"
+      "size_bytes": 25555,
+      "sha256": "862eeb60015d7df45a5050d3ef14b8d72fcdd669093c905888dcbfc28220b82b"
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_route_top50_paths.rpt",
-      "size_bytes": 335891,
-      "sha256": "384276f3eef81c155ad4fb1530e717d7c3bbd590f9b018eadf2d1a99ed0f977d"
+      "size_bytes": 317721,
+      "sha256": "80bc10005685c038f6cbff15711ff9f84b5d02add4e8bd261fc812b0fc84b611"
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_route_utilization.rpt",
       "size_bytes": 11447,
-      "sha256": "ef8b356e24569f9776cedc5b05fc6971a1a77a8ca7cde7926a9d7ca9093152b9"
+      "sha256": "96aed290aabf44f5a3779995b06d85ad85894b320088d30824bab054ff03e8a6"
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_synth_clocks.rpt",
@@ -530,23 +530,23 @@
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_synth_critical_paths.rpt",
-      "size_bytes": 101397,
-      "sha256": "b62e251dc6bd8b082271e6c0b70006bb8e749fd18d4cab4e2767ea4c9abf332b"
+      "size_bytes": 97007,
+      "sha256": "63d34abf90b99bb6a4ca4eb96b44e3443678f33d006735b077d576f1597b8834"
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_synth_drc.rpt",
       "size_bytes": 1384,
-      "sha256": "243cd994f81a9885acc5b967ef465d2b12e36ae7548e3cf457e2c4160c5b8728"
+      "sha256": "76377872c3569405197ccb6fa07b80d9e782b0ec33c20a50a0aad49c37b8c83d"
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_synth_timing_summary.rpt",
-      "size_bytes": 25162,
-      "sha256": "9a2cf7e40cce7c6923ccc004f9c810a7dc814b27b41dcee40b93a008ac9bc034"
+      "size_bytes": 24974,
+      "sha256": "d35ac9883f08492dfd2ae6bde33bf5d3ba522ae2ef5c2e40addfe158d6dd3d60"
     },
     {
       "path": "build\\vivado\\basys3\\reports\\post_synth_utilization.rpt",
       "size_bytes": 9263,
-      "sha256": "ceb66b7569b81bd67f46194586e665137d17d7bbc72037e85be1465b49ea9012"
+      "sha256": "a6c7ca94d7d1b37c45b40da90d0f34cdf25312b635d921541b954f7222e3f61a"
     }
   ]
 }

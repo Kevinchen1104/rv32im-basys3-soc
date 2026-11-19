@@ -8,7 +8,7 @@ Current profiles:
 | Profile | Top module | Status |
 | --- | --- | --- |
 | `generic_uart_boot_runtime` | `RISCVCPU_uart_boot_runtime_soc_top` | Portable integration configuration and pinout checklist |
-| [`basys3`](basys3/README.md) | `RISCVCPU_basys3_top` | Digilent Basys3, 100 MHz; recorded build `849270b` has WNS `+0.399 ns` and 2026-09-30 UART/MATVEC/reset measurements |
+| [`basys3`](basys3/README.md) | `RISCVCPU_basys3_top` | Digilent Basys3, 100 MHz; current routed build `fd52074` has WNS `+0.021 ns`; latest board acceptance on build `9d46f04` |
 
 The [generic pinout checklist](generic_uart_boot_runtime/pinout_checklist.md)
 lists the signals that must be mapped when adapting the portable profile.

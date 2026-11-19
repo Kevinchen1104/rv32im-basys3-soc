@@ -1,8 +1,8 @@
 ﻿# basys3 implementation
 
-Routed Vivado implementation at 10 ns: WNS 0.323 ns; WHS 0.04 ns.
+Routed Vivado implementation at 10 ns: WNS 0.021 ns; WHS 0.034 ns.
 
-Measured/configuration revision: `9d46f0418a7ac6296a8a116aef524cca6b58a5e3`.
+Measured/configuration revision: `fd520745fcf361b09d164b77cb4568241c9593e6`.
 
 Source inputs and report artifacts are indexed by SHA-256. Package integrity and source freshness are checked by `scripts/final-audit.ps1`.
 

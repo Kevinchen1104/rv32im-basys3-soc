@@ -1,8 +1,13 @@
 # Current timing and resources
 
-The default RTL profile rebuilt at `9d46f04` meets **100 MHz with +0.323 ns setup slack**
-and uses **9,476 LUTs, 7,179 FFs, two BRAM tiles, and no DSP blocks**.
-Hold timing, constraint coverage, and DRC also pass.
+The default RTL profile rebuilt at `fd52074` meets **100 MHz with +0.021 ns setup slack**
+and uses **9,359 LUTs, 7,176 FFs, two BRAM tiles, and no DSP blocks**.
+Hold timing, constraint coverage, and DRC also pass. This build adds the
+trap, UART RX, debug-status, read-only `mip` and MMIO readback changes; it has
+routed reports but no bitstream or board run. Its worst path is the existing
+D-cache tag compare to control-redirect path; the same logic routed with
++0.188 to +0.263 ns in earlier builds of these changes, so the margin varies
+with placement. The latest board-validated default build is `9d46f04`.
 
 The default still uses iterative multiplication, both accelerators, a 64 B
 I-cache with parallel lookup, and a 64 B direct-mapped D-cache without victims.
@@ -15,7 +20,8 @@ Current routed reports are in the
 
 | Revision | Target period | Frequency | WNS (ns) | WHS (ns) | LUTs | FFs | Timing |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| Current default `9d46f04` | 10.0 ns | 100.00 MHz | +0.323 | +0.040 | 9,476 | 7,179 | Met |
+| Current default `fd52074` | 10.0 ns | 100.00 MHz | +0.021 | +0.034 | 9,359 | 7,176 | Met |
+| Board build `9d46f04` | 10.0 ns | 100.00 MHz | +0.323 | +0.040 | 9,476 | 7,179 | Met |
 | Earlier `a98a8d3` | 10.0 ns | 100.00 MHz | +0.323 | +0.040 | 9,476 | 7,179 | Met |
 | Earlier `bdff5e2` | 10.0 ns | 100.00 MHz | +0.056 | +0.023 | 9,643 | 7,168 | Met |
 | Earlier `adbd1db` | 10.0 ns | 100.00 MHz | +0.056 | +0.023 | 9,643 | 7,168 | Met |
@@ -66,14 +72,17 @@ and the 9.5-ns/9.0-ns experiments.
 
 | Path | Logic levels | Data delay | Routing portion |
 | --- | ---: | ---: | ---: |
-| Data BRAM -> refill-word selection -> load formatting -> `MEMWBValue[25]` | 7 | 9.501 ns | 5.962 ns (62.8%) |
+| `EXMEMALUOut[5]` -> D-cache tag compare -> `cache_miss` -> trap acceptance -> `control_alignment_capture` -> `ControlRedirectPending` | 12 | 9.674 ns | 7.730 ns (79.9%) |
 
-The limiting path starts at `soc/dmem/line_memory_reg_1/CLKARDCLK` and ends at
-`soc/cpu/MEMWBValue_reg[25]/D`. Routing remains the larger delay component.
-Any additional register on this path would change load/refill timing, so a
-future optimization must compare whole-design timing and execution cycles,
-not only shorten this combinational path. The former `IDEXIR`-to-`PC` path is
-an earlier revision's bottleneck, not the critical path of this build.
+The limiting path starts at `soc/cpu/EXMEMALUOut_reg[5]/C` and ends at
+`soc/cpu/ControlRedirectPending_reg/D`. The memory-stage address drives the
+D-cache tag compare; its miss result holds the pipeline, which gates trap
+acceptance and the registered control-redirect capture. Routing is about 80%
+of the delay. Registering the D-cache miss or moving the redirect capture would
+change pipeline cycles, so a future optimization must compare whole-design
+timing and execution cycles, not only shorten this combinational path. The
+earlier data-BRAM-to-`MEMWBValue` and `IDEXIR`-to-`PC` paths belong to
+previous builds.
 
 ## Reproduce and inspect
 

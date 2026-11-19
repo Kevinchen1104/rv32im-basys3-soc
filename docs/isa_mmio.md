@@ -51,6 +51,8 @@ byte-address aliases; load/store formatting selects the addressed lane.
 `0x0400..0x05ff` is not MMIO. Accesses use the ordinary data-memory path and
 may be cached like other data-memory addresses.
 
+Write-only registers, such as UART TX data and MATVEC control, read as zero.
+
 The public debug signature word at byte address `0x0100` is an ordinary memory
 location with top-level observation support. It is used by firmware tests and
 is intentionally not part of the peripheral decoder.

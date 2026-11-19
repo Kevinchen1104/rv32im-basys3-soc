@@ -1,6 +1,6 @@
 {
   "hash_mode": "verification",
-  "fingerprint": "a31535d095e8831ffe77911803bce36e072d66f08d55fdcbc79714f29f2fb5bf",
+  "fingerprint": "ab1c812abbd1e16c484640c3f8e25d0ee2dbb5f35d1b62244bd8374598a4594b",
   "inputs": [
     {
       "path": ".gitattributes",
@@ -28,7 +28,7 @@
     },
     {
       "path": "docs/test_catalog.json",
-      "sha256": "24c0e533a33422bd9aa1a8e2d1dc37e2ce1b93fa8435f2687f5f130207100169"
+      "sha256": "b569384f9517a8374dbef26763701017094b64b478ecad525f97a1cd5cdd7f6a"
     },
     {
       "path": "firmware/c/architecture_workload.c",
@@ -99,6 +99,10 @@
       "sha256": "0264f70c011e5942db638db0399e0465de0d0029bab6af5be34248b5ea57e2e6"
     },
     {
+      "path": "firmware/hex/csr_trap/access_fault_misaligned_control.hex",
+      "sha256": "62122e12ecb1bbee24de835c3092a0822adb59206b22d00dac82daec25828457"
+    },
+    {
       "path": "firmware/hex/csr_trap/csr_trap.hex",
       "sha256": "3f9103d388a45a84415c15a06ba49cdcd1ad99b7bb80ce41ba22a665623acca8"
     },
@@ -115,6 +119,10 @@
       "sha256": "566f7afcc569a51c2d2f1f9dacfcc1f23f92e7867f04ce98fbabf415055ecd24"
     },
     {
+      "path": "firmware/hex/csr_trap/misaligned_control_after_branch.hex",
+      "sha256": "349e753a96a4761d72633cc58449ebb3aa51c8c07a97eabbf896e4c83ea5145a"
+    },
+    {
       "path": "firmware/hex/csr_trap/misaligned_exception.hex",
       "sha256": "7c5b2bf42413dc4e7663fa7b013bddb1177b11bcb6fe674adaa6b83bcaac13a3"
     },
@@ -128,7 +136,7 @@
     },
     {
       "path": "firmware/hex/csr_trap/privileged_csr_edges.hex",
-      "sha256": "df92aacf6ef93fb10f6e0cd030a5e8c281ff47e3489d80cab7bb52d90971e232"
+      "sha256": "3ce256796d4ec7e14e6008eb81a997b7f149ec27801efd8a1213a9f156533c3c"
     },
     {
       "path": "firmware/hex/examples/abi_call.hex",
@@ -271,12 +279,20 @@
       "sha256": "9f6689820dc4bd772cfd652f78379a2629701e885409995ba3c599bd039c81f5"
     },
     {
+      "path": "firmware/hex/soc_io/debug_status_victim_store.hex",
+      "sha256": "889fddd22a92b4145628d7df2147858e4b6d1b1ed59d1a9bf8fc41ae4df83174"
+    },
+    {
       "path": "firmware/hex/soc_io/perf_mmio_read.hex",
       "sha256": "36438af3cfa6b7752c24e696288002697f5606d3f7d864b03f62ca44ca8d823b"
     },
     {
       "path": "firmware/hex/soc_io/uart_gpio_demo.hex",
       "sha256": "028d93917ae947672e451ed8ec81d7ec5b27319de93e8032ead1a41cdcbeee0f"
+    },
+    {
+      "path": "firmware/hex/soc_io/uart_rx_back_to_back.hex",
+      "sha256": "09497487ddb52d9d705719ee7404d39851cfbd3b45a4b9b1f8617faf33e54950"
     },
     {
       "path": "firmware/src/accelerator/matvec_dma_demo.S",
@@ -295,6 +311,10 @@
       "sha256": "7af108cee0cca446b26baf13256678a20393d506771b3d5127a60a6a6c14b997"
     },
     {
+      "path": "firmware/src/csr_trap/access_fault_misaligned_control.S",
+      "sha256": "188e165e9c17092030cfac5ae1de6c461da6a03b4b9685d409c2bb582336950f"
+    },
+    {
       "path": "firmware/src/csr_trap/csr_trap.S",
       "sha256": "ca3d6b1c66a89aba6914efad8d07464ee6777bcc984369c3d4d6fcecd2f1fbd1"
     },
@@ -311,6 +331,10 @@
       "sha256": "7559a5d7c8dacfd2bedd8d5917ebf33369a879ef407ee31a3f7774a3c861965d"
     },
     {
+      "path": "firmware/src/csr_trap/misaligned_control_after_branch.S",
+      "sha256": "d4fc606c80ab25319e505f5d00f1ae1ac0ce858f93f4e5487fe1177f60b2c4b3"
+    },
+    {
       "path": "firmware/src/csr_trap/misaligned_exception.S",
       "sha256": "a4cf1e7c14b27ebbe8732231528ac0badcf7cc6afe843735fdc47d9bf6a09080"
     },
@@ -324,7 +348,7 @@
     },
     {
       "path": "firmware/src/csr_trap/privileged_csr_edges.S",
-      "sha256": "3849bb01b77d131cdbb96e6f6e2dd229992349853c322ea31d11c398ad0b3f5d"
+      "sha256": "bef26f11de858971d36a48914a950b31b0ea9087bfce32a05cba2b4f3f9f36d0"
     },
     {
       "path": "firmware/src/examples/abi_call.S",
@@ -467,12 +491,20 @@
       "sha256": "770bf9703f32854838570d83c02377ad43998cb4b962a418fd41e65a070c44f1"
     },
     {
+      "path": "firmware/src/soc_io/debug_status_victim_store.S",
+      "sha256": "73a31b8d88a92dbe8ca4e54f7de5ef079fdcc0f82bdb5689f8ce14a4477aaf1c"
+    },
+    {
       "path": "firmware/src/soc_io/perf_mmio_read.S",
       "sha256": "8c6aa9d95d9176dd074a9d4c46d0a4b1839171885e785e6290c7b69fb055408c"
     },
     {
       "path": "firmware/src/soc_io/uart_gpio_demo.S",
       "sha256": "9b01d744d3c6d7ea7a1bcda2cd97195303c25412280ad834a3f88d2edc487361"
+    },
+    {
+      "path": "firmware/src/soc_io/uart_rx_back_to_back.S",
+      "sha256": "070f016b0b0cb170b123fa2edbb8119add221fe36c04507377e5958ffd65d89a"
     },
     {
       "path": "fixtures/generated/boot/board_smoke.boot.bin",
@@ -740,7 +772,7 @@
     },
     {
       "path": "rtl/core/csr/csr_unit.v",
-      "sha256": "678fceac86be46f0a75c63c2826ba8b3b148e1b75d219b74a7ac87a17313d868"
+      "sha256": "499ff9ce65620a10d6470d3a622b32d0b26f55ba0273f355ccfae7861dd2c16b"
     },
     {
       "path": "rtl/core/csr/exception_decode_unit.v",
@@ -784,7 +816,7 @@
     },
     {
       "path": "rtl/core/riscv_cpu_core.v",
-      "sha256": "98e1d6e56935f423ff12e621aede60a6e7bcb1a3184d7023f195543f49d82994"
+      "sha256": "a01dd9a0f9d53eaabf46233164a9bede4f8890f7c1d4616fa9757a60b409f7dd"
     },
     {
       "path": "rtl/memory/bram/external_dmem_bram.v",
@@ -828,7 +860,7 @@
     },
     {
       "path": "rtl/soc/mmio/mmio_read_mux.v",
-      "sha256": "94e4cd860422e34de976864c8970dd5eb3cb8235731ef76c420057e48c42e424"
+      "sha256": "f40f066acb4fb92975e2bdbb6415a8bd2aab92004b0e42eb4a80f217f4fea619"
     },
     {
       "path": "rtl/soc/perf/performance_counter_unit.v",
@@ -900,7 +932,7 @@
     },
     {
       "path": "scripts/assemble.ps1",
-      "sha256": "8692310e2980788c45194ebe4bd2eff629b8ad66ab70a51be237995ee8033ac8"
+      "sha256": "3957e859fdeafc070cdbaf6d76b2b18773233fcc91bc6bcf70bb10f30333b247"
     },
     {
       "path": "scripts/assembler-tests.ps1",
@@ -1116,7 +1148,7 @@
     },
     {
       "path": "scripts/run.ps1",
-      "sha256": "9962ac2b37e257e31cea36beed3792eca2a4320bb105d0761a892bc1de954577"
+      "sha256": "5d71bed08e1c84871f67c840d720024147a729965531210d2cbfb33ee58ae26b"
     },
     {
       "path": "scripts/runner-self-test.ps1",
@@ -1599,6 +1631,10 @@
       "sha256": "e106476cfa29d575654389049b464cbfa95937da992e128ff0268985441f8f4c"
     },
     {
+      "path": "tb/program/csr_trap/tb_program_access_fault_misaligned_control.v",
+      "sha256": "3023ba80bcc24cdd45f15e21832fd86581b2d1437c0b264951f72c8bc0d3f9e9"
+    },
+    {
       "path": "tb/program/csr_trap/tb_program_csr_trap.v",
       "sha256": "6903ca8b2d617af1abd0b7774a46a0fffcf82f3012690bd3fbf30135ee17f0d2"
     },
@@ -1615,6 +1651,10 @@
       "sha256": "beac36c00ed03a604ff8c2dbf7fbaf6daa6304683c8f7645a136c41005296dac"
     },
     {
+      "path": "tb/program/csr_trap/tb_program_misaligned_control_after_branch.v",
+      "sha256": "778de14e168c46c7dec4e02bc30be73cd132b9f4d9b9d29b455e35f507ccb97e"
+    },
+    {
       "path": "tb/program/csr_trap/tb_program_misaligned_exception.v",
       "sha256": "34202866e00909729d6a335a5be358304ca06b06c31c00c94b4e0e399af25c0e"
     },
@@ -1628,7 +1668,7 @@
     },
     {
       "path": "tb/program/csr_trap/tb_program_privileged_csr_edges.v",
-      "sha256": "8247973966379a2e809b6a0b843b4fc60cd14d859a2c4420eb241e0febfe83cc"
+      "sha256": "6f75756ec610dbae4928eade700b274a9cf6d5bd372fd23835ece2697fcb7da2"
     },
     {
       "path": "tb/program/examples/tb_program.v",
@@ -1767,12 +1807,20 @@
       "sha256": "28f3e7277428f145fedbe9230efde5fc21e04ef2e5c3d5c54cddb35647b9e8dc"
     },
     {
+      "path": "tb/program/soc_io/tb_program_debug_status_victim_store.v",
+      "sha256": "1480c00beb50b9c2d5a4502c0c86260f45df787921d7a10097596b547abf7d1e"
+    },
+    {
       "path": "tb/program/soc_io/tb_program_perf_mmio_read.v",
       "sha256": "ea7e1bf2fed25f2cbd5c4dec129a627342b75fc7c350445edc8ae27c8fc87154"
     },
     {
       "path": "tb/program/soc_io/tb_program_uart_gpio_demo.v",
       "sha256": "d90213f0890fd7f8dc46ead9cf2b260cd810b56431f407e44d5feeb6e0b1d9ef"
+    },
+    {
+      "path": "tb/program/soc_io/tb_program_uart_rx_back_to_back.v",
+      "sha256": "f20e04c7570ef6994b9e4aaf0fb060b569806cdf979699eb00a961037aa44862"
     },
     {
       "path": "tb/reference/tb_arch_test_signature.v",
@@ -1884,7 +1932,7 @@
     },
     {
       "path": "tb/unit/core/tb_csr_unit.v",
-      "sha256": "aa53627919360a3610546e3939a30040ee1c780eb7a475a31d9b3887d7f10c4e"
+      "sha256": "1e6b54683846ac04df1017224e14cadf277c2a0e8c519f6e51e1542f3b5f32b9"
     },
     {
       "path": "tb/unit/core/tb_exception_decode_unit.v",
@@ -2004,7 +2052,7 @@
     },
     {
       "path": "tb/unit/soc/tb_mmio_read_mux.v",
-      "sha256": "59a46b685e253424defa4ea3a447bcebbd46a5a41b6e99501c634196be49a6f9"
+      "sha256": "cb290a23d7ae1a6cc697d83c20a39242d714e7527c3e2eb8b2494ee273ba8a96"
     },
     {
       "path": "tools/arch-test/arch-test.ld",

@@ -58,7 +58,6 @@ module csr_unit (
     reg [31:0] mepc;
     reg [31:0] mcause;
     reg [31:0] mtval;
-    reg [31:0] mip;
 
     // Trap metadata is sampled every cycle so trap_taken never becomes the
     // clock-enable for this wide payload bank.  The one-bit pending event
@@ -85,15 +84,15 @@ module csr_unit (
     reg [31:0] direct_mtvec_write_shadow;
     reg direct_mtvec_write_pending;
 
+    // MTIP and MEIP are read-only: they follow the timer and the external
+    // source, and software clears them at the source. mip writes are ignored.
     wire [31:0] mip_effective =
-        mip |
         (mip_timer_pending ? 32'h0000_0080 : 32'h0) |
         (mip_external_pending ? 32'h0000_0800 : 32'h0);
 
     wire write_mstatus = csr_write_enable && (csr_addr == CSR_MSTATUS);
     wire write_mie     = csr_write_enable && (csr_addr == CSR_MIE);
     wire write_mtvec   = csr_write_enable && (csr_addr == CSR_MTVEC);
-    wire write_mip     = csr_write_enable && (csr_addr == CSR_MIP);
     wire addr_is_mepc   = (csr_addr == CSR_MEPC);
     wire addr_is_mcause = (csr_addr == CSR_MCAUSE);
     wire addr_is_mtval  = (csr_addr == CSR_MTVAL);
@@ -197,7 +196,6 @@ module csr_unit (
             mepc <= 32'h0;
             mcause <= 32'h0;
             mtval <= 32'h0;
-            mip <= 32'h0;
             trap_pc_shadow <= 32'h0;
             trap_cause_shadow <= 32'h0;
             trap_tval_shadow <= 32'h0;
@@ -257,9 +255,6 @@ module csr_unit (
             if (!trap_taken) begin
                 if (write_mie) begin
                     mie <= csr_write_result(mie, csr_funct3, csr_rs1_value, csr_rs1_nonzero) & INTERRUPT_MASK;
-                end
-                if (write_mip) begin
-                    mip <= csr_write_result(mip, csr_funct3, csr_rs1_value, csr_rs1_nonzero) & INTERRUPT_MASK;
                 end
             end
             if (direct_mtvec_write_pending) begin

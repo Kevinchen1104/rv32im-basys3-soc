@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 // Checks: Standalone CSR unit supports the local machine-mode CSR subset, including mtvec/mepc alignment, mtval
-//   storage, mstatus/mie/mip WARL masking for implemented bits, hardware MTIP/MEIP readback, immediate trap-entry
+//   storage, mstatus/mie WARL masking for implemented bits, read-only hardware MTIP/MEIP, immediate trap-entry
 //   mstatus updates, one-cycle registered trap-metadata commit, back-to-back capture/commit, and mret side effects.
 // CPU-level tests exercise interrupt gating, redirect timing, and flush interactions.
 
@@ -210,6 +210,9 @@ module tb_csr_unit;
         csr_write(12'h344, 3'b001, 32'h0000_0005, 1'b1);
         check32("csrrw mip ignores unsupported bits", mip_out, 32'h0000_0000);
         read_check(12'h344, 32'h0000_0000, "csrrw mip read");
+        csr_write(12'h344, 3'b001, 32'h0000_0880, 1'b1);
+        check32("csrrw mip cannot set MTIP/MEIP", mip_out, 32'h0000_0000);
+        read_check(12'h344, 32'h0000_0000, "read-only mip read");
         mip_external_pending = 1'b1;
         #1;
         check32("mip external pending out", mip_out, 32'h0000_0800);

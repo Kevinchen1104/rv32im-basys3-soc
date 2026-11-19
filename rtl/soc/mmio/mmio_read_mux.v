@@ -57,30 +57,32 @@ module mmio_read_mux (
     reg [31:0] timer_page_word;
     reg [31:0] matvec_dma_page_word;
 
-    // GPIO output remains the deterministic fallback for write-only or
-    // unmapped reads. The decoder prevents those addresses from bypassing
-    // normal memory when no MMIO register exists.
+    // Write-only registers (UART TX, MATVEC control) and unused offsets read
+    // as zero, so a read-modify-write never picks up another register's
+    // bits. The decoder sends addresses without an MMIO register to normal
+    // memory, so this value only reaches the CPU for decoded registers.
+    localparam [31:0] UNREADABLE_WORD = 32'h0;
     always @(*) begin
-        gpio_page_word = gpio_output_read_data;
+        gpio_page_word = UNREADABLE_WORD;
         case (word_offset)
             6'h00: gpio_page_word = gpio_output_read_data;
             6'h01: gpio_page_word = gpio_input_read_data;
-            default: gpio_page_word = gpio_output_read_data;
+            default: gpio_page_word = UNREADABLE_WORD;
         endcase
     end
 
     always @(*) begin
-        uart_page_word = gpio_output_read_data;
+        uart_page_word = UNREADABLE_WORD;
         case (word_offset)
-            6'h00: uart_page_word = gpio_output_read_data;
+            6'h00: uart_page_word = UNREADABLE_WORD;
             6'h01: uart_page_word = uart_rx_read_data;
             6'h02: uart_page_word = uart_status_read_data;
-            default: uart_page_word = gpio_output_read_data;
+            default: uart_page_word = UNREADABLE_WORD;
         endcase
     end
 
     always @(*) begin
-        perf_page_word = gpio_output_read_data;
+        perf_page_word = UNREADABLE_WORD;
         case (word_offset)
             6'h00: perf_page_word = perf_cycle_count_read_data;
             6'h01: perf_page_word = perf_retired_count_read_data;
@@ -91,14 +93,14 @@ module mmio_read_mux (
             6'h06: perf_page_word = perf_matvec_start_count_read_data;
             6'h07: perf_page_word = perf_matvec_done_count_read_data;
             6'h08: perf_page_word = perf_matvec_busy_cycle_count_read_data;
-            default: perf_page_word = gpio_output_read_data;
+            default: perf_page_word = UNREADABLE_WORD;
         endcase
     end
 
     always @(*) begin
-        matvec_page_word = gpio_output_read_data;
+        matvec_page_word = UNREADABLE_WORD;
         case (word_offset)
-            6'h00: matvec_page_word = gpio_output_read_data;
+            6'h00: matvec_page_word = UNREADABLE_WORD;
             6'h01: matvec_page_word = matvec_status_read_data;
             6'h02: matvec_page_word = matvec_config_read_data;
             6'h03: matvec_page_word = matvec_vector_read_data;
@@ -107,23 +109,23 @@ module mmio_read_mux (
             6'h06: matvec_page_word = matvec_result_index_read_data;
             6'h07: matvec_page_word = matvec_result_data_read_data;
             6'h08: matvec_page_word = matvec_perf_read_data;
-            default: matvec_page_word = gpio_output_read_data;
+            default: matvec_page_word = UNREADABLE_WORD;
         endcase
     end
 
     always @(*) begin
-        timer_page_word = gpio_output_read_data;
+        timer_page_word = UNREADABLE_WORD;
         case (word_offset)
             6'h00: timer_page_word = timer_mtime_low_read_data;
             6'h01: timer_page_word = timer_mtime_high_read_data;
             6'h02: timer_page_word = timer_mtimecmp_low_read_data;
             6'h03: timer_page_word = timer_mtimecmp_high_read_data;
-            default: timer_page_word = gpio_output_read_data;
+            default: timer_page_word = UNREADABLE_WORD;
         endcase
     end
 
     always @(*) begin
-        matvec_dma_page_word = gpio_output_read_data;
+        matvec_dma_page_word = UNREADABLE_WORD;
         case (word_offset)
             6'h00: matvec_dma_page_word = matvec_dma_vec_addr_read_data;
             6'h01: matvec_dma_page_word = matvec_dma_matrix_addr_read_data;
@@ -133,12 +135,12 @@ module mmio_read_mux (
             6'h05: matvec_dma_page_word = matvec_dma_status_read_data;
             6'h06: matvec_dma_page_word = matvec_dma_error_read_data;
             6'h07: matvec_dma_page_word = matvec_dma_perf_read_data;
-            default: matvec_dma_page_word = gpio_output_read_data;
+            default: matvec_dma_page_word = UNREADABLE_WORD;
         endcase
     end
 
     always @(*) begin
-        read_word = gpio_output_read_data;
+        read_word = UNREADABLE_WORD;
         if (addr[31:12] == 20'h0) begin
             case (addr[11:8])
                 4'h2: read_word = gpio_page_word;
@@ -147,7 +149,7 @@ module mmio_read_mux (
                 4'h7: read_word = matvec_page_word;
                 4'h8: read_word = timer_page_word;
                 4'h9: read_word = matvec_dma_page_word;
-                default: read_word = gpio_output_read_data;
+                default: read_word = UNREADABLE_WORD;
             endcase
         end
     end

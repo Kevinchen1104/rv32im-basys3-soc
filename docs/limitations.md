@@ -5,6 +5,12 @@
 - The core implements the RV32I instruction groups and machine-mode subset
   described in [ISA and MMIO](isa_mmio.md), plus all eight RV32M operations.
   `FENCE`, user/supervisor modes, MMU, and virtual memory are not implemented.
+- An interrupt class does not re-enter its own handler. Until `mret`, the timer
+  or external interrupt is not taken again, even if its handler sets
+  `mstatus.MIE` while the source is still pending; it is taken after `mret`
+  if still pending. The other class can still interrupt the handler once
+  `mstatus.MIE` is set. `mip.MTIP` and `mip.MEIP` are read-only and are
+  cleared at their source.
 - The 16-entry BTB has no PC tags. Aliasing can cause extra mispredictions;
   resolved control transfers correct the architectural path.
 - Reset initializes general registers to their index values for deterministic

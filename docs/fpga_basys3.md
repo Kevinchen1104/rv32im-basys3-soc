@@ -33,10 +33,15 @@ endpoints. Use these alongside the timing summary when comparing RTL revisions.
 The [timing and resource baseline](timing_baseline.md) records the measured
 starting point for optimization.
 
-The current default build at `9d46f04` completed implementation and bitstream
-generation on 2026-10-02: WNS `+0.323 ns`, WHS `+0.040 ns`, zero TNS/THS,
-9,476 LUTs, 7,179 FFs, two BRAM tiles and no DSP blocks. Its source identities
-and routed reports are in the [implementation package](../release/implementation/basys3/README.md).
+The current default implementation at `fd52074` meets 100 MHz: WNS
+`+0.021 ns`, WHS `+0.034 ns`, zero TNS/THS, 9,359 LUTs, 7,176 FFs, two BRAM
+tiles and no DSP blocks. Its source identities and routed reports are in the
+[implementation package](../release/implementation/basys3/README.md). No
+bitstream or board run has been recorded for this revision.
+
+The latest board-validated default build, `9d46f04`, completed implementation
+and bitstream generation on 2026-10-02: WNS `+0.323 ns`, WHS `+0.040 ns`, zero
+TNS/THS, 9,476 LUTs, 7,179 FFs, two BRAM tiles and no DSP blocks.
 
 The earlier 2026-09-30 build at `849270b` completed implementation and bitstream
 generation in Vivado 2026.1 with post-route WNS `+0.399 ns`, TNS `0 ns`,

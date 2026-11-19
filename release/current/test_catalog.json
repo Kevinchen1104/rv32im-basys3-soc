@@ -130,7 +130,7 @@
       "source": "tb/unit/core/tb_csr_unit.v",
       "category": "csr_trap",
       "tags": ["csr_trap"],
-      "contract": "Standalone CSR unit supports the local machine-mode CSR subset, including mtvec/mepc alignment, mtval storage, mstatus/mie/mip WARL masking, immediate trap-entry mstatus updates, one-cycle registered mepc/mcause/mtval commit, back-to-back metadata capture/commit, reset cancellation, direct-write priority, and mret side effects.",
+      "contract": "Standalone CSR unit supports the local machine-mode CSR subset, including mtvec/mepc alignment, mtval storage, mstatus/mie WARL masking, read-only mip, immediate trap-entry mstatus updates, one-cycle registered mepc/mcause/mtval commit, back-to-back metadata capture/commit, reset cancellation, direct-write priority, and mret side effects.",
       "boundary": "Standalone CSR storage and update behavior; CPU tests exercise exception legality, redirects, interrupt entry, and flush interactions.",
       "uses_hierarchical_access": true
     },
@@ -587,7 +587,7 @@
       "source": "tb/unit/soc/tb_mmio_read_mux.v",
       "category": "mmio",
       "tags": ["mmio", "load_store"],
-      "contract": "Hierarchical MMIO read selection returns the exact GPIO, UART, accelerator, performance-counter, timer, and DMA-lite readback word for every mapped register while preserving low address-bit aliases and shared subword load formatting.",
+      "contract": "Hierarchical MMIO read selection returns the exact GPIO, UART, accelerator, performance-counter, timer, and DMA-lite readback word for every mapped register, zero for write-only and unmapped words, while preserving low address-bit aliases and shared subword load formatting.",
       "boundary": "Directed combinational mux and formatter evidence.",
       "uses_hierarchical_access": false
     },
@@ -1158,7 +1158,7 @@
       "source": "tb/program/csr_trap/tb_program_privileged_csr_edges.v",
       "category": "csr_trap",
       "tags": ["csr_trap"],
-      "contract": "Checks an assembled program observes mtvec direct-mode alignment, mepc IALIGN=32 alignment, mstatus machine-only MPP plus MIE/MPIE WARL behavior, mie/mip implemented-bit masking, mtval read/write, and aligned mret return through a public debug_status pass/fail signature.",
+      "contract": "Checks an assembled program observes mtvec direct-mode alignment, mepc IALIGN=32 alignment, mstatus machine-only MPP plus MIE/MPIE WARL behavior, mie implemented-bit masking, read-only mip, mtval read/write, and aligned mret return through a public debug_status pass/fail signature.",
       "boundary": "Selected local machine-mode CSR edge coverage."
     },
     {
@@ -1176,6 +1176,22 @@
       "tags": ["csr_trap", "exception", "memory"],
       "contract": "Checks assembled misaligned lw and sw traps observe mcause=4/6, mepc at the faulting instruction, mtval as the faulting data address, load destination suppression, store side-effect suppression, and public debug_status pass/fail.",
       "boundary": "Selected data-address misalignment behavior."
+    },
+    {
+      "name": "program_misaligned_control_after_branch",
+      "source": "tb/program/csr_trap/tb_program_misaligned_control_after_branch.v",
+      "category": "csr_trap",
+      "tags": ["csr_trap", "exception", "control_flow"],
+      "contract": "Checks that an isolated misaligned JALR and the same JALR entering execute on the cycle after a not-taken branch both trap with mcause=0, mepc at the JALR and mtval at the target, without writing the link register or executing the target; a monitor requires the branch and JALR to occupy ID/EX on consecutive cycles.",
+      "boundary": "JALR targets after one not-taken branch with the default predictor and I-cache."
+    },
+    {
+      "name": "program_access_fault_misaligned_control",
+      "source": "tb/program/csr_trap/tb_program_access_fault_misaligned_control.v",
+      "category": "csr_trap",
+      "tags": ["csr_trap", "exception", "external_memory"],
+      "contract": "With external IMEM larger than MEMORY_WORD_COUNT, checks that a JAL with a misaligned target at an out-of-range PC raises exactly one trap, an instruction-access fault with mepc=mtval=0x400, and that the handler observes mstatus=0x1880.",
+      "boundary": "One out-of-range control transfer with a combinational-ready external IMEM model."
     },
     {
       "name": "program_abi",
@@ -1330,6 +1346,22 @@
       "contract": "CPU program polls UART TX ready through MMIO, emits RV32IM CPU OK newline through the synthesizable UART TX serializer, writes GPIO output pattern 0xa5, reads GPIO back in software, and exposes a public debug_status pass/fail signature.",
       "boundary": "Board-facing SoC I/O simulation evidence.",
       "uses_hierarchical_access": false
+    },
+    {
+      "name": "program_uart_rx_back_to_back",
+      "source": "tb/program/soc_io/tb_program_uart_rx_back_to_back.v",
+      "category": "uart",
+      "tags": ["uart", "mmio"],
+      "contract": "With 0x11, 0x22 and 0x33 queued in uart_rx_mmio_buffer, checks that RXDATA loads on consecutive cycles return 0x11 then 0x22, a status load still reports one byte, and a status load on the cycle after reading 0x33 reports an empty queue, with exactly three pops and no overrun.",
+      "boundary": "CPU core plus a four-entry RX queue driven directly by the testbench; no serial receiver."
+    },
+    {
+      "name": "program_debug_status_victim_store",
+      "source": "tb/program/soc_io/tb_program_debug_status_victim_store.v",
+      "category": "cache",
+      "tags": ["dcache", "cache", "mmio"],
+      "contract": "With a four-line D-cache victim buffer, checks that a store to the debug_status word completing through a victim-buffer hit updates the public debug_status mirror; a monitor requires that store to take the victim path.",
+      "boundary": "One evicted-line store with internal data memory."
     },
     {
       "name": "program_showcase_demo",

@@ -1,6 +1,6 @@
 # Program: privileged_csr_edges
 # Purpose: Checks selected machine-mode CSR readback and masking edges.
-# Exercises: mtvec, mepc, mstatus.MIE/MPIE/MPP, mie/mip masks, mtval, mcause, and mret return behavior.
+# Exercises: mtvec, mepc, mstatus.MIE/MPIE/MPP, the mie mask, read-only mip, mtval, mcause, and mret return behavior.
 # Observable result: Public debug_status pass/fail signature is checked by the program testbench.
 # Used by: tb_program_privileged_csr_edges
 
@@ -38,10 +38,9 @@
     bne  t1, t2, fail
 
     li   t0, 0xffffffff
-    csrrw x0, mip, t0
+    csrrw x0, mip, t0     # MTIP and MEIP are read-only
     csrrs t1, mip, zero
-    li   t2, 0x880
-    bne  t1, t2, fail
+    bne  t1, zero, fail
 
     li   t0, 0
     csrrw x0, mip, t0

@@ -8,7 +8,7 @@ and FPGA implementation.
 ## Run and inspect
 
 Run `scripts/check.ps1 -Mode Quick` during editing and `-Mode Full` for the
-complete portable gate. Full includes all 169 simulations and eight FPGA top
+complete portable gate. Full includes all 173 simulations and eight FPGA top
 elaborations. See [Reproduce](reproduce.md) for commands and prerequisites.
 
 | Output | Use |
@@ -80,7 +80,7 @@ The optional [GCC-compiled C checks](compiled-programs.md) add an external
 Unicorn reference for four C programs at three optimization levels. Each run
 compares the retired PC/instruction/register-write stream, cache-visible data
 RAM, and algorithm-level result words. These twelve executions are reported
-separately from the 169 portable simulations. Comparator self-tests deliberately
+separately from the 173 portable simulations. Comparator self-tests deliberately
 corrupt trace fields and memory bytes and exercise timeout/error handling.
 
 Generated-reference tests use fixed seeds and repository reference models to

@@ -3,7 +3,7 @@
 // Testbench: tb_program_privileged_csr_edges
 // Purpose: Runs CPU firmware to exercise the selected machine-mode CSR/trap subset.
 // Checks: An assembled program observes mtvec direct-mode alignment, mepc IALIGN=32 alignment, mstatus machine-only
-//   MPP plus MIE/MPIE WARL behavior, mie/mip implemented-bit masking, mtval read/write, and aligned mret return
+//   MPP plus MIE/MPIE WARL behavior, mie implemented-bit masking, read-only mip, mtval read/write, and aligned mret return
 //   through a public debug_status pass/fail signature.
 // Pass condition: Firmware-visible register, memory, debug_status, I/O, or transcript signatures match expected
 //   values before timeout.
@@ -16,7 +16,7 @@ module tb_program_privileged_csr_edges;
     localparam integer TIMEOUT_CYCLES = 5000;
 
     localparam PROGRAM_HEX = "firmware/hex/csr_trap/privileged_csr_edges.hex";
-    localparam integer PROGRAM_WORD_COUNT = 85;
+    localparam integer PROGRAM_WORD_COUNT = 83;
     `include "tb/common/tb_firmware.vh"
 
     initial begin

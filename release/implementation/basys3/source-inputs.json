@@ -1,6 +1,6 @@
 {
   "hash_mode": "raw",
-  "fingerprint": "293d6cc96a7134b3c6caeca1e80984bd5c21b79d6f7083e6b77882c8416e983a",
+  "fingerprint": "866b799c0a40bef330890c13bbd27db904974f535e6fbc966b34bbaf3f16c4e2",
   "inputs": [
     {
       "path": "fpga/boards/basys3/basys3.xdc",
@@ -16,11 +16,11 @@
     },
     {
       "path": "rtl/accelerators/matvec/int8_matvec_dma_lite.v",
-      "sha256": "88f9dcf8cc9fa0c402337e3321b23e78460fe8f5b7788a259aacf890ce5720ca"
+      "sha256": "6e1756cb09e1f3170165d9f45e99a05793dcf4a18ea41620d91c122171a3bdc2"
     },
     {
       "path": "rtl/accelerators/matvec/int8_matvec_scratchpad_accelerator.v",
-      "sha256": "750ca5bbd3f9b8019ff08f7889446b64bca3c7fd3e7cc2bd52f79a8ffd5bcae3"
+      "sha256": "65499d6e0ccdf9ba06ad7254920dc5fbe13d89803a40ba35172885403320fe7b"
     },
     {
       "path": "rtl/boot/uart/boot_reset_controller.v",
@@ -32,15 +32,15 @@
     },
     {
       "path": "rtl/boot/uart/uart_serial_packet_boot_imem.v",
-      "sha256": "829d2aee3b78e69a465213a473080ed8bacabc9e4aef134ef50d6ffd82e894bc"
+      "sha256": "60abc86122e6d4c9e628f59e8a48eb5e8f0af595c24d1c9b06df92252031001a"
     },
     {
       "path": "rtl/core/csr/csr_unit.v",
-      "sha256": "04c568da1afc36c8e7a97e768173ab2e2f4087b050f666cfb6f8cc96ebce17cd"
+      "sha256": "499ff9ce65620a10d6470d3a622b32d0b26f55ba0273f355ccfae7861dd2c16b"
     },
     {
       "path": "rtl/core/csr/exception_decode_unit.v",
-      "sha256": "1fd70d824ededf838d3b92a23303a7212c1149264489b7744a4cdd9866609e2d"
+      "sha256": "ce3cdf19f1dd239d77262332396ba8dc950d916b0b4ce8d7b60c0988ca5c1bd6"
     },
     {
       "path": "rtl/core/csr/trap_redirect_control_unit.v",
@@ -48,7 +48,7 @@
     },
     {
       "path": "rtl/core/execute/branch_jump_unit.v",
-      "sha256": "a3f4b032268c087afc258656a3cb6835bb922c5f9a86473ee5c9d894a5666137"
+      "sha256": "c5da1f85fd7c13bc11b09cff4f7dbf36b74f5e8921dda906b99379c7008d5bc3"
     },
     {
       "path": "rtl/core/execute/riscv_alu.v",
@@ -68,7 +68,7 @@
     },
     {
       "path": "rtl/core/pipeline/forwarding_unit.v",
-      "sha256": "65af61c7979c224453809c2fb7bc44c364b1e630c3145f20c30f459712d87362"
+      "sha256": "7b94a11b6b3cf1c513539a1665fd63f26930135b84d37ba3037f0295d8afa062"
     },
     {
       "path": "rtl/core/pipeline/hazard_unit.v",
@@ -80,7 +80,7 @@
     },
     {
       "path": "rtl/core/riscv_cpu_core.v",
-      "sha256": "98e1d6e56935f423ff12e621aede60a6e7bcb1a3184d7023f195543f49d82994"
+      "sha256": "a01dd9a0f9d53eaabf46233164a9bede4f8890f7c1d4616fa9757a60b409f7dd"
     },
     {
       "path": "rtl/memory/bram/external_dmem_bram.v",
@@ -100,7 +100,7 @@
     },
     {
       "path": "rtl/peripherals/timer/machine_timer.v",
-      "sha256": "61b7b67fd240f4e9559b7e07af81a889edb90032c5ab26a0066fdddccc15c4d1"
+      "sha256": "f24094b30f40ac71ac009f27077a6f4e7a741f8f9b3b3ea7dae14e22b3b9e35a"
     },
     {
       "path": "rtl/peripherals/uart/uart_rx.v",
@@ -120,7 +120,7 @@
     },
     {
       "path": "rtl/soc/mmio/mmio_read_mux.v",
-      "sha256": "94e4cd860422e34de976864c8970dd5eb3cb8235731ef76c420057e48c42e424"
+      "sha256": "f40f066acb4fb92975e2bdbb6415a8bd2aab92004b0e42eb4a80f217f4fea619"
     },
     {
       "path": "rtl/soc/perf/performance_counter_unit.v",
@@ -128,39 +128,39 @@
     },
     {
       "path": "rtl/top/boards/basys3/basys3_lowfreq_clock_gen.v",
-      "sha256": "748cde385747dbdd79ab76ac6738530b5604db8ba5445486447272a980b11c62"
+      "sha256": "82df37279e6ea7fdff59dc7791f966c2a19d8c93c36937508344442cb8fd30f6"
     },
     {
       "path": "rtl/top/boards/basys3/riscv_cpu_basys3_board_smoke_top.v",
-      "sha256": "21aa81d515c69aad6c79212554bdb4c904ce7885e48a6436ca995565d4c01757"
+      "sha256": "a0950b4e415652ff84b15ab5f5313a238aaad31ff3d034637bd1c06282cd10c4"
     },
     {
       "path": "rtl/top/boards/basys3/riscv_cpu_basys3_full_lowfreq_top.v",
-      "sha256": "0d920fe5593eed3f1f38f9cee462acba0b6d9b291814a66f9784ed1bc9b9b2e5"
+      "sha256": "3fe657b79acb425c9b98ad11156a9e85f46413781991f0dd388fe176c0de5915"
     },
     {
       "path": "rtl/top/boards/basys3/riscv_cpu_basys3_top.v",
-      "sha256": "1b85f7e4fbd00bec6e937dec76e162f77b2d1d314a864519025cdad8e6098ab8"
+      "sha256": "2bbf2b1102b176459723ccfe1a420c82d08dcba84586e3717f45d67faefc8e20"
     },
     {
       "path": "rtl/top/generic/riscv_cpu_fpga_debug_led_top.v",
-      "sha256": "2b69230aa3a1e21d73235a6be3830f8599bcb8e4586bbe1f8982f0f370f3af88"
+      "sha256": "21aebcf1c79417701cb9394813eedd5e6f8d8e0df6db5eb9796964bd64a851d4"
     },
     {
       "path": "rtl/top/generic/riscv_cpu_fpga_top.v",
-      "sha256": "9172cd6959da2a4bc2faf2be9957c8dfef4e6fa76eb0f53158345a5ccdd4b0bb"
+      "sha256": "31280a11b52c399a834fa5c872b8d3f78ac29192243a0543ac448e9eb90f2a33"
     },
     {
       "path": "rtl/top/soc/riscv_cpu_uart_boot_bram_soc_top.v",
-      "sha256": "711e865a22d4e3c5a264964ab67a3246069c48ca62516f497bd233d08a166d35"
+      "sha256": "d8bd416b1c5dc5066023266dfcb2ede833a1152c81fd9ceb5b45f3fdf822360c"
     },
     {
       "path": "rtl/top/soc/riscv_cpu_uart_boot_fpga_top.v",
-      "sha256": "217aaadda3703b81b7d44ee7ef28ba8fe5b3b5c0d1ea6e6471f63d50a11d7544"
+      "sha256": "b02e96f25a33d2d1d6b6535676ed692c2acd1d487dedad9c48a129264c12ac1f"
     },
     {
       "path": "rtl/top/soc/riscv_cpu_uart_boot_runtime_soc_top.v",
-      "sha256": "5d9f3a7896cb81fb7357835b89c0aa8b2dd853979a52c30097a7797d893eff15"
+      "sha256": "25b90028c8c93bed3acc905fc2549561a42e2afd2101212bafed872b663f78aa"
     },
     {
       "path": "scripts/result-format.ps1",

@@ -2,13 +2,14 @@
 
 // Testbench: tb_mmio_read_mux
 // Purpose: Checks readback selection for every active MMIO page.
-// Checks: Register markers, low-bit aliases, 0x0400..0x05ff fallback, invalid
-//   addresses, and shared byte/halfword load formatting.
-// Pass condition: Each active register returns its marker and unmapped/invalid
-//   addresses return the ordinary-memory fallback with correct load formatting.
+// Checks: Register markers, low-bit aliases, zero readback for write-only and
+//   unmapped words, invalid addresses, and shared byte/halfword load formatting.
+// Pass condition: Each active register returns its marker, and write-only,
+//   unmapped and invalid addresses return zero with correct load formatting.
 
 module tb_mmio_read_mux;
-    localparam [31:0] FALLBACK_WORD = 32'hf00d_ba5e;
+    localparam [31:0] GPIO_OUTPUT_WORD = 32'hf00d_ba5e;
+    localparam [31:0] UNREADABLE_WORD = 32'h0000_0000;
 
     reg [31:0] addr;
     reg [31:0] gpio_input_read_data;
@@ -20,7 +21,7 @@ module tb_mmio_read_mux;
 
     mmio_read_mux dut (
         .addr(addr),
-        .gpio_output_read_data(FALLBACK_WORD),
+        .gpio_output_read_data(GPIO_OUTPUT_WORD),
         .gpio_input_read_data(gpio_input_read_data),
         .uart_rx_read_data(32'h3000_0001),
         .uart_status_read_data(32'h3000_0002),
@@ -105,9 +106,9 @@ module tb_mmio_read_mux;
         funct3 = 3'b010;
         gpio_input_read_data = 32'h2000_0001;
 
-        check_register(32'h0000_0200, FALLBACK_WORD, "GPIO output");
+        check_register(32'h0000_0200, GPIO_OUTPUT_WORD, "GPIO output");
         check_register(32'h0000_0204, 32'h2000_0001, "GPIO input");
-        check_register(32'h0000_0300, FALLBACK_WORD, "UART TX write-only");
+        check_register(32'h0000_0300, UNREADABLE_WORD, "UART TX write-only");
         check_register(32'h0000_0304, 32'h3000_0001, "UART RX");
         check_register(32'h0000_0308, 32'h3000_0002, "UART status");
 
@@ -121,7 +122,7 @@ module tb_mmio_read_mux;
         check_register(32'h0000_061c, 32'h6000_0007, "MATVEC done count");
         check_register(32'h0000_0620, 32'h6000_0008, "MATVEC busy count");
 
-        check_register(32'h0000_0700, FALLBACK_WORD, "MATVEC control");
+        check_register(32'h0000_0700, UNREADABLE_WORD, "MATVEC control");
         check_register(32'h0000_0704, 32'h7000_0001, "MATVEC status");
         check_register(32'h0000_0708, 32'h7000_0002, "MATVEC config");
         check_register(32'h0000_070c, 32'h7000_0003, "MATVEC vector");
@@ -145,11 +146,11 @@ module tb_mmio_read_mux;
         check_register(32'h0000_091c, 32'h9000_0007, "DMA perf");
 
         // These addresses are not MMIO, so the mux returns ordinary-memory data.
-        check_register(32'h0000_0400, FALLBACK_WORD, "ordinary memory 0x0400");
-        check_register(32'h0000_0500, FALLBACK_WORD, "ordinary memory 0x0500");
-        check_register(32'h0000_0724, FALLBACK_WORD, "invalid MATVEC offset");
-        check_register(32'h0000_0920, FALLBACK_WORD, "invalid DMA offset");
-        check_register(32'h1000_0204, FALLBACK_WORD, "high address alias");
+        check_register(32'h0000_0400, UNREADABLE_WORD, "ordinary memory 0x0400");
+        check_register(32'h0000_0500, UNREADABLE_WORD, "ordinary memory 0x0500");
+        check_register(32'h0000_0724, UNREADABLE_WORD, "invalid MATVEC offset");
+        check_register(32'h0000_0920, UNREADABLE_WORD, "invalid DMA offset");
+        check_register(32'h1000_0204, UNREADABLE_WORD, "high address alias");
 
         addr = 32'h0000_0204;
         gpio_input_read_data = 32'h1234_5678;

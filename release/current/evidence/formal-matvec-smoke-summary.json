@@ -1,0 +1,12 @@
+{
+  "generated_at_utc": "2026-11-01T05:53:59.7680645Z",
+  "status": "pass",
+  "harnesses": ["matvec_scratchpad_formal"],
+  "group": "Matvec",
+  "method": "SymbiYosys properties; modes and depths are specified in formal/*.sby",
+  "log_directory": "results/logs/formal",
+  "source_commit": "fd520745fcf361b09d164b77cb4568241c9593e6",
+  "verification_input_fingerprint": "ab1c812abbd1e16c484640c3f8e25d0ee2dbb5f35d1b62244bd8374598a4594b",
+  "verification_input_count": 519,
+  "verification_working_tree_dirty": false
+}

@@ -1,8 +1,8 @@
 ﻿# Portable verification snapshot
 
-Source revision: `c85280d49904d62367d54b7fb8561601db7831a9`.
+Source revision: `fd520745fcf361b09d164b77cb4568241c9593e6`.
 
-Full workflow: 31 stages; RTL regression: 169 tests.
+Full workflow: 31 stages; RTL regression: 173 tests.
 
 Read `package.json` for included gates and omitted optional tools; `evidence/` contains their recorded summaries.
 
